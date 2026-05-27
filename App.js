@@ -10,6 +10,7 @@ import Dialog from './shared/components/Dialog';
 import SearchField from './shared/components/SearchField';
 import { useState } from 'react';
 import Toast from './shared/components/Toast';
+import TopNavigation from './shared/components/TopNavigation.jsx';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -29,6 +30,19 @@ export default function App() {
        <ButtonIcon
         Icon={ic_x}
         onPress={() => console.log('pressed')}
+      />
+
+      <TopNavigation
+        title="편지 쓰기"
+        buttonLabel="완료"
+        onPressBack={() => console.log('back')}
+        onPressButton={() => console.log('done')}
+      />
+
+      <TopNavigation
+        title="Title"
+        showTextButton={false}
+        onPressBack={() => console.log('back')}
       />
 
       <SearchField
