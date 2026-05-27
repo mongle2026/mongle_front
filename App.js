@@ -14,6 +14,7 @@ import TopNavigation from './shared/components/TopNavigation.jsx';
 import ListRow from './src/write/components/ListRow.jsx';
 import SelectRecipient from './src/write/SelectRecipient.jsx';
 import ListHeader from './shared/components/ListHeader.jsx';
+import Music from './shared/components/Music.jsx';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -30,7 +31,6 @@ export default function App() {
     <View style={styles.container}>
       <Text>Open up App.js to start working on your app!</Text>
       <StatusBar style="auto" />
-      
       <SelectRecipient />
 
       
