@@ -13,6 +13,7 @@ import Toast from './shared/components/Toast';
 import TopNavigation from './shared/components/TopNavigation.jsx';
 import ListRow from './src/write/components/ListRow.jsx';
 import SelectRecipient from './src/write/SelectRecipient.jsx';
+import ListHeader from './shared/components/ListHeader.jsx';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
