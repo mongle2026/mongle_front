@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { useFonts } from 'expo-font';
 import ButtonIconS from './shared/components/ButtonIconS';
-import ButtonIconL from './shared/components/ButtonIconL';
+import ButtonIconL from './shared/components/ButtonIcon';
 import ButtonText from './shared/components/ButtonText';
 import ic_x from './assets/icons/ic_x.svg';
 
