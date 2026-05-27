@@ -7,6 +7,8 @@ import ListRow from './components/ListRow';
 import UseSelectRecipient from './hook/UseSelectRecipient';
 import { styles } from './styles/SelectRecipientStyle';
 
+import Profile from '../../shared/components/Profile';
+
 export default function SelectRecipient() {
   const {
     keyword,
@@ -29,6 +31,7 @@ export default function SelectRecipient() {
         buttonDisabled={!isNextEnabled}
       />
 
+      <Profile name="코코" />
       <SearchField
         value={keyword}
         onChangeText={handleChangeKeyword}
