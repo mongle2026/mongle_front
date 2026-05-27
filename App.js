@@ -11,6 +11,7 @@ import SearchField from './shared/components/SearchField';
 import { useState } from 'react';
 import Toast from './shared/components/Toast';
 import TopNavigation from './shared/components/TopNavigation.jsx';
+import ListRow from './src/write/components/ListRow.jsx';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -27,10 +28,7 @@ export default function App() {
     <View style={styles.container}>
       <Text>Open up App.js to start working on your app!</Text>
       <StatusBar style="auto" />
-       <ButtonIcon
-        Icon={ic_x}
-        onPress={() => console.log('pressed')}
-      />
+      
 
       <TopNavigation
         title="편지 쓰기"
@@ -45,6 +43,22 @@ export default function App() {
         onPressBack={() => console.log('back')}
       />
 
+
+      <ListRow
+        name="name"
+        imageSource={require('./src/write/assets/profile_img.png')}
+        img="profile"
+        selected={false}
+      />
+
+      <ListRow
+        name="name"
+        artist="artist"
+        imageSource={require('./src/write/assets/cover_img.png')}
+        img="music"
+        caption
+        selected
+      />
       <SearchField
 
         value={keyword}
