@@ -1,7 +1,7 @@
 import { Image, Pressable, Text, View, StyleSheet } from 'react-native';
 
 import { colors } from '../../../shared/styles/color';
-import { padding, gap } from '../../../shared/styles/token';
+import { padding, gap, radius } from '../../../shared/styles/token';
 import { typo } from '../../../shared/styles/typo';
 
 export default function ListRow({
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   },
   row: {
     width: '100%',
-    minHeight: 56,
+    minHeight: 57,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: padding.L,
@@ -80,20 +80,20 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   musicImage: {
-    borderRadius: 0,
+    borderRadius: radius.XS,
   },
   textContainer: {
     flex: 1,
     alignItems: 'flex-start',
   },
   name: {
-    ...typo.bodyMediumStrong,
+    ...typo.titleMedium,
     color: colors.fgLayerNeutral,
     alignSelf: 'stretch',
     textAlign: 'left',
   },
   artist: {
-    ...typo.bodyMedium,
+    ...typo.captionSmall,
     color: colors.fgLayerNeutral,
     alignSelf: 'stretch',
     textAlign: 'left',
