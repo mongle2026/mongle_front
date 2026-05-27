@@ -5,6 +5,7 @@ import ButtonIcon from './shared/components/ButtonIcon';
 import ButtonText from './shared/components/ButtonText';
 import ic_x from './assets/icons/ic_x.svg';
 import Button from './shared/components/Button';
+import BottomBar from './src/write/components/BottomBar.jsx'
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -61,6 +62,11 @@ export default function App() {
         label="버튼"
         color="brand"
         onPress={() => console.log('brand')}
+      />
+
+      <BottomBar
+        disabledImage={false}
+        onPressImage={() => console.log('image')}
       />
     </View>
   );
