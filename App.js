@@ -7,6 +7,8 @@ import ic_x from './assets/icons/ic_x.svg';
 import Button from './shared/components/Button';
 import BottomBar from './src/write/components/BottomBar.jsx'
 import Dialog from './shared/components/Dialog';
+import SearchField from './shared/components/SearchField';
+import { useState } from 'react';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -14,6 +16,8 @@ export default function App() {
     'Pretendard-Medium': require('./assets/fonts/Pretendard-Medium.ttf'),
     'Pretendard-SemiBold': require('./assets/fonts/Pretendard-SemiBold.ttf'),
   });
+
+  const [keyword, setKeyword] = useState('');
 
   if (!fontsLoaded) return null;
 
@@ -25,6 +29,17 @@ export default function App() {
         Icon={ic_x}
         onPress={() => console.log('pressed')}
       />
+
+      <SearchField
+
+        value={keyword}
+
+        onChangeText={setKeyword}
+
+        placeholder="기록할 음악을 선택해주세요"
+
+      />
+
       <ButtonIcon
         Icon={ic_x}
         onPress={() => console.log('pressed')}
