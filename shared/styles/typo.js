@@ -19,3 +19,4 @@ export const typo = {
   bodyLarge:        { fontFamily: fontFamily.Regular,  fontSize: 16, lineHeight: 24,   letterSpacing: -0.16 },
   captionSmall:     { fontFamily: fontFamily.Regular,  fontSize: 12, lineHeight: 16.2, letterSpacing: 0     },
 };
+ 
