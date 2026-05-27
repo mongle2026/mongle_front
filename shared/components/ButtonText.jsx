@@ -1,5 +1,9 @@
 import { Pressable, Text, StyleSheet } from 'react-native';
 
+import { colors } from '../styles/color';
+import { spacing, padding } from '../styles/token';
+import { typo } from '../styles/typo';
+
 export default function ButtonText({
   label = '버튼',
   onPress,
@@ -7,19 +11,15 @@ export default function ButtonText({
   disabled = false,
   style,
 }) {
+  const textType = disabled ? 'disabled' : type;
+
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
       style={[styles.button, style]}
     >
-      <Text
-        style={[
-          styles.text,
-          styles[type],
-          disabled && styles.disabled,
-        ]}
-      >
+      <Text style={[styles.text, styles[textType]]}>
         {label}
       </Text>
     </Pressable>
@@ -28,28 +28,25 @@ export default function ButtonText({
 
 const styles = StyleSheet.create({
   button: {
+    minWidth: 40,
+    minHeight: 40,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 6,
-    paddingVertical: 12,
+    paddingHorizontal: spacing.M,
+    paddingVertical: padding.L,
   },
   text: {
-    fontSize: 16,
-    lineHeight: 16,
-    fontFamily: 'Pretendard-SemiBold',
-    textAlign: 'left',
+    ...typo.labelMedium,
+    textAlign: 'center',
   },
   brand: {
-    color: '#4596FF',
+    color: colors.fgBrand,
   },
-  gray: {
-    color: '#7A8087',
-  },
-  black: {
-    color: '#1A1B1C',
+  neutral: {
+    color: colors.fgPlaceholder,
   },
   disabled: {
-    color: '#B8BDC3',
+    color: colors.fgDisabled,
   },
 });

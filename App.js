@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useFonts } from 'expo-font';
 import ButtonIconS from './shared/components/ButtonIconS';
 import ButtonIconL from './shared/components/ButtonIconL';
+import ButtonText from './shared/components/ButtonText';
 import ic_x from './assets/icons/ic_x.svg';
 
 export default function App() {
@@ -26,6 +27,22 @@ export default function App() {
         Icon={ic_x}
         onPress={() => console.log('pressed')}
       />
+      <ButtonText
+  label="버튼"
+  type="brand"
+  onPress={() => console.log('brand')}
+/>
+
+<ButtonText
+  label="버튼"
+  type="neutral"
+  onPress={() => console.log('neutral')}
+/>
+
+<ButtonText
+  label="버튼"
+  disabled
+/>
     </View>
   );
 }
