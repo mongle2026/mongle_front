@@ -12,6 +12,7 @@ import { useState } from 'react';
 import Toast from './shared/components/Toast';
 import TopNavigation from './shared/components/TopNavigation.jsx';
 import ListRow from './src/write/components/ListRow.jsx';
+import SelectRecipient from './src/write/SelectRecipient.jsx';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -29,111 +30,9 @@ export default function App() {
       <Text>Open up App.js to start working on your app!</Text>
       <StatusBar style="auto" />
       
+      <SelectRecipient />
 
-      <TopNavigation
-        title="편지 쓰기"
-        buttonLabel="완료"
-        onPressBack={() => console.log('back')}
-        onPressButton={() => console.log('done')}
-      />
-
-      <TopNavigation
-        title="Title"
-        showTextButton={false}
-        onPressBack={() => console.log('back')}
-      />
-
-
-      <ListRow
-        name="name"
-        imageSource={require('./src/write/assets/profile_img.png')}
-        img="profile"
-        selected={false}
-      />
-
-      <ListRow
-        name="name"
-        artist="artist"
-        imageSource={require('./src/write/assets/cover_img.png')}
-        img="music"
-        caption
-        selected
-      />
-      <SearchField
-
-        value={keyword}
-
-        onChangeText={setKeyword}
-
-        placeholder="기록할 음악을 선택해주세요"
-
-      />
-
-      <Toast
-        type="warning"
-        message="2,000자 이내로 내용을 줄여주세요."
-      />
-
-      <Toast
-        type="success"
-        message="2,000자 이내로 내용을 줄여주세요."
-        actionLabel="되돌리기"
-        onPressAction={() => console.log('undo')}
-      />
-
-      <ButtonIcon
-        Icon={ic_x}
-        onPress={() => console.log('pressed')}
-      />
-      <ButtonText
-        label="버튼"
-        type="brand"
-        onPress={() => console.log('brand')}
-      />
-
-      <ButtonText
-        label="버튼"
-        type="neutral"
-        onPress={() => console.log('neutral')}
-      />
-
-      <ButtonText
-        label="버튼"
-        disabled
-      />
-
-
-      <Button
-        label="버튼"
-        color="neutralWeak"
-        onPress={() => console.log('neutral')}
-      />
-
-      <Button
-        label="버튼"
-        color="critical"
-        onPress={() => console.log('critical')}
-      />
-
-      <Button
-        label="버튼"
-        color="brand"
-        onPress={() => console.log('brand')}
-      />
-
-      <BottomBar
-        disabledImage={false}
-        onPressImage={() => console.log('image')}
-      />
-
-      <Dialog
-        title="작성을 그만둘까요?"
-        description={'작성한 내용은 저장되지 않으며\n다시 불러올 수 없습니다.'}
-        cancelLabel="계속 작성하기"
-        confirmLabel="그만두기"
-        onCancel={() => console.log('cancel')}
-        onConfirm={() => console.log('confirm')}
-      />
+      
     </View>
   );
 }

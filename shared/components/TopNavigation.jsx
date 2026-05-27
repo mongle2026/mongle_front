@@ -17,6 +17,7 @@ export default function TopNavigation({
   onPressButton,
   showBackButton = true,
   showTextButton = true,
+  buttonDisabled = false,
   style,
 }) {
   return (
@@ -44,6 +45,7 @@ export default function TopNavigation({
             <ButtonText
               label={buttonLabel}
               type="brand"
+              disabled={buttonDisabled}
               onPress={onPressButton}
             />
           )}

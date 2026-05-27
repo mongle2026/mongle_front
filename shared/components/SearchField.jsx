@@ -8,6 +8,7 @@ import { typo } from '../styles/typo';
 export default function SearchField({
   value = '',
   onChangeText,
+  onFocus,
   placeholder = '검색어',
   editable = true,
   style,
@@ -22,6 +23,7 @@ export default function SearchField({
         <TextInput
           value={value}
           onChangeText={onChangeText}
+          onFocus={onFocus}
           placeholder={placeholder}
           placeholderTextColor={colors.fgPlaceholder}
           editable={editable}

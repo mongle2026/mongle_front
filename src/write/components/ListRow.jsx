@@ -5,8 +5,8 @@ import { padding, gap, radius } from '../../../shared/styles/token';
 import { typo } from '../../../shared/styles/typo';
 
 export default function ListRow({
-  name = 'name',
-  artist,
+  title = 'title',
+  subtitle,
   imageSource,
   img = 'profile',
   caption = false,
@@ -14,7 +14,7 @@ export default function ListRow({
   onPress,
   style,
 }) {
-  const hasCaption = caption && artist;
+  const hasCaption = caption && subtitle;
 
   return (
     <View style={[styles.wrapper, style]}>
@@ -36,12 +36,12 @@ export default function ListRow({
 
         <View style={styles.textContainer}>
           <Text style={styles.name} numberOfLines={1}>
-            {name}
+            {title}
           </Text>
 
           {hasCaption && (
-            <Text style={styles.artist} numberOfLines={1}>
-              {artist}
+            <Text style={styles.subtitle} numberOfLines={1}>
+              {subtitle}
             </Text>
           )}
         </View>
@@ -86,13 +86,17 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'flex-start',
   },
-  name: {
+
+  // 큰 글씨(ex.이름, 노래 제목)
+  title: {
     ...typo.titleMedium,
     color: colors.fgLayerNeutral,
     alignSelf: 'stretch',
     textAlign: 'left',
   },
-  artist: {
+
+  // 작은 글씨(ex.id, 가수명)
+  subtitle: {
     ...typo.captionSmall,
     color: colors.fgLayerNeutral,
     alignSelf: 'stretch',
