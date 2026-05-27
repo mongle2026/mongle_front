@@ -1,10 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { useFonts } from 'expo-font';
-import ButtonIconS from './shared/components/ButtonIconS';
-import ButtonIconL from './shared/components/ButtonIcon';
+import ButtonIcon from './shared/components/ButtonIcon';
 import ButtonText from './shared/components/ButtonText';
 import ic_x from './assets/icons/ic_x.svg';
+import Button from './shared/components/Button';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -19,30 +19,49 @@ export default function App() {
     <View style={styles.container}>
       <Text>Open up App.js to start working on your app!</Text>
       <StatusBar style="auto" />
-       <ButtonIconS
+       <ButtonIcon
         Icon={ic_x}
         onPress={() => console.log('pressed')}
       />
-      <ButtonIconL
+      <ButtonIcon
         Icon={ic_x}
         onPress={() => console.log('pressed')}
       />
       <ButtonText
-  label="버튼"
-  type="brand"
-  onPress={() => console.log('brand')}
-/>
+        label="버튼"
+        type="brand"
+        onPress={() => console.log('brand')}
+      />
 
-<ButtonText
-  label="버튼"
-  type="neutral"
-  onPress={() => console.log('neutral')}
-/>
+      <ButtonText
+        label="버튼"
+        type="neutral"
+        onPress={() => console.log('neutral')}
+      />
 
-<ButtonText
-  label="버튼"
-  disabled
-/>
+      <ButtonText
+        label="버튼"
+        disabled
+      />
+
+
+      <Button
+        label="버튼"
+        color="neutralWeak"
+        onPress={() => console.log('neutral')}
+      />
+
+      <Button
+        label="버튼"
+        color="critical"
+        onPress={() => console.log('critical')}
+      />
+
+      <Button
+        label="버튼"
+        color="brand"
+        onPress={() => console.log('brand')}
+      />
     </View>
   );
 }
