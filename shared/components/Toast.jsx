@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native';
 
 import ButtonText from './ButtonText';
-import { palette, colors, shadow } from '../styles/color';
+import { colors, shadow } from '../styles/color';
 import { padding, gap, radius } from '../styles/token';
 import { typo } from '../styles/typo';
 
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     paddingBottom: padding.S,
     gap: gap.M,
     borderRadius: radius.M,
-    backgroundColor: palette.gray[80],
+    backgroundColor: colors.bgSurface,
     ...shadow.middleDown,
   },
   message: {
