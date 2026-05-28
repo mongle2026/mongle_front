@@ -31,7 +31,6 @@ export default function SelectRecipient() {
         buttonDisabled={!isNextEnabled}
       />
 
-      <Profile name="코코" />
       <SearchField
         value={keyword}
         onChangeText={handleChangeKeyword}
