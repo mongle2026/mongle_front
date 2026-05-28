@@ -3,7 +3,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import TopNavigation from './shared/components/TopNavigation';
-import SelectRecipient from './src/write/SelectRecipient';
+import SelectRecipient from './src/write/SelectRecipient.jsx';
+import SelectMusic from './src/write/SelectMusic.jsx';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -18,7 +19,7 @@ export default function App() {
     <SafeAreaProvider>
       <View style={styles.container}>
         <StatusBar style="auto" />
-        <TopNavigation />
+        <SelectMusic />
       </View>
     </SafeAreaProvider>
   );
