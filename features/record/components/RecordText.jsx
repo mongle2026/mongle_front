@@ -1,0 +1,102 @@
+import React, { useState } from 'react';
+import {
+  View,
+  TextInput,
+  StyleSheet,
+} from 'react-native';
+import { typo } from '../../../shared/styles/typo';
+import { padding } from '../../../shared/styles/token';
+
+const INPUT_TYPO = typo.bodySmall;
+
+const NOTE_LINE_HEIGHT = 33;
+const MIN_LINES = 15;
+const TOP_GAP = 8;
+const BOTTOM_GAP = 16;
+const TEXT_TOP_OFFSET = 4;
+
+const RecordText = ({ recordForm }) => {
+  const minTextHeight = NOTE_LINE_HEIGHT * MIN_LINES;
+  const minWrapperHeight = TOP_GAP + minTextHeight + BOTTOM_GAP;
+
+  const [textHeight, setTextHeight] = useState(minTextHeight);
+
+  const handleContentSizeChange = (event) => {
+    const contentHeight = event.nativeEvent.contentSize.height;
+
+    setTextHeight(Math.max(contentHeight, minTextHeight));
+  };
+
+  const wrapperHeight = TOP_GAP + textHeight + BOTTOM_GAP;
+  const lineCount = Math.ceil(textHeight / NOTE_LINE_HEIGHT);
+
+  return (
+    <View style={styles.container}>
+      <View style={[styles.lineWrapper, { height: wrapperHeight }]}>
+        {Array.from({ length: lineCount }).map((_, index) => (
+          <View
+            key={index}
+            style={[
+              styles.line,
+              {
+                top: TOP_GAP + NOTE_LINE_HEIGHT * (index + 1),
+              },
+            ]}
+          />
+        ))}
+
+        <TextInput
+          value={recordForm.text}
+          onChangeText={recordForm.setText}
+          multiline
+          scrollEnabled={false}
+          textAlignVertical="top"
+          onContentSizeChange={handleContentSizeChange}
+          placeholder="편지를 작성해 주세요"
+          style={[
+            styles.input,
+            INPUT_TYPO,
+            {
+              top: TOP_GAP + TEXT_TOP_OFFSET,
+              height: textHeight,
+              lineHeight: NOTE_LINE_HEIGHT,
+            },
+          ]}
+        />
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: padding.M,
+  },
+
+  lineWrapper: {
+    position: 'relative',
+  },
+
+  line: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    height: 1,
+    backgroundColor: '#ddd',
+  },
+
+  input: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+
+    paddingTop: 0,
+    paddingBottom: 0,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+
+    includeFontPadding: false,
+  },
+});
+
+export default RecordText;
