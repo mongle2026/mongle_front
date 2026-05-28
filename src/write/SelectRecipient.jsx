@@ -44,13 +44,14 @@ export default function SelectRecipient() {
         contentContainerStyle={styles.listContainer}
         renderItem={({ item }) => (
          <ListRow
-            title={item.username}
-            subtitle={item.nickname}
-            img={item.img}
-            caption
-            selected={selectedRecipientId === item.id}
-            onPress={() => handleSelectRecipient(item.id)}
-          />
+        title={item.username}
+        subtitle={item.nickname}
+        img={item.img}
+        imageSource={item.imageSource}
+        caption
+        selected={selectedRecipientId === item.id}
+        onPress={() => handleSelectRecipient(item.id)}
+      />
         )}
       />
     </View>
