@@ -19,7 +19,7 @@ export default function ButtonText({
       disabled={disabled}
       style={[styles.button, style]}
     >
-      <Text style={[styles.text, styles[textType]]}>
+      <Text style={[styles.text, styles[textType]]} numberOfLines={1}>
         {label}
       </Text>
     </Pressable>
@@ -28,17 +28,22 @@ export default function ButtonText({
 
 const styles = StyleSheet.create({
   button: {
-    minWidth: 40,
+    minWidth: 44,
     minHeight: 40,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: spacing.M,
-    paddingVertical: padding.L,
+    paddingVertical: 0,
+    flexShrink: 0,
   },
   text: {
     ...typo.labelMedium,
+    lineHeight: 20,
     textAlign: 'center',
+    textAlignVertical: 'center',
+    includeFontPadding: false,
+    flexShrink: 0,
   },
   brand: {
     color: colors.fgBrand,
