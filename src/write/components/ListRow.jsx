@@ -35,7 +35,7 @@ export default function ListRow({
         />
 
         <View style={styles.textContainer}>
-          <Text style={styles.name} numberOfLines={1}>
+          <Text style={styles.title} numberOfLines={1}>
             {title}
           </Text>
 

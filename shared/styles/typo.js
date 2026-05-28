@@ -12,7 +12,7 @@ const fontFamily = {
 export const typo = {
   titleXSmall:      { fontFamily: fontFamily.Medium,   fontSize: 14, lineHeight: 21,   letterSpacing: -0.14 },
   titleMedium:      { fontFamily: fontFamily.SemiBold, fontSize: 15, lineHeight: 22.5, letterSpacing: 0     },
-  titleLarge:      { fontFamily: fontFamily.SemiBold, fontSize: 18, lineHeight: 22.5, letterSpacing: 0     },
+  titleLarge:      { fontFamily: fontFamily.SemiBold, fontSize: 18, lineHeight: 22.5,  letterSpacing: 0     },
   labelMedium:      { fontFamily: fontFamily.SemiBold, fontSize: 16, lineHeight: 16,   letterSpacing: 0     },
   labelSmall:       { fontFamily: fontFamily.SemiBold, fontSize: 14, lineHeight: 14,   letterSpacing: 0     },
   bodySmall:        { fontFamily: fontFamily.Regular,  fontSize: 14, lineHeight: 21,   letterSpacing: -0.14 },
