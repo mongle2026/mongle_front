@@ -1,0 +1,65 @@
+import { Pressable, StyleSheet } from 'react-native';
+
+import { colors } from '../styles/color';
+import { padding, radius } from '../styles/token';
+
+const BUTTON_SIZE = {
+  S: 28,
+  L: 40,
+};
+
+const ICON_SIZE = {
+  S: 12,
+  L: 16,
+};
+
+const BUTTON_PADDING = {
+  S: padding.M,
+  L: padding.L,
+};
+
+export default function ButtonIcon({
+  Icon,
+  size = 'S',
+  variant = 'overlay',
+  onPress,
+  disabled = false,
+  style,
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      style={[
+        styles.button,
+        styles[variant],
+        {
+          width: BUTTON_SIZE[size],
+          height: BUTTON_SIZE[size],
+          padding: BUTTON_PADDING[size],
+        },
+        disabled && styles.disabled,
+        style,
+      ]}
+    >
+      <Icon width={ICON_SIZE[size]} height={ICON_SIZE[size]} />
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  button: {
+    borderRadius: radius.XS,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  overlay: {
+    backgroundColor: colors.bgOverlay,
+  },
+  none: {
+    backgroundColor: 'transparent',
+  },
+  disabled: {
+    opacity: 0.4,
+  },
+});
