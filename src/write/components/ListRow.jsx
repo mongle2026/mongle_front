@@ -35,7 +35,7 @@ export default function ListRow({
         />
 
         <View style={styles.textContainer}>
-          <Text style={styles.name} numberOfLines={1}>
+          <Text style={styles.title} numberOfLines={1}>
             {title}
           </Text>
 
@@ -86,16 +86,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'flex-start',
   },
-
-  // 큰 글씨(ex.이름, 노래 제목)
   title: {
     ...typo.titleMedium,
     color: colors.fgLayerNeutral,
     alignSelf: 'stretch',
     textAlign: 'left',
   },
-
-  // 작은 글씨(ex.id, 가수명)
   subtitle: {
     ...typo.captionSmall,
     color: colors.fgLayerNeutral,
