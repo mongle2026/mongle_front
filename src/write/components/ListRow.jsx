@@ -20,10 +20,7 @@ export default function ListRow({
     <View style={[styles.wrapper, style]}>
       <Pressable
         onPress={onPress}
-        style={[
-          styles.row,
-          selected ? styles.selected : styles.default,
-        ]}
+        style={[styles.row, selected ? styles.selected : styles.default]}
       >
         <Image
           source={imageSource}
@@ -69,12 +66,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgLayerDefault,
   },
   selected: {
-    backgroundColor: colors.bgNeutralWeak,
+    backgroundColor: colors.bgLayerWeak,
   },
   image: {
     width: 40,
     height: 40,
-    backgroundColor: colors.bgNeutralWeak,
+    backgroundColor: colors.bgLayerWeak,
   },
   profileImage: {
     borderRadius: 20,
@@ -86,16 +83,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'flex-start',
   },
-
-  // 큰 글씨(ex.이름, 노래 제목)
   title: {
     ...typo.titleMedium,
     color: colors.fgLayerNeutral,
     alignSelf: 'stretch',
     textAlign: 'left',
   },
-
-  // 작은 글씨(ex.id, 가수명)
   subtitle: {
     ...typo.captionSmall,
     color: colors.fgLayerNeutral,

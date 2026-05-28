@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     padding: padding.M,
     gap: gap.L,
     borderRadius: radius.M,
-    backgroundColor: colors.bgNeutralWeak,
+    backgroundColor: colors.bgLayerWeak,
   },
   cover: {
     width: 56,

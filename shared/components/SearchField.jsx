@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 23,
     padding: 0,
+    alignItems: 'center',
     margin: 0,
     ...typo.bodyMedium,
   },

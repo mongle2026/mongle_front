@@ -7,7 +7,7 @@ import ButtonText from './ButtonText';
 import ChevronIcon from '../../assets/icons/ic_chevron.svg';
 
 import { colors } from '../styles/color';
-import { padding, gap } from '../styles/token';
+import { padding } from '../styles/token';
 import { typo } from '../styles/typo';
 
 export default function TopNavigation({
@@ -25,7 +25,7 @@ export default function TopNavigation({
       <SafeArea />
 
       <View style={styles.navigation}>
-        <View style={styles.side}>
+        <View style={styles.leftSide}>
           {showBackButton && (
             <ButtonIcon
               Icon={ChevronIcon}
@@ -40,7 +40,7 @@ export default function TopNavigation({
           {title}
         </Text>
 
-        <View style={styles.side}>
+        <View style={styles.rightSide}>
           {showTextButton && (
             <ButtonText
               label={buttonLabel}
@@ -55,6 +55,8 @@ export default function TopNavigation({
   );
 }
 
+const SIDE_MIN_WIDTH = 64;
+
 const styles = StyleSheet.create({
   container: {
     width: '100%',
@@ -63,14 +65,27 @@ const styles = StyleSheet.create({
   },
   navigation: {
     width: '100%',
-    height: 40,
+    minHeight: 40,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: padding.M
+    paddingHorizontal: padding.M,
+  },
+  leftSide: {
+    minWidth: SIDE_MIN_WIDTH,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  rightSide: {
+    minWidth: SIDE_MIN_WIDTH,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    flexShrink: 0,
   },
   title: {
     flex: 1,
+    flexShrink: 1,
     ...typo.labelMedium,
     color: colors.fgNeutral,
     textAlign: 'center',

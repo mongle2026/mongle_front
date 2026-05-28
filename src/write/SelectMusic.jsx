@@ -2,29 +2,31 @@ import { View, FlatList } from 'react-native';
 
 import TopNavigation from '../../shared/components/TopNavigation';
 import SearchField from '../../shared/components/SearchField';
+import ListHeader from '../../shared/components/ListHeader';
+
 import ListRow from './components/ListRow';
 
-import UseSelectRecipient from './hook/UseSelectRecipient';
+import UseSelectMusic from './hook/UseSelectMusic';
 import { styles } from './styles/SelectStyle';
 
-import Profile from '../../shared/components/Profile';
-
-export default function SelectRecipient() {
+export default function SelectMusic({
+  searchPlaceholder = '기록할 음악을 검색해 주세요.',
+}) {
   const {
     keyword,
-    filteredRecipients,
-    selectedRecipientId,
+    filteredMusicList,
+    selectedMusicId,
     isNextEnabled,
     handleChangeKeyword,
     handleFocusSearch,
-    handleSelectRecipient,
+    handleSelectMusic,
     handlePressNext,
-  } = UseSelectRecipient();
+  } = UseSelectMusic();
 
   return (
     <View style={styles.container}>
       <TopNavigation
-        title="수신인 선택"
+        title="음악 선택"
         buttonLabel="다음"
         onPressBack={() => console.log('뒤로가기')}
         onPressButton={handlePressNext}
@@ -35,23 +37,26 @@ export default function SelectRecipient() {
         value={keyword}
         onChangeText={handleChangeKeyword}
         onFocus={handleFocusSearch}
-        placeholder="편지를 받을 사람을 검색해 주세요."
+        placeholder={searchPlaceholder}
       />
 
+      {!keyword.trim() && (
+        <ListHeader title="Apple Music 인기곡 10곡" />
+      )}
+
       <FlatList
-        data={filteredRecipients}
+        data={filteredMusicList}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.listContainer}
         renderItem={({ item }) => (
-         <ListRow
-        title={item.username}
-        subtitle={item.nickname}
-        img={item.img}
-        imageSource={item.imageSource}
-        caption
-        selected={selectedRecipientId === item.id}
-        onPress={() => handleSelectRecipient(item.id)}
-      />
+          <ListRow
+            title={item.title}
+            subtitle={item.artist}
+            img={item.img}
+            caption
+            selected={selectedMusicId === item.id}
+            onPress={() => handleSelectMusic(item.id)}
+          />
         )}
       />
     </View>
