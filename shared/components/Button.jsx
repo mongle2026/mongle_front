@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgCriticalSolid,
   },
   neutralWeak: {
-    backgroundColor: colors.bgNeutralWeak,
+    backgroundColor: colors.bgLayerWeak,
   },
 
   text: {
