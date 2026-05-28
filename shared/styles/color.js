@@ -44,22 +44,22 @@ export const shadow = {
 
 // ── colors: Color System의 시맨틱 토큰, palette 참조를 실제 값으로 resolve ──
 export const colors = {
-  bgLayerDefault:    palette.gray[0],          // 흰 배경 (레이어)
-  bgDefault:         palette.gray[100],        // 기본 배경
-  bgNeutralWeak:     palette.gray[10],         // 약한 중립 배경
-  bgDefaultWeak:     palette.gray[80],         // 약한 기본 배경
-  bgOverlay:         palette.grayOpacity[75],  // 오버레이 (반투명)
-  bgBrandSolid:      palette.mongle[50],       // 브랜드 배경
-  bgCriticalSolid:   palette.red[50],          // 에러/위험 배경
+  bgLayerDefault:    palette.gray[0],
+  bgDefault:         palette.gray[100],
+  bgLayerWeak:       palette.gray[10],
+  bgDefaultWeak:     palette.gray[90],
+  bgOverlay:         palette.grayOpacity[75],
+  bgBrandSolid:      palette.mongle[50],
+  bgCriticalSolid:   palette.red[50],
 
-  strokeNeutralWeak: palette.gray[20],         // 약한 구분선
+  strokeNeutralWeak: palette.gray[20],
 
-  fgNeutral:         palette.gray[0],          // 흰 텍스트/아이콘
-  fgLayerNeutral:    palette.gray[90],         // 레이어 위 텍스트
-  fgLayerNeutralWeak:palette.gray[70],         // 레이어 위 약한 텍스트
-  fgPlaceholder:     palette.gray[60],         // placeholder
-  fgBrand:           palette.mongle[50],       // 브랜드 색상
-  fgCritical:        palette.red[50],          // 에러/위험
-  fgPositive:        palette.green[50],        // 성공/긍정
-  fgDisabled:        palette.gray[80],         // 비활성
+  fgNeutral:         palette.gray[0],
+  fgLayerNeutral:    palette.gray[90],
+  fgLayerNeutralWeak:palette.gray[70],
+  fgPlaceholder:     palette.gray[60],
+  fgBrand:           palette.mongle[50],
+  fgCritical:        palette.red[50],
+  fgPositive:        palette.green[50],
+  fgDisabled:        palette.gray[80],
 };
