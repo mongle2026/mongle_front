@@ -17,8 +17,50 @@ import axios from 'axios';
 const PostPage = () => {
   const recordForm = useRecordFormStore();
 
-  const handleCommit = async() => {
+  const handleCommit = async () => {
+    const formData = new FormData();
 
+    // formData.append('recordType', recordForm.recordType);
+    // 글 기록
+    formData.append('text', recordForm.text);
+
+    // 공개 범위
+    // formData.append('visibility', recordForm.visibility);
+
+    // 노래 
+    formData.append('music', JSON.stringify(recordForm.music));
+
+    // 사진, 음성 
+    recordForm.files.forEach(file => {
+      formData.append('files', {
+        uri: file.uri,
+        name: file.name,
+        type: file.type,
+      });
+
+      formData.append('fileTypes', file.fileType);
+    });
+
+
+    // 편지 전용 
+    if (recordForm.recordType === 'letter' && recordForm.receiver) {
+      formData.append('receiverId', String(recordForm.receiver.id));
+    }
+
+    const response = await axios('http://localhost:3000/records', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('글 작성에 실패했습니다.');
+    }
+
+    const data = await response.json();
+
+    recordForm.resetForm();
+
+    return data;
   };
 
   return (
