@@ -8,17 +8,19 @@ const fontFamily = {
   SemiBold: 'Pretendard-SemiBold',
 };
 
+// includeFontPadding: false → Android 기본 여백 제거 (iOS/Android 크기 통일)
 // lineHeight, letterSpacing은 token.json의 % 값을 fontSize 기준으로 계산한 결과
+const base = { includeFontPadding: false };
+
 export const typo = {
-  titleXSmall:      { fontFamily: fontFamily.Medium,   fontSize: 14, lineHeight: 21,   letterSpacing: -0.14 },
-  titleMedium:      { fontFamily: fontFamily.SemiBold, fontSize: 15, lineHeight: 22.5, letterSpacing: 0     },
-  titleLarge:      { fontFamily: fontFamily.SemiBold, fontSize: 18, lineHeight: 22.5,  letterSpacing: 0     },
-  labelMedium:      { fontFamily: fontFamily.SemiBold, fontSize: 16, lineHeight: 16,   letterSpacing: 0     },
-  labelSmall:       { fontFamily: fontFamily.SemiBold, fontSize: 14, lineHeight: 14,   letterSpacing: 0     },
-  bodySmall:        { fontFamily: fontFamily.Regular,  fontSize: 14, lineHeight: 21,   letterSpacing: -0.14 },
-  bodyMedium:       { fontFamily: fontFamily.Regular,  fontSize: 15, lineHeight: 22.5, letterSpacing: -0.15 },
-  bodyMediumStrong: { fontFamily: fontFamily.SemiBold, fontSize: 15, lineHeight: 22.5, letterSpacing: 0     },
-  bodyLarge:        { fontFamily: fontFamily.Regular,  fontSize: 16, lineHeight: 24,   letterSpacing: -0.16 },
-  captionSmall:     { fontFamily: fontFamily.Regular,  fontSize: 12, lineHeight: 16.2, letterSpacing: 0     },
+  titleXSmall:      { ...base, fontFamily: fontFamily.Medium,   fontSize: 14, lineHeight: 21,   letterSpacing: -0.14 },
+  titleMedium:      { ...base, fontFamily: fontFamily.SemiBold, fontSize: 15, lineHeight: 22.5, letterSpacing: 0     },
+  titleLarge:       { ...base, fontFamily: fontFamily.SemiBold, fontSize: 18, lineHeight: 22.5, letterSpacing: 0     },
+  labelMedium:      { ...base, fontFamily: fontFamily.SemiBold, fontSize: 16, lineHeight: 16,   letterSpacing: 0     },
+  labelSmall:       { ...base, fontFamily: fontFamily.SemiBold, fontSize: 14, lineHeight: 14,   letterSpacing: 0     },
+  bodySmall:        { ...base, fontFamily: fontFamily.Regular,  fontSize: 14, lineHeight: 21,   letterSpacing: -0.14 },
+  bodyMedium:       { ...base, fontFamily: fontFamily.Regular,  fontSize: 15, lineHeight: 22.5, letterSpacing: -0.15 },
+  bodyMediumStrong: { ...base, fontFamily: fontFamily.SemiBold, fontSize: 15, lineHeight: 22.5, letterSpacing: 0     },
+  bodyLarge:        { ...base, fontFamily: fontFamily.Regular,  fontSize: 16, lineHeight: 24,   letterSpacing: -0.16 },
+  captionSmall:     { ...base, fontFamily: fontFamily.Regular,  fontSize: 12, lineHeight: 16.2, letterSpacing: 0     },
 };
- 
