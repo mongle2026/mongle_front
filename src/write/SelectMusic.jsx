@@ -3,13 +3,14 @@ import { View, FlatList } from 'react-native';
 import TopNavigation from '../../shared/components/TopNavigation';
 import SearchField from '../../shared/components/SearchField';
 import ListHeader from '../../shared/components/ListHeader';
-
 import ListRow from './components/ListRow';
 
 import UseSelectMusic from './hook/UseSelectMusic';
 import { styles } from './styles/SelectStyle';
 
+
 export default function SelectMusic({
+  navigation,
   searchPlaceholder = '기록할 음악을 검색해 주세요.',
 }) {
   const {
@@ -28,7 +29,7 @@ export default function SelectMusic({
       <TopNavigation
         title="음악 선택"
         buttonLabel="다음"
-        onPressBack={() => console.log('뒤로가기')}
+        onPressBack={() => navigation.goBack()}
         onPressButton={handlePressNext}
         buttonDisabled={!isNextEnabled}
       />
@@ -53,6 +54,7 @@ export default function SelectMusic({
             title={item.title}
             subtitle={item.artist}
             img={item.img}
+            imageSource={item.imageSource}
             caption
             selected={selectedMusicId === item.id}
             onPress={() => handleSelectMusic(item.id)}
