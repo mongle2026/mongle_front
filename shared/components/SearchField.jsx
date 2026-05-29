@@ -1,9 +1,8 @@
-import { View, TextInput, StyleSheet } from 'react-native';
+import { View, TextInput, StyleSheet, Platform } from 'react-native';
 
 import SearchIcon from '../../assets/icons/ic_search.svg';
 import { colors } from '../styles/color';
 import { padding, gap, radius } from '../styles/token';
-import { typo } from '../styles/typo';
 
 export default function SearchField({
   value = '',
@@ -27,6 +26,7 @@ export default function SearchField({
           placeholder={placeholder}
           placeholderTextColor={colors.fgPlaceholder}
           editable={editable}
+          multiline={false}
           style={[
             styles.input,
             hasValue ? styles.inputFilled : styles.inputEmpty,
@@ -45,22 +45,30 @@ const styles = StyleSheet.create({
   },
   container: {
     width: '100%',
-    minHeight: 39,
+    height: 39,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: padding.L,
-    paddingVertical: padding.M,
+    paddingVertical: 0,
     gap: gap.M,
     borderRadius: radius.XS,
     backgroundColor: colors.bgLayerDefault,
   },
   input: {
     flex: 1,
-    height: 23,
+    height: 39,
     padding: 0,
-    alignItems: 'center',
     margin: 0,
-    ...typo.bodyMedium,
+
+    fontFamily: 'Pretendard-Regular',
+    fontSize: 15,
+    letterSpacing: -0.15,
+
+    color: colors.fgLayerNeutral,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
+
+    paddingTop: Platform.OS === 'ios' ? 1 : 0,
   },
   inputEmpty: {
     color: colors.fgPlaceholder,
