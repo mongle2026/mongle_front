@@ -7,9 +7,7 @@ import ListRow from './components/ListRow';
 import UseSelectRecipient from './hook/UseSelectRecipient';
 import { styles } from './styles/SelectStyle';
 
-import Profile from '../../shared/components/Profile';
-
-export default function SelectRecipient() {
+export default function SelectRecipient({ navigation }) {
   const {
     keyword,
     filteredRecipients,
@@ -18,7 +16,6 @@ export default function SelectRecipient() {
     handleChangeKeyword,
     handleFocusSearch,
     handleSelectRecipient,
-    handlePressNext,
   } = UseSelectRecipient();
 
   return (
@@ -26,8 +23,8 @@ export default function SelectRecipient() {
       <TopNavigation
         title="수신인 선택"
         buttonLabel="다음"
-        onPressBack={() => console.log('뒤로가기')}
-        onPressButton={handlePressNext}
+        onPressBack={() => navigation.goBack()}
+        onPressButton={() => navigation.navigate('SelectMusic')}
         buttonDisabled={!isNextEnabled}
       />
 
@@ -43,15 +40,15 @@ export default function SelectRecipient() {
         keyExtractor={item => item.id}
         contentContainerStyle={styles.listContainer}
         renderItem={({ item }) => (
-         <ListRow
-        title={item.username}
-        subtitle={item.nickname}
-        img={item.img}
-        imageSource={item.imageSource}
-        caption
-        selected={selectedRecipientId === item.id}
-        onPress={() => handleSelectRecipient(item.id)}
-      />
+          <ListRow
+            title={item.username}
+            subtitle={item.nickname}
+            img={item.img}
+            imageSource={item.imageSource}
+            caption
+            selected={selectedRecipientId === item.id}
+            onPress={() => handleSelectRecipient(item.id)}
+          />
         )}
       />
     </View>
