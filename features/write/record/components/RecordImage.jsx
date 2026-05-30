@@ -37,7 +37,7 @@ const RecordImage = ({
         uri: asset.uri,
         fileName: asset.fileName,
         type: asset.mimeType,
-        fileType: 'image',
+        fileType: 'IMAGE',
       }));
 
       const currentImages = recordForm.files.filter(file => file.fileType === 'image');

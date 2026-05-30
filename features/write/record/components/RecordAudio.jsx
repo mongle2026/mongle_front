@@ -2,6 +2,7 @@
 // import { View, Button, Text } from 'react-native';
 // import { Audio } from 'expo-av';
 
+// Audio Voice로 바꾸기 
 // const RecordAudio = ({
 //   recordForm
 // }) => {
