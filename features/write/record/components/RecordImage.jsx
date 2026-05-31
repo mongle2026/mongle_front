@@ -14,7 +14,7 @@ const MAX_IMAGES = 2;
 const RecordImage = ({
   recordForm,
 }) => {
-  const images = recordForm.files.filter(file => file.fileType === 'image');
+  const images = recordForm.files.filter(file => file.fileType === 'IMAGE');
 
   const pickImages = async () => {
     const permissionResult =
@@ -33,15 +33,15 @@ const RecordImage = ({
     });
 
     if (!result.canceled) {
-      const selectedImages = result.assets.map((asset) => ({
+      const selectedImages = result.assets.map((asset, index) => ({
         uri: asset.uri,
-        fileName: asset.fileName,
-        type: asset.mimeType,
+        name: asset.fileName ?? `image-${Date.now()}-${index}.jpg`,
+        type: asset.mimeType ?? 'image/jpeg',
         fileType: 'IMAGE',
       }));
 
-      const currentImages = recordForm.files.filter(file => file.fileType === 'image');
-      const otherFiles = recordForm.files.filter(file => file.fileType !== 'image');
+      const currentImages = recordForm.files.filter(file => file.fileType === 'IMAGE');
+      const otherFiles = recordForm.files.filter(file => file.fileType !== 'IMAGE');
 
       const nextImages = [...currentImages, ...selectedImages].slice(0, 2);
 

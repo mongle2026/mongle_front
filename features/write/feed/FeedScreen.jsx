@@ -1,5 +1,5 @@
 import React from 'react'
-import { KeyboardAvoidingView, ScrollView, Text, TextInput, View, StyleSheet, Platform, Pressable, Image } from 'react-native'
+import { Alert, KeyboardAvoidingView, ScrollView, Text, TextInput, View, StyleSheet, Platform, Pressable, Image } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRecordFormStore } from '../record/store/useRecordFormStore.js';
 import RecordImage from '../record/components/RecordImage.jsx';
@@ -18,6 +18,7 @@ const FeedScreen = () => {
   const recordForm = useRecordFormStore();
 
   const handleCommit = async () => {
+    // Alert.alert('게시 실행', `platform: ${Platform.OS}`);
     const formData = new FormData();
 
     // 임시 데이터 
@@ -48,16 +49,26 @@ const FeedScreen = () => {
     // formData.append('music', JSON.stringify(recordForm.music));
 
     // 사진, 음성 
-    recordForm.files.forEach(file => {
+    recordForm.files.forEach((file, index) => {
       formData.append('files', {
         uri: file.uri,
-        name: file.name,
-        type: file.type,
-        fileType: file.fileType
+        name: file.name ?? `file-${Date.now()}-${index}.jpg`,
+        type: file.type ?? 'image/jpeg',
       });
 
       formData.append('fileTypes', file.fileType);
     });
+
+    // console.log('recordForm.files:', recordForm.files);
+
+    // recordForm.files.forEach((file, index) => {
+    //   console.log(`file ${index}:`, {
+    //     uri: file.uri,
+    //     name: file.name,
+    //     type: file.type,
+    //     fileType: file.fileType,
+    //   });
+    // });
 
 
     // 편지 전용 
@@ -70,30 +81,23 @@ const FeedScreen = () => {
 
     // =========== 전송 ============
     try {
-      const response = await axios.post(
-        // 192.168.0.3
-        'http://192.168.0.3:3000/feed',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-          transformRequest: (data) => data,
-        }
-      );
+      // const response = await axios.post(
+      //   // 192.168.0.3
+      //   'http://192.168.0.3:3000/feed',
+      //   formData
+      // );
 
-      // const response = await fetch('http://localhost:3000/feed', {
-      //   method: 'POST',
-      //   body: formData,
-      // });
+      // console.log('요청 성공:', response.data);
 
-      // const data = await response.json();
+      const response = await fetch('http://192.168.0.3:3000/feed', {
+        method: 'POST',
+        body: formData,
+      });
 
-      // console.log('응답 상태:', response.status);
-      // console.log('응답 데이터 전체:', JSON.stringify(data, null, 2));
-      // console.log('응답 message:', data.message);
+      const text = await response.text();
 
-      console.log('요청 성공:', response.data);
+      console.log('응답 status:', response.status);
+      console.log('응답 body:', text);
     } catch (error) {
       console.log('요청 실패 전체 error:', error);
 
