@@ -1,15 +1,17 @@
 // 유경 생성
 
-import { View, ScrollView, Pressable, StyleSheet, Dimensions } from 'react-native';
+import { View, ScrollView, Pressable, Image, StyleSheet, Dimensions } from 'react-native';
 
 import TopNavigation from '../../../shared/components/TopNavigation';
 import TabBar from '../../../shared/components/TabBar';
 import ButtonIcon from '../../../shared/components/ButtonIcon';
 import Templete from './components/Templete';
+import LetterFlip from './components/LetterFlip';
 
 import FlipIcon from '../../../assets/icons/ic_flip.svg';
 
-import UseLetterCoverSelect, { TABS, MOCK_DATA } from './hook/UseLetterCoverSelect';
+import UseLetterCoverSelect, { TABS } from './hook/UseLetterCoverSelect';
+import { PATTERNS, STAMPS, TEMPLATES } from './data/letterCoverData';
 
 import { colors } from '../../../shared/styles/color';
 import { gap, padding, radius } from '../../../shared/styles/token';
@@ -21,21 +23,25 @@ const ITEM_3COL = (SCREEN_WIDTH - padding.XL * 2 - gap.M * 2) / 3;
 
 const TAB_COLUMNS = { template: 2, pattern: 3, color: 3, stamp: 3 };
 
-function PatternItem({ selected, onPress }) {
+function PatternItem({ thumbnail, selected, onPress }) {
   return (
     <Pressable
       onPress={onPress}
       style={[styles.item3Col, { aspectRatio: 1 }, selected && styles.itemSelected]}
-    />
+    >
+      <Image source={thumbnail} style={styles.itemImage} resizeMode="cover" />
+    </Pressable>
   );
 }
 
-function ColorItem({ color, selected, onPress }) {
+function ColorItem({ frontImg, selected, onPress }) {
   return (
     <Pressable
       onPress={onPress}
-      style={[styles.item3Col, { aspectRatio: 1, backgroundColor: color }, selected && styles.itemSelected]}
-    />
+      style={[styles.item3Col, { aspectRatio: 1 }, selected && styles.itemSelected]}
+    >
+      <Image source={frontImg} style={styles.itemImage} resizeMode="cover" />
+    </Pressable>
   );
 }
 
@@ -53,14 +59,23 @@ export default function LetterCoverSelect({ navigation }) {
   const {
     activeTab,
     selectedItems,
+    currentColors,
+    isFront,
     handleTabPress,
     handleSelectItem,
     handleFlip,
     isNextEnabled,
   } = UseLetterCoverSelect();
 
-  const currentData = MOCK_DATA[activeTab];
-  const numColumns = TAB_COLUMNS[activeTab];
+  // 탭별 데이터
+  const TAB_DATA = {
+    template: TEMPLATES,
+    pattern:  PATTERNS,
+    color:    currentColors,
+    stamp:    STAMPS,
+  };
+  const currentData = TAB_DATA[activeTab];
+  const numColumns  = TAB_COLUMNS[activeTab];
 
   // 데이터를 numColumns 단위로 행 분리
   const rows = [];
@@ -69,18 +84,45 @@ export default function LetterCoverSelect({ navigation }) {
   }
 
   const renderItem = (item) => {
-    const selected = selectedItems[activeTab] === item.id;
     const onPress = () => handleSelectItem(item.id);
 
     switch (activeTab) {
       case 'template':
-        return <Templete key={item.id} label={item.label} selected={selected} onPress={onPress} />;
+        return (
+          <Templete
+            key={item.id}
+            label={item.label}
+            imageSource={item.preview}
+            selected={selectedItems.template === item.id}
+            onPress={onPress}
+          />
+        );
       case 'pattern':
-        return <PatternItem key={item.id} selected={selected} onPress={onPress} />;
+        return (
+          <PatternItem
+            key={item.id}
+            thumbnail={item.thumbnail}
+            selected={selectedItems.patternId === item.id}
+            onPress={onPress}
+          />
+        );
       case 'color':
-        return <ColorItem key={item.id} color={item.value} selected={selected} onPress={onPress} />;
+        return (
+          <ColorItem
+            key={item.id}
+            frontImg={item.frontImg}
+            selected={selectedItems.colorId === item.id}
+            onPress={onPress}
+          />
+        );
       case 'stamp':
-        return <StampItem key={item.id} selected={selected} onPress={onPress} />;
+        return (
+          <StampItem
+            key={item.id}
+            selected={selectedItems.stampId === item.id}
+            onPress={onPress}
+          />
+        );
     }
   };
 
@@ -95,9 +137,9 @@ export default function LetterCoverSelect({ navigation }) {
       />
 
       <ScrollView bounces={false} contentContainerStyle={styles.scrollContent}>
-        {/* 봉투 미리보기 — Rive 애니메이션 자리 */}
+        {/* 봉투 미리보기 */}
         <View style={styles.sectionLetter}>
-          <View style={styles.riveContainer} />
+          <LetterFlip isFront={isFront} />
           <ButtonIcon
             Icon={FlipIcon}
             size="L"
@@ -141,10 +183,6 @@ const styles = StyleSheet.create({
     paddingTop: padding.XL,
     paddingBottom: 32,
   },
-  riveContainer: {
-    width: 280,
-    height: 210,
-  },
   flipButton: {
     position: 'absolute',
     top: 12,
@@ -177,5 +215,10 @@ const styles = StyleSheet.create({
   },
   itemSelected: {
     borderColor: colors.fgBrand,
+  },
+  itemImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: radius.XS,
   },
 });
