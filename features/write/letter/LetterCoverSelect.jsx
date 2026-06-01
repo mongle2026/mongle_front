@@ -1,12 +1,15 @@
 // 유경 생성
 
-import { View, ScrollView, Pressable, Image, StyleSheet, Dimensions } from 'react-native';
+import { View, ScrollView, Pressable, StyleSheet, Dimensions } from 'react-native';
 
 import TopNavigation from '../../../shared/components/TopNavigation';
 import TabBar from '../../../shared/components/TabBar';
 import ButtonIcon from '../../../shared/components/ButtonIcon';
 import Templete from './components/Templete';
 import LetterFlip from './components/LetterFlip';
+import PatternItem from '../components/PatternItem';
+import ColorItem from '../components/ColorItem';
+import StampItem from '../components/StampItem';
 
 import FlipIcon from '../../../assets/icons/ic_flip.svg';
 
@@ -23,37 +26,8 @@ const ITEM_3COL = (SCREEN_WIDTH - padding.XL * 2 - gap.M * 2) / 3;
 
 const TAB_COLUMNS = { template: 2, pattern: 3, color: 3, stamp: 3 };
 
-function PatternItem({ thumbnail, selected, onPress }) {
-  return (
-    <Pressable
-      onPress={onPress}
-      style={[styles.item3Col, { aspectRatio: 1 }, selected && styles.itemSelected]}
-    >
-      <Image source={thumbnail} style={styles.itemImage} resizeMode="cover" />
-    </Pressable>
-  );
-}
 
-function ColorItem({ frontImg, selected, onPress }) {
-  return (
-    <Pressable
-      onPress={onPress}
-      style={[styles.item3Col, { aspectRatio: 1 }, selected && styles.itemSelected]}
-    >
-      <Image source={frontImg} style={styles.itemImage} resizeMode="cover" />
-    </Pressable>
-  );
-}
 
-function StampItem({ selected, onPress }) {
-  return (
-    <Pressable
-      onPress={onPress}
-      // 피그마 기준 109×145 → 3:4 비율
-      style={[styles.item3Col, { aspectRatio: 3 / 4 }, selected && styles.itemSelected]}
-    />
-  );
-}
 
 export default function LetterCoverSelect({ navigation }) {
   const {
@@ -93,7 +67,7 @@ export default function LetterCoverSelect({ navigation }) {
             key={item.id}
             label={item.label}
             imageSource={item.preview}
-            selected={selectedItems.template === item.id}
+            isSelected={selectedItems.template === item.id}
             onPress={onPress}
           />
         );
@@ -102,7 +76,7 @@ export default function LetterCoverSelect({ navigation }) {
           <PatternItem
             key={item.id}
             thumbnail={item.thumbnail}
-            selected={selectedItems.patternId === item.id}
+            isSelected={selectedItems.patternId === item.id}
             onPress={onPress}
           />
         );
@@ -110,8 +84,8 @@ export default function LetterCoverSelect({ navigation }) {
         return (
           <ColorItem
             key={item.id}
-            frontImg={item.frontImg}
-            selected={selectedItems.colorId === item.id}
+            color={item.color}
+            isSelected={selectedItems.colorId === item.id}
             onPress={onPress}
           />
         );
@@ -119,7 +93,8 @@ export default function LetterCoverSelect({ navigation }) {
         return (
           <StampItem
             key={item.id}
-            selected={selectedItems.stampId === item.id}
+            image={item.image}
+            isSelected={selectedItems.stampId === item.id}
             onPress={onPress}
           />
         );
@@ -136,22 +111,23 @@ export default function LetterCoverSelect({ navigation }) {
         buttonDisabled={!isNextEnabled}
       />
 
+      {/* 봉투 미리보기 — 고정 */}
+      <View style={styles.sectionLetter}>
+        <LetterFlip isFront={isFront} />
+        <ButtonIcon
+          Icon={FlipIcon}
+          size="L"
+          variant="none"
+          onPress={handleFlip}
+          style={styles.flipButton}
+        />
+      </View>
+
+      {/* 탭바 — 고정 */}
+      <TabBar tabs={TABS} activeTab={activeTab} onTabPress={handleTabPress} />
+
+      {/* 탭별 선택 그리드 — 스크롤 */}
       <ScrollView bounces={false} contentContainerStyle={styles.scrollContent}>
-        {/* 봉투 미리보기 */}
-        <View style={styles.sectionLetter}>
-          <LetterFlip isFront={isFront} />
-          <ButtonIcon
-            Icon={FlipIcon}
-            size="L"
-            variant="none"
-            onPress={handleFlip}
-            style={styles.flipButton}
-          />
-        </View>
-
-        <TabBar tabs={TABS} activeTab={activeTab} onTabPress={handleTabPress} />
-
-        {/* 탭별 선택 그리드 */}
         <View style={[
           styles.section,
           activeTab === 'template' ? styles.sectionTemplate : styles.section3Col,
@@ -159,6 +135,9 @@ export default function LetterCoverSelect({ navigation }) {
           {rows.map((row, rowIndex) => (
             <View key={rowIndex} style={styles.row}>
               {row.map(item => renderItem(item))}
+              {Array.from({ length: numColumns - row.length }).map((_, i) => (
+                <View key={`spacer-${i}`} style={styles.rowSpacer} />
+              ))}
             </View>
           ))}
         </View>
@@ -173,7 +152,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgDefault,
   },
   scrollContent: {
-    flexGrow: 1,
+    paddingBottom: padding.XL,
   },
 
   // 봉투 미리보기
@@ -200,6 +179,9 @@ const styles = StyleSheet.create({
   section3Col: {
     paddingHorizontal: padding.XL,
   },
+  rowSpacer: {
+    flex: 1,
+  },
   row: {
     flexDirection: 'row',
     gap: gap.M,
@@ -215,10 +197,5 @@ const styles = StyleSheet.create({
   },
   itemSelected: {
     borderColor: colors.fgBrand,
-  },
-  itemImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: radius.XS,
   },
 });

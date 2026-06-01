@@ -6,6 +6,7 @@ import { useFonts } from 'expo-font';
 import { StyleSheet, Text, View } from 'react-native';
 import TabBar from './shared/components/TabBar'; // 추가
 import LetterScreen from './features/write/letter/LetterScreen';
+import LetterCoverSelect from './features/write/letter/LetterCoverSelect';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator(); // 추가
@@ -17,6 +18,7 @@ function PlaceholderScreen() { // 추가: 탭 화면 확정 전 임시 화면
 function WriteStack() { // 추가: 쓰기 탭 내부 스택
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="LetterCoverSelect" component={LetterCoverSelect} />
       <Stack.Screen name="Letter" component={LetterScreen} />
     </Stack.Navigator>
   );

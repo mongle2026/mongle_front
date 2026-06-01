@@ -1,105 +1,96 @@
-// 패턴 이미지 경로 헬퍼
-const p = (pattern, color, face) =>
-  require(`../../../../assets/letter_cover/patterns/p${pattern}_c${color}_${face}.svg`);
+// Metro 번들러는 동적 require() 불가 → 모두 정적으로 작성
 
-// 패턴 목록
-// colors 배열의 첫 번째 항목 = 해당 패턴의 기본 컬러
 export const PATTERNS = [
   {
     id: 'p1',
-    thumbnail: p(1, 1, 'front'),
+    thumbnail: require('../../../../assets/letter_cover/patterns/p1_thumbnail.svg'),
     colors: [
-      { id: 'p1_c1', frontImg: p(1,1,'front'), flapImg: p(1,1,'flap'), sideImg: p(1,1,'side'), backImg: p(1,1,'back') },
-      { id: 'p1_c2', frontImg: p(1,2,'front'), flapImg: p(1,2,'flap'), sideImg: p(1,2,'side'), backImg: p(1,2,'back') },
-      { id: 'p1_c3', frontImg: p(1,3,'front'), flapImg: p(1,3,'flap'), sideImg: p(1,3,'side'), backImg: p(1,3,'back') },
-      { id: 'p1_c4', frontImg: p(1,4,'front'), flapImg: p(1,4,'flap'), sideImg: p(1,4,'side'), backImg: p(1,4,'back') },
-      { id: 'p1_c5', frontImg: p(1,5,'front'), flapImg: p(1,5,'flap'), sideImg: p(1,5,'side'), backImg: p(1,5,'back') },
-      { id: 'p1_c6', frontImg: p(1,6,'front'), flapImg: p(1,6,'flap'), sideImg: p(1,6,'side'), backImg: p(1,6,'back') },
+      { id: 'p1_c1', color: '#b8a9ff', frontImg: require('../../../../assets/letter_cover/patterns/p1_c1_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p1_c1_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p1_c1_side.svg'), backImg: require('../../../../assets/letter_cover/patterns/p1_c1_back.svg') },
+      { id: 'p1_c2', color: '#5c73d4', frontImg: require('../../../../assets/letter_cover/patterns/p1_c2_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p1_c2_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p1_c2_side.svg'), backImg: require('../../../../assets/letter_cover/patterns/p1_c2_back.svg') },
+      { id: 'p1_c3', color: '#2d3142', frontImg: require('../../../../assets/letter_cover/patterns/p1_c3_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p1_c3_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p1_c3_side.svg'), backImg: require('../../../../assets/letter_cover/patterns/p1_c3_back.svg') },
+      { id: 'p1_c4', color: '#ff6b4a', frontImg: require('../../../../assets/letter_cover/patterns/p1_c4_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p1_c4_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p1_c4_side.svg'), backImg: require('../../../../assets/letter_cover/patterns/p1_c4_back.svg') },
+      { id: 'p1_c5', color: '#f8f4ec', frontImg: require('../../../../assets/letter_cover/patterns/p1_c5_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p1_c5_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p1_c5_side.svg'), backImg: require('../../../../assets/letter_cover/patterns/p1_c5_back.svg') },
+      { id: 'p1_c6', color: '#8ad88d', frontImg: require('../../../../assets/letter_cover/patterns/p1_c6_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p1_c6_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p1_c6_side.svg'), backImg: require('../../../../assets/letter_cover/patterns/p1_c6_back.svg') },
     ],
   },
   {
     id: 'p2',
-    thumbnail: p(2, 1, 'front'),
+    thumbnail: require('../../../../assets/letter_cover/patterns/p2_thumbnail.svg'),
     colors: [
-      { id: 'p2_c1', frontImg: p(2,1,'front'), flapImg: p(2,1,'flap'), sideImg: p(2,1,'side') },
-      { id: 'p2_c2', frontImg: p(2,2,'front'), flapImg: p(2,2,'flap'), sideImg: p(2,2,'side') },
-      { id: 'p2_c3', frontImg: p(2,3,'front'), flapImg: p(2,3,'flap'), sideImg: p(2,3,'side') },
-      { id: 'p2_c4', frontImg: p(2,4,'front'), flapImg: p(2,4,'flap'), sideImg: p(2,4,'side') },
-      { id: 'p2_c5', frontImg: p(2,5,'front'), flapImg: p(2,5,'flap'), sideImg: p(2,5,'side') },
-      { id: 'p2_c6', frontImg: p(2,6,'front'), flapImg: p(2,6,'flap'), sideImg: p(2,6,'side') },
+      { id: 'p2_c1', color: '#1d3557', frontImg: require('../../../../assets/letter_cover/patterns/p2_c1_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p2_c1_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p2_c1_side.svg') },
+      { id: 'p2_c2', color: '#ffffff', frontImg: require('../../../../assets/letter_cover/patterns/p2_c2_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p2_c2_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p2_c2_side.svg') },
+      { id: 'p2_c3', color: '#2d6a4f', frontImg: require('../../../../assets/letter_cover/patterns/p2_c3_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p2_c3_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p2_c3_side.svg') },
+      { id: 'p2_c4', color: '#d97757', frontImg: require('../../../../assets/letter_cover/patterns/p2_c4_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p2_c4_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p2_c4_side.svg') },
+      { id: 'p2_c5', color: '#8ecae6', frontImg: require('../../../../assets/letter_cover/patterns/p2_c5_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p2_c5_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p2_c5_side.svg') },
+      { id: 'p2_c6', color: '#b8a4d9', frontImg: require('../../../../assets/letter_cover/patterns/p2_c6_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p2_c6_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p2_c6_side.svg') },
     ],
   },
   {
     id: 'p3',
-    thumbnail: p(3, 1, 'front'),
+    thumbnail: require('../../../../assets/letter_cover/patterns/p3_thumbnail.svg'),
     colors: [
-      { id: 'p3_c1', frontImg: p(3,1,'front'), flapImg: p(3,1,'flap'), sideImg: p(3,1,'side') },
-      { id: 'p3_c2', frontImg: p(3,2,'front'), flapImg: p(3,2,'flap'), sideImg: p(3,2,'side') },
-      { id: 'p3_c3', frontImg: p(3,3,'front'), flapImg: p(3,3,'flap'), sideImg: p(3,3,'side') },
-      { id: 'p3_c4', frontImg: p(3,4,'front'), flapImg: p(3,4,'flap'), sideImg: p(3,4,'side') },
+      { id: 'p3_c1', color: '#e1e7f3', frontImg: require('../../../../assets/letter_cover/patterns/p3_c1_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p3_c1_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p3_c1_side.svg') },
+      { id: 'p3_c2', color: '#fffaf4', frontImg: require('../../../../assets/letter_cover/patterns/p3_c2_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p3_c2_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p3_c2_side.svg') },
+      { id: 'p3_c3', color: '#e9e1ef', frontImg: require('../../../../assets/letter_cover/patterns/p3_c3_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p3_c3_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p3_c3_side.svg') },
+      { id: 'p3_c4', color: '#fffaf4', frontImg: require('../../../../assets/letter_cover/patterns/p3_c4_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p3_c4_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p3_c4_side.svg') },
     ],
   },
   {
     id: 'p4',
-    thumbnail: p(4, 1, 'front'),
+    thumbnail: require('../../../../assets/letter_cover/patterns/p4_thumbnail.svg'),
     colors: [
-      { id: 'p4_c1', frontImg: p(4,1,'front'), flapImg: p(4,1,'flap'), sideImg: p(4,1,'side') },
-      { id: 'p4_c2', frontImg: p(4,2,'front'), flapImg: p(4,2,'flap'), sideImg: p(4,2,'side') },
-      { id: 'p4_c3', frontImg: p(4,3,'front'), flapImg: p(4,3,'flap'), sideImg: p(4,3,'side') },
-      { id: 'p4_c4', frontImg: p(4,4,'front'), flapImg: p(4,4,'flap'), sideImg: p(4,4,'side') },
-      { id: 'p4_c5', frontImg: p(4,5,'front'), flapImg: p(4,5,'flap'), sideImg: p(4,5,'side') },
+      { id: 'p4_c1', color: '#f4f7fc', frontImg: require('../../../../assets/letter_cover/patterns/p4_c1_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p4_c1_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p4_c1_side.svg') },
+      { id: 'p4_c2', color: '#f4f7fc', frontImg: require('../../../../assets/letter_cover/patterns/p4_c2_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p4_c2_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p4_c2_side.svg') },
+      { id: 'p4_c3', color: '#f4f7fc', frontImg: require('../../../../assets/letter_cover/patterns/p4_c3_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p4_c3_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p4_c3_side.svg') },
+      { id: 'p4_c4', color: '#f4f7fc', frontImg: require('../../../../assets/letter_cover/patterns/p4_c4_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p4_c4_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p4_c4_side.svg') },
+      { id: 'p4_c5', color: '#f4f7fc', frontImg: require('../../../../assets/letter_cover/patterns/p4_c5_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p4_c5_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p4_c5_side.svg') },
     ],
   },
   {
     id: 'p5',
-    thumbnail: p(5, 1, 'front'),
+    thumbnail: require('../../../../assets/letter_cover/patterns/p5_thumbnail.svg'),
     colors: [
-      { id: 'p5_c1', frontImg: p(5,1,'front'), flapImg: p(5,1,'flap'), sideImg: p(5,1,'side') },
-      { id: 'p5_c2', frontImg: p(5,2,'front'), flapImg: p(5,2,'flap'), sideImg: p(5,2,'side') },
-      { id: 'p5_c3', frontImg: p(5,3,'front'), flapImg: p(5,3,'flap'), sideImg: p(5,3,'side') },
-      { id: 'p5_c4', frontImg: p(5,4,'front'), flapImg: p(5,4,'flap'), sideImg: p(5,4,'side') },
-      { id: 'p5_c5', frontImg: p(5,5,'front'), flapImg: p(5,5,'flap'), sideImg: p(5,5,'side') },
-      { id: 'p5_c6', frontImg: p(5,6,'front'), flapImg: p(5,6,'flap'), sideImg: p(5,6,'side') },
+      { id: 'p5_c1', color: '#fafaf5', frontImg: require('../../../../assets/letter_cover/patterns/p5_c1_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p5_c1_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p5_c1_side.svg') },
+      { id: 'p5_c2', color: '#282854', frontImg: require('../../../../assets/letter_cover/patterns/p5_c2_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p5_c2_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p5_c2_side.svg') },
+      { id: 'p5_c3', color: '#7d3248', frontImg: require('../../../../assets/letter_cover/patterns/p5_c3_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p5_c3_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p5_c3_side.svg') },
+      { id: 'p5_c4', color: '#7a9d8a', frontImg: require('../../../../assets/letter_cover/patterns/p5_c4_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p5_c4_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p5_c4_side.svg') },
+      { id: 'p5_c5', color: '#4c83ff', frontImg: require('../../../../assets/letter_cover/patterns/p5_c5_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p5_c5_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p5_c5_side.svg') },
+      { id: 'p5_c6', color: '#38414f', frontImg: require('../../../../assets/letter_cover/patterns/p5_c6_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p5_c6_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p5_c6_side.svg') },
     ],
   },
   {
     id: 'p6',
-    thumbnail: p(6, 1, 'front'),
+    thumbnail: require('../../../../assets/letter_cover/patterns/p6_thumbnail.svg'),
     colors: [
-      { id: 'p6_c1', frontImg: p(6,1,'front'), flapImg: p(6,1,'flap'), sideImg: p(6,1,'side') },
-      { id: 'p6_c2', frontImg: p(6,2,'front'), flapImg: p(6,2,'flap'), sideImg: p(6,2,'side') },
-      { id: 'p6_c3', frontImg: p(6,3,'front'), flapImg: p(6,3,'flap'), sideImg: p(6,3,'side') },
-      { id: 'p6_c4', frontImg: p(6,4,'front'), flapImg: p(6,4,'flap'), sideImg: p(6,4,'side') },
-      { id: 'p6_c5', frontImg: p(6,5,'front'), flapImg: p(6,5,'flap'), sideImg: p(6,5,'side') },
+      { id: 'p6_c1', color: '#bfd0de', frontImg: require('../../../../assets/letter_cover/patterns/p6_c1_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p6_c1_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p6_c1_side.svg') },
+      { id: 'p6_c2', color: '#b9c6b0', frontImg: require('../../../../assets/letter_cover/patterns/p6_c2_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p6_c2_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p6_c2_side.svg') },
+      { id: 'p6_c3', color: '#c9c3d9', frontImg: require('../../../../assets/letter_cover/patterns/p6_c3_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p6_c3_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p6_c3_side.svg') },
+      { id: 'p6_c4', color: '#e2c4c7', frontImg: require('../../../../assets/letter_cover/patterns/p6_c4_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p6_c4_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p6_c4_side.svg') },
+      { id: 'p6_c5', color: '#d6c8b6', frontImg: require('../../../../assets/letter_cover/patterns/p6_c5_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p6_c5_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p6_c5_side.svg') },
     ],
   },
   {
     id: 'p7',
-    thumbnail: p(7, 1, 'front'),
+    thumbnail: require('../../../../assets/letter_cover/patterns/p7_thumbnail.svg'),
     colors: [
-      { id: 'p7_c1', frontImg: p(7,1,'front'), flapImg: p(7,1,'flap'), sideImg: p(7,1,'side') },
-      { id: 'p7_c2', frontImg: p(7,2,'front'), flapImg: p(7,2,'flap'), sideImg: p(7,2,'side') },
-      { id: 'p7_c3', frontImg: p(7,3,'front'), flapImg: p(7,3,'flap'), sideImg: p(7,3,'side') },
-      { id: 'p7_c4', frontImg: p(7,4,'front'), flapImg: p(7,4,'flap'), sideImg: p(7,4,'side') },
-      { id: 'p7_c5', frontImg: p(7,5,'front'), flapImg: p(7,5,'flap'), sideImg: p(7,5,'side') },
-      { id: 'p7_c6', frontImg: p(7,6,'front'), flapImg: p(7,6,'flap'), sideImg: p(7,6,'side') },
+      { id: 'p7_c1', color: '#fdfefe', frontImg: require('../../../../assets/letter_cover/patterns/p7_c1_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p7_c1_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p7_c1_side.svg') },
+      { id: 'p7_c2', color: '#1e2a44', frontImg: require('../../../../assets/letter_cover/patterns/p7_c2_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p7_c2_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p7_c2_side.svg') },
+      { id: 'p7_c3', color: '#dce5d3', frontImg: require('../../../../assets/letter_cover/patterns/p7_c3_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p7_c3_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p7_c3_side.svg') },
+      { id: 'p7_c4', color: '#f5d8d8', frontImg: require('../../../../assets/letter_cover/patterns/p7_c4_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p7_c4_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p7_c4_side.svg') },
+      { id: 'p7_c5', color: '#d9ecf2', frontImg: require('../../../../assets/letter_cover/patterns/p7_c5_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p7_c5_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p7_c5_side.svg') },
+      { id: 'p7_c6', color: '#fff48a', frontImg: require('../../../../assets/letter_cover/patterns/p7_c6_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p7_c6_flap.svg'), sideImg: require('../../../../assets/letter_cover/patterns/p7_c6_side.svg') },
     ],
   },
 ];
 
-// 우표 목록 — 첫 번째 항목 = 기본 우표
-// TODO: 실제 우표 이미지로 교체
-const STAMP_PLACEHOLDER = require('../../../../assets/write/cover_img.png');
 export const STAMPS = [
-  { id: 's1', image: STAMP_PLACEHOLDER },
-  { id: 's2', image: STAMP_PLACEHOLDER },
-  { id: 's3', image: STAMP_PLACEHOLDER },
-  { id: 's4', image: STAMP_PLACEHOLDER },
-  { id: 's5', image: STAMP_PLACEHOLDER },
-  { id: 's6', image: STAMP_PLACEHOLDER },
-  { id: 's7', image: STAMP_PLACEHOLDER },
-  { id: 's8', image: STAMP_PLACEHOLDER },
-  { id: 's9', image: STAMP_PLACEHOLDER },
+  { id: 's1', image: require('../../../../assets/letter_cover/stamps/stamp_1.png') },
+  { id: 's2', image: require('../../../../assets/letter_cover/stamps/stamp_2.png') },
+  { id: 's3', image: require('../../../../assets/letter_cover/stamps/stamp_3.png') },
+  { id: 's4', image: require('../../../../assets/letter_cover/stamps/stamp_4.png') },
+  { id: 's5', image: require('../../../../assets/letter_cover/stamps/stamp_5.png') },
+  { id: 's6', image: require('../../../../assets/letter_cover/stamps/stamp_6.png') },
+  { id: 's7', image: require('../../../../assets/letter_cover/stamps/stamp_7.png') },
 ];
 
 // 템플릿 목록 — 기본 패턴/컬러/우표 조합의 프리셋

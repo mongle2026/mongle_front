@@ -3,11 +3,11 @@ import { colors } from '../../../../shared/styles/color';
 import { gap, padding, radius } from '../../../../shared/styles/token';
 import { typo } from '../../../../shared/styles/typo';
 
-export default function Templete({ label, imageSource, selected = false, onPress }) {
+export default function Templete({ label, imageSource, isSelected = false, onPress }) {
   return (
     <Pressable
       onPress={onPress}
-      style={[styles.container, selected && styles.containerSelected]}
+      style={[styles.container, isSelected && styles.containerSelected]}
     >
       <Text style={styles.label} numberOfLines={1}>{label}</Text>
       <View style={styles.preview}>
