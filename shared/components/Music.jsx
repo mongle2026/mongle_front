@@ -18,7 +18,7 @@ export default function Music({
     <View style={[styles.wrapper, style]}>
       <View style={styles.container}>
         <Image
-          source={currentImageSource}
+          source={{ uri: currentImageSource }}
           style={styles.cover}
           resizeMode="cover"
         />
