@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 const initialState = {
-  recordType: null, // 'post' | 'letter'
+  recordType: null, // 'feed' | 'letter'
 
   receiver: null,
 
@@ -19,7 +19,7 @@ export const useRecordFormStore = create((set) => ({
   setRecordType: (recordType) =>
     set((state) => ({
       recordType,
-      receiver: recordType === 'post' ? null : state.receiver,
+      receiver: recordType === 'feed' ? null : state.receiver,
     })),
 
   setReceiver: (receiver) =>
