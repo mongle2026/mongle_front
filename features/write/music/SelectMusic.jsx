@@ -14,13 +14,14 @@ export default function SelectMusic({
   const {
     keyword,
     filteredMusicList,
+    musicList,
     selectedMusicId,
     isNextEnabled,
     handleChangeKeyword,
     handleFocusSearch,
     handleSelectMusic,
     handlePressNext,
-  } = UseSelectMusic();
+  } = UseSelectMusic(navigation);
 
   return (
     <View>
@@ -44,18 +45,17 @@ export default function SelectMusic({
       )}
 
       <FlatList
-        data={filteredMusicList}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.listContainer}
+        data={musicList}
+        keyExtractor={item => item.externalId}
         renderItem={({ item }) => (
           <ListRow
-            title={item.title}
-            subtitle={item.artist}
-            img={item.img}
-            imageSource={item.imageSource}
+            title={item.musicTitle}
+            subtitle={item.musicArtist}
+            img={item.musicArtwork}
+            imageSource={item.musicArtwork}
             caption
-            selected={selectedMusicId === item.id}
-            onPress={() => handleSelectMusic(item.id)}
+            selected={selectedMusicId === item.externalId}
+            onPress={() => handleSelectMusic(item.externalId)}
           />
         )}
       />
