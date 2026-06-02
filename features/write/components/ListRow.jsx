@@ -63,10 +63,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   default: {
-    backgroundColor: colors.bgLayerDefault,
+    backgroundColor: colors.bgDefaultWeak,
   },
   selected: {
-    backgroundColor: colors.bgLayerWeak,
+    backgroundColor: colors.bgSurface,
   },
   image: {
     width: 40,
@@ -85,13 +85,13 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typo.titleMedium,
-    color: colors.fgLayerNeutral,
+    color: colors.fgNeutral,
     alignSelf: 'stretch',
     textAlign: 'left',
   },
   subtitle: {
     ...typo.captionSmall,
-    color: colors.fgLayerNeutral,
+    color: colors.fgNeutral,
     alignSelf: 'stretch',
     textAlign: 'left',
   },
