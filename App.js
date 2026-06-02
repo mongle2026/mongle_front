@@ -1,33 +1,20 @@
-import { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
 import { useFonts } from 'expo-font';
 
-import LetterScreen from './features/write/letter/LetterScreen';
-import Img from './features/write/components/Img';
+import RecipientEmptyView from './features/write/recipient/RecipientEmptyViewScreen.jsx';
 
 const Stack = createNativeStackNavigator();
 
-function ImgTestScreen() {
-  const [selectedImage, setSelectedImage] = useState(
-    require('./assets/write/cover_img.png')
-  );
-
+function RecipientEmptyViewTestScreen() {
   return (
-    <View style={styles.container}>
-      <Img
-        imageSource={selectedImage}
-        onPressDelete={() => setSelectedImage(null)}
-        style={styles.imageItem}
-      />
-
-      <Img
-        onPressAdd={() => console.log('이미지 추가')}
-        style={styles.imageItem}
-      />
-    </View>
+    <RecipientEmptyView
+      keyword="없는검색어"
+      onChangeKeyword={text => console.log(text)}
+      onFocusSearch={() => console.log('focus search')}
+      onPressBack={() => console.log('back')}
+    />
   );
 }
 
@@ -42,27 +29,14 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
 
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="ImgTest" component={ImgTestScreen} />
-        <Stack.Screen name="Letter" component={LetterScreen} />
+        <Stack.Screen
+          name="RecipientEmptyViewTest"
+          component={RecipientEmptyViewTestScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'row',
-    gap: 20,
-    paddingHorizontal: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  imageItem: {
-    flex: 1,
-  },
-});
