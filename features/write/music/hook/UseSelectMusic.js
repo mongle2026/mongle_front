@@ -143,7 +143,7 @@ export default function UseSelectMusic(navigation) {
     setMusic(selectedMusic);
     // console.log('선택한 음악:', selectedMusic);
 
-    navigation.navigate('Feed');
+    navigation.navigate('Record');
   };
 
   return {
