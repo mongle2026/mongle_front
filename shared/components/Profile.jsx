@@ -10,6 +10,7 @@ export default function Profile({
   name = 'username',
   tailText = '에게',
   imageSource,
+  imageOnly = false,
   style,
 }) {
   const currentImageSource = imageSource || DEFAULT_PROFILE_IMAGE;
@@ -22,15 +23,17 @@ export default function Profile({
         resizeMode="cover"
       />
 
-      <View style={styles.textContainer}>
-        <Text style={styles.name} numberOfLines={1}>
-          {name}
-        </Text>
+      {!imageOnly && (
+        <View style={styles.textContainer}>
+          <Text style={styles.name} numberOfLines={1}>
+            {name}
+          </Text>
 
-        <Text style={styles.tailText} numberOfLines={1}>
-          {tailText}
-        </Text>
-      </View>
+          <Text style={styles.tailText} numberOfLines={1}>
+            {tailText}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }

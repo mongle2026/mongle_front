@@ -1,9 +1,16 @@
 // 유경 생성
 
-import { View, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import { View, ScrollView, StyleSheet, Dimensions, Pressable, Image } from 'react-native';
+import Animated, {
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 import TopNavigation from '../../../shared/components/TopNavigation';
 import TabBar from '../../../shared/components/TabBar';
+import Profile from '../../../shared/components/Profile';
 import Templete from './components/Templete';
 import PatternItem from '../components/PatternItem';
 import ColorItem from '../components/ColorItem';
@@ -12,7 +19,7 @@ import StampItem from '../components/StampItem';
 import UseLetterCoverSelect, { TABS } from './hook/UseLetterCoverSelect';
 import { PATTERNS, STAMPS, TEMPLATES } from './data/letterCoverData';
 
-import { colors } from '../../../shared/styles/color';
+import { colors, shadow } from '../../../shared/styles/color';
 import { gap, padding, radius } from '../../../shared/styles/token';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -22,8 +29,16 @@ const ITEM_3COL = (SCREEN_WIDTH - padding.XL * 2 - gap.M * 2) / 3;
 
 const TAB_COLUMNS = { template: 2, pattern: 3, color: 3, stamp: 3 };
 
-
-
+// 봉투 미리보기 사이즈 (front SVG viewBox: 342.6 × 253.33)
+const ENVELOPE_WIDTH  = SCREEN_WIDTH - padding.XL * 2;
+const ENVELOPE_HEIGHT = ENVELOPE_WIDTH * (253.33 / 342.6);
+// flap SVG viewBox: 325.17 × 173.2 — front와 동일한 픽셀-퍼-유닛 스케일로 렌더링
+const FLAP_RENDER_WIDTH  = ENVELOPE_WIDTH * (325.17 / 342.6);
+const FLAP_RENDER_HEIGHT = FLAP_RENDER_WIDTH * (173.2 / 325.17);
+const FLAP_LEFT          = (ENVELOPE_WIDTH - FLAP_RENDER_WIDTH) / 2;
+// back SVG clipPath 기준 봉투 shape 여백 (~15.8 가로, ~13.92 세로 SVG units)
+const ENV_MARGIN_H = ENVELOPE_WIDTH * (15.8 / 342.6);
+const ENV_MARGIN_V = ENVELOPE_WIDTH * (13.92 / 342.6);
 
 export default function LetterCoverSelect({ navigation }) {
   const {
@@ -35,6 +50,33 @@ export default function LetterCoverSelect({ navigation }) {
     isNextEnabled,
   } = UseLetterCoverSelect();
 
+  // 현재 선택된 color/stamp resolve
+  const selectedPattern = PATTERNS.find(p => p.id === selectedItems.patternId);
+  const selectedColor   = selectedPattern?.colors.find(c => c.id === selectedItems.colorId);
+  const selectedStamp   = STAMPS.find(s => s.id === selectedItems.stampId);
+
+  const FrontSvg = selectedColor?.frontImg?.default ?? selectedColor?.frontImg;
+  const FlapSvg  = selectedColor?.flapImg?.default  ?? selectedColor?.flapImg;
+  const backSrc  = selectedColor?.backImg ?? selectedColor?.frontImg;
+  const BackSvg  = backSrc?.default ?? backSrc;
+
+  // 플립 애니메이션 — 0: 앞면, 1: 뒷면
+  const flipProgress = useSharedValue(0);
+
+  const handleFlip = () => {
+    flipProgress.value = withTiming(flipProgress.value === 0 ? 1 : 0, { duration: 500 });
+  };
+
+  const frontAnimStyle = useAnimatedStyle(() => {
+    const spin = interpolate(flipProgress.value, [0, 1], [0, 180]);
+    return { transform: [{ perspective: 800 }, { rotateY: `${spin}deg` }] };
+  });
+
+  const backAnimStyle = useAnimatedStyle(() => {
+    const spin = interpolate(flipProgress.value, [0, 1], [180, 360]);
+    return { transform: [{ perspective: 800 }, { rotateY: `${spin}deg` }] };
+  });
+
   // 탭별 데이터
   const TAB_DATA = {
     template: TEMPLATES,
@@ -45,7 +87,6 @@ export default function LetterCoverSelect({ navigation }) {
   const currentData = TAB_DATA[activeTab];
   const numColumns  = TAB_COLUMNS[activeTab];
 
-  // 데이터를 numColumns 단위로 행 분리
   const rows = [];
   for (let i = 0; i < currentData.length; i += numColumns) {
     rows.push(currentData.slice(i, i + numColumns));
@@ -105,13 +146,44 @@ export default function LetterCoverSelect({ navigation }) {
         buttonDisabled={!isNextEnabled}
       />
 
-      {/* 봉투 미리보기 — 고정 */}
-      <View style={styles.sectionLetter} />
+      {/* 봉투 미리보기 */}
+      <View style={styles.sectionLetter}>
+        <Pressable
+          onPress={handleFlip}
+          style={styles.envelopeContainer}
+        >
+          {/* 앞면 */}
+          <Animated.View style={[styles.envelopeFace, frontAnimStyle]}>
+            {FrontSvg && <FrontSvg width={ENVELOPE_WIDTH} height={ENVELOPE_HEIGHT} />}
+            {FlapSvg && (
+              <View style={[styles.flapWrapper, { height: FLAP_RENDER_HEIGHT }]}>
+                <FlapSvg width={FLAP_RENDER_WIDTH} height={FLAP_RENDER_HEIGHT} />
+              </View>
+            )}
+            <Profile
+              imageOnly
+              style={styles.profileOverlay}
+            />
+          </Animated.View>
 
-      {/* 탭바 — 고정 */}
+          {/* 뒷면 */}
+          <Animated.View style={[styles.envelopeFace, styles.envelopeFaceBack, backAnimStyle]}>
+            {BackSvg && <BackSvg width={ENVELOPE_WIDTH} height={ENVELOPE_HEIGHT} />}
+            {selectedStamp && (
+              <Image source={selectedStamp.image} style={styles.stamp} />
+            )}
+            <Profile
+              imageOnly
+              style={styles.profileOverlay}
+            />
+          </Animated.View>
+        </Pressable>
+      </View>
+
+      {/* 탭바 */}
       <TabBar tabs={TABS} activeTab={activeTab} onTabPress={handleTabPress} />
 
-      {/* 탭별 선택 그리드 — 스크롤 */}
+      {/* 탭별 선택 그리드 */}
       <ScrollView bounces={false} contentContainerStyle={styles.scrollContent}>
         <View style={[
           styles.section,
@@ -147,6 +219,41 @@ const styles = StyleSheet.create({
     paddingTop: padding.XL,
     paddingBottom: 32,
   },
+  envelopeContainer: {
+    width: ENVELOPE_WIDTH,
+    height: ENVELOPE_HEIGHT,
+  },
+  envelopeFace: {
+    position: 'absolute',
+    width: ENVELOPE_WIDTH,
+    height: ENVELOPE_HEIGHT,
+    backfaceVisibility: 'hidden',
+    zIndex: 1,
+  },
+  envelopeFaceBack: {
+    zIndex: 2,
+  },
+  flapWrapper: {
+    position: 'absolute',
+    top: 8,
+    left: FLAP_LEFT,
+    width: FLAP_RENDER_WIDTH,
+    ...shadow.middleDown,
+  },
+  stamp: {
+    position: 'absolute',
+    top: ENV_MARGIN_V + 16,
+    right: ENV_MARGIN_H + 16,
+    width: 72,
+    height: 106,
+  },
+  profileOverlay: {
+    position: 'absolute',
+    bottom: ENV_MARGIN_V + 8,
+    right: ENV_MARGIN_H + 8,
+    width: 50,
+  },
+
   // 그리드 공통
   section: {
     gap: gap.M,
