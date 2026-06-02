@@ -245,6 +245,7 @@ const styles = StyleSheet.create({
     top: padding.M,
     left: FLAP_LEFT,
     width: FLAP_RENDER_WIDTH,
+    transform: [{ rotate: '-0.25deg' }, { translateY: -0.4 }],
     ...shadow.middleDown,
   },
   stamp: {
