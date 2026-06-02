@@ -23,8 +23,6 @@ export default function UseLetterCoverSelect() {
     colorId:   DEFAULT_COLOR.id,
     stampId:   DEFAULT_STAMP.id,
   });
-  const [isFront, setIsFront] = useState(true);
-
   // 현재 선택된 패턴의 컬러 목록
   const selectedPattern = PATTERNS.find(p => p.id === selectedItems.patternId) ?? DEFAULT_PATTERN;
   const currentColors   = selectedPattern.colors;
@@ -74,8 +72,6 @@ export default function UseLetterCoverSelect() {
     }
   };
 
-  const handleFlip = () => setIsFront(prev => !prev);
-
   // 패턴/컬러/우표가 모두 선택된 경우 다음 활성화
   const isNextEnabled = !!(selectedItems.patternId && selectedItems.colorId && selectedItems.stampId);
 
@@ -83,10 +79,8 @@ export default function UseLetterCoverSelect() {
     activeTab,
     selectedItems,
     currentColors,
-    isFront,
     handleTabPress,
     handleSelectItem,
-    handleFlip,
     isNextEnabled,
   };
 }

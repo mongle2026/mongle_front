@@ -1,5 +1,3 @@
-// Metro 번들러는 동적 require() 불가 → 모두 정적으로 작성
-
 export const PATTERNS = [
   {
     id: 'p1',
@@ -84,13 +82,22 @@ export const PATTERNS = [
 ];
 
 export const STAMPS = [
-  { id: 's1', image: require('../../../../assets/letter_cover/stamps/stamp_1.png') },
-  { id: 's2', image: require('../../../../assets/letter_cover/stamps/stamp_2.png') },
-  { id: 's3', image: require('../../../../assets/letter_cover/stamps/stamp_3.png') },
-  { id: 's4', image: require('../../../../assets/letter_cover/stamps/stamp_4.png') },
-  { id: 's5', image: require('../../../../assets/letter_cover/stamps/stamp_5.png') },
-  { id: 's6', image: require('../../../../assets/letter_cover/stamps/stamp_6.png') },
-  { id: 's7', image: require('../../../../assets/letter_cover/stamps/stamp_7.png') },
+  { id: 's1',  image: require('../../../../assets/letter_cover/stamps/stamp_1.png') },
+  { id: 's2',  image: require('../../../../assets/letter_cover/stamps/stamp_2.png') },
+  { id: 's3',  image: require('../../../../assets/letter_cover/stamps/stamp_3.png') },
+  { id: 's4',  image: require('../../../../assets/letter_cover/stamps/stamp_4.png') },
+  { id: 's5',  image: require('../../../../assets/letter_cover/stamps/stamp_5.png') },
+  { id: 's6',  image: require('../../../../assets/letter_cover/stamps/stamp_6.png') },
+  { id: 's7',  image: require('../../../../assets/letter_cover/stamps/stamp_7.png') },
+  { id: 's8',  image: require('../../../../assets/letter_cover/stamps/stamp_8.png') },
+  { id: 's9',  image: require('../../../../assets/letter_cover/stamps/stamp_9.png') },
+  { id: 's10', image: require('../../../../assets/letter_cover/stamps/stamp_10.png') },
+  { id: 's11', image: require('../../../../assets/letter_cover/stamps/stamp_11.png') },
+  { id: 's12', image: require('../../../../assets/letter_cover/stamps/stamp_12.png') },
+  { id: 's13', image: require('../../../../assets/letter_cover/stamps/stamp_13.png') },
+  { id: 's14', image: require('../../../../assets/letter_cover/stamps/stamp_14.png') },
+  { id: 's15', image: require('../../../../assets/letter_cover/stamps/stamp_15.png') },
+  { id: 's16', image: require('../../../../assets/letter_cover/stamps/stamp_16.png') },
 ];
 
 // 템플릿 목록 — 기본 패턴/컬러/우표 조합의 프리셋

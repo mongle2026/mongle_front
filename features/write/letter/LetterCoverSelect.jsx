@@ -1,17 +1,13 @@
 // 유경 생성
 
-import { View, ScrollView, Pressable, StyleSheet, Dimensions } from 'react-native';
+import { View, ScrollView, StyleSheet, Dimensions } from 'react-native';
 
 import TopNavigation from '../../../shared/components/TopNavigation';
 import TabBar from '../../../shared/components/TabBar';
-import ButtonIcon from '../../../shared/components/ButtonIcon';
 import Templete from './components/Templete';
-import LetterFlip from './components/LetterFlip';
 import PatternItem from '../components/PatternItem';
 import ColorItem from '../components/ColorItem';
 import StampItem from '../components/StampItem';
-
-import FlipIcon from '../../../assets/icons/ic_flip.svg';
 
 import UseLetterCoverSelect, { TABS } from './hook/UseLetterCoverSelect';
 import { PATTERNS, STAMPS, TEMPLATES } from './data/letterCoverData';
@@ -34,10 +30,8 @@ export default function LetterCoverSelect({ navigation }) {
     activeTab,
     selectedItems,
     currentColors,
-    isFront,
     handleTabPress,
     handleSelectItem,
-    handleFlip,
     isNextEnabled,
   } = UseLetterCoverSelect();
 
@@ -112,16 +106,7 @@ export default function LetterCoverSelect({ navigation }) {
       />
 
       {/* 봉투 미리보기 — 고정 */}
-      <View style={styles.sectionLetter}>
-        <LetterFlip isFront={isFront} />
-        <ButtonIcon
-          Icon={FlipIcon}
-          size="L"
-          variant="none"
-          onPress={handleFlip}
-          style={styles.flipButton}
-        />
-      </View>
+      <View style={styles.sectionLetter} />
 
       {/* 탭바 — 고정 */}
       <TabBar tabs={TABS} activeTab={activeTab} onTabPress={handleTabPress} />
@@ -162,12 +147,6 @@ const styles = StyleSheet.create({
     paddingTop: padding.XL,
     paddingBottom: 32,
   },
-  flipButton: {
-    position: 'absolute',
-    top: 12,
-    right: 0,
-  },
-
   // 그리드 공통
   section: {
     gap: gap.M,
