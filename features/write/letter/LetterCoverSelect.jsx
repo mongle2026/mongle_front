@@ -45,10 +45,20 @@ export default function LetterCoverSelect({ navigation }) {
     activeTab,
     selectedItems,
     currentColors,
-    handleTabPress,
+    handleTabPress: _handleTabPress,
     handleSelectItem,
     isNextEnabled,
   } = UseLetterCoverSelect();
+
+  // 플립 애니메이션 — 0: 앞면, 1: 뒷면
+  const flipProgress = useSharedValue(0);
+
+  const handleTabPress = (key) => {
+    if (key === 'stamp' && flipProgress.value === 0) {
+      flipProgress.value = withTiming(1, { duration: 500 });
+    }
+    _handleTabPress(key);
+  };
 
   // 현재 선택된 color/stamp resolve
   const selectedPattern = PATTERNS.find(p => p.id === selectedItems.patternId);
@@ -59,9 +69,6 @@ export default function LetterCoverSelect({ navigation }) {
   const FlapSvg  = selectedColor?.flapImg?.default  ?? selectedColor?.flapImg;
   const backSrc  = selectedColor?.backImg ?? selectedColor?.frontImg;
   const BackSvg  = backSrc?.default ?? backSrc;
-
-  // 플립 애니메이션 — 0: 앞면, 1: 뒷면
-  const flipProgress = useSharedValue(0);
 
   const handleFlip = () => {
     flipProgress.value = withTiming(flipProgress.value === 0 ? 1 : 0, { duration: 500 });
@@ -216,8 +223,8 @@ const styles = StyleSheet.create({
   sectionLetter: {
     width: '100%',
     alignItems: 'center',
-    paddingTop: padding.XL,
-    paddingBottom: 32,
+    paddingTop: padding.M,
+    paddingBottom: padding.XL,
   },
   envelopeContainer: {
     width: ENVELOPE_WIDTH,
@@ -235,22 +242,22 @@ const styles = StyleSheet.create({
   },
   flapWrapper: {
     position: 'absolute',
-    top: 8,
+    top: padding.M,
     left: FLAP_LEFT,
     width: FLAP_RENDER_WIDTH,
     ...shadow.middleDown,
   },
   stamp: {
     position: 'absolute',
-    top: ENV_MARGIN_V + 16,
-    right: ENV_MARGIN_H + 16,
+    top: ENV_MARGIN_V + padding.XL,
+    right: ENV_MARGIN_H + padding.XL,
     width: 72,
     height: 106,
   },
   profileOverlay: {
     position: 'absolute',
-    bottom: ENV_MARGIN_V + 8,
-    right: ENV_MARGIN_H + 8,
+    bottom: ENV_MARGIN_V + padding.M,
+    right: ENV_MARGIN_H + padding.M,
     width: 50,
   },
 
