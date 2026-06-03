@@ -5,6 +5,7 @@ import { useFonts } from 'expo-font';
 import { View, StyleSheet } from 'react-native';
 
 import ListRow from './features/write/components/ListRow';
+import SendAnimationScreen from './features/write/send/SendAnimationScreen';
 import { colors } from './shared/styles/color';
 
 const Stack = createNativeStackNavigator();
@@ -56,6 +57,10 @@ export default function App() {
       <StatusBar style="light" />
 
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name="SendAnimation"
+          component={SendAnimationScreen}
+        />
         <Stack.Screen
           name="ListRowTest"
           component={ListRowTestScreen}

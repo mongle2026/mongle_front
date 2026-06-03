@@ -17,7 +17,7 @@ import ColorItem from '../components/ColorItem';
 import StampItem from '../components/StampItem';
 
 import UseLetterCoverSelect, { TABS } from './hook/UseLetterCoverSelect';
-import { PATTERNS, STAMPS, TEMPLATES, resolvePatternColor } from './data/letterCoverData';
+import { PATTERNS, STAMPS, TEMPLATES, resolvePatternColor, useLetterCoverStore } from './data/letterCoverData';
 
 import { colors, shadow } from '../../../shared/styles/color';
 import { gap, padding, radius } from '../../../shared/styles/token';
@@ -49,6 +49,8 @@ export default function LetterCoverSelect({ navigation }) {
     handleSelectItem,
     isNextEnabled,
   } = UseLetterCoverSelect();
+
+  const { setEnvelope } = useLetterCoverStore();
 
   // 플립 애니메이션 — 0: 앞면, 1: 뒷면
   const flipProgress = useSharedValue(0);
@@ -156,7 +158,14 @@ export default function LetterCoverSelect({ navigation }) {
         title="편지 봉투 선택"
         buttonLabel="전송"
         onPressBack={() => navigation.goBack()}
-        onPressButton={() => {}}
+        onPressButton={() => {
+          setEnvelope({
+            patternId: selectedItems.patternId,
+            colorId:   selectedItems.colorId,
+            stampId:   selectedItems.stampId,
+          });
+          // TODO: navigation.navigate('DateSelect');
+        }}
         buttonDisabled={!isNextEnabled}
       />
 
