@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRecordFormStore } from '../record/store/useRecordFormStore.js';
 import RecordImage from '../record/components/RecordImage.jsx';
 import RecordAudio from '../record/components/RecordAudio.jsx';
-import RecordFormDebug from '../letter/components/RecordFormDebug.jsx';
 import TopNavigation from '../../../shared/components/TopNavigation.jsx';
 import Music from '../../../shared/components/Music';
 import RecordText from '../record/components/RecordText.jsx';
@@ -17,8 +16,8 @@ import Profile from '../../../shared/components/Profile.jsx';
 
 const RecordScreen = ({ navigation }) => {
   const recordForm = useRecordFormStore();
-  // const recordType = useRecordFormStore(state => state.recordType);
-  const recordType = "FEED";
+  const recordType = useRecordFormStore(state => state.recordType);
+  // const recordType = "LETTER";
 
   const handleCommit = async () => {
     // Alert.alert('게시 실행', `platform: ${Platform.OS}`);
@@ -161,7 +160,10 @@ const RecordScreen = ({ navigation }) => {
             contentContainerStyle={styles.sectionContent}
           >
             {recordType === "LETTER" &&
-              <Profile />
+              <Profile 
+              name={recordForm.receiver.nickname}
+              imageSource={recordForm.receiver.image}
+              />
             }
 
             <Music
@@ -177,9 +179,6 @@ const RecordScreen = ({ navigation }) => {
             <RecordImage
               recordForm={recordForm}
             />
-
-            {/* <RecordFormDebug /> */}
-
           </ScrollView>
         </View>
         <BottomBar />

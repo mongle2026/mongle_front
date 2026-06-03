@@ -7,7 +7,7 @@ import { typo } from '../styles/typo';
 const DEFAULT_PROFILE_IMAGE = require('../../assets/write/profile_img.png');
 
 export default function Profile({
-  name = 'username',
+  name = 'nickname',
   tailText = '에게',
   imageSource,
   style,

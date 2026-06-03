@@ -10,12 +10,14 @@ export default function SelectRecipient({ navigation }) {
   const {
     keyword,
     filteredRecipients,
+    userList,
     selectedRecipientId,
     isNextEnabled,
     handleChangeKeyword,
     handleFocusSearch,
     handleSelectRecipient,
-  } = UseSelectRecipient();
+    handlePressNext,
+  } = UseSelectRecipient(navigation);
 
   return (
     <View>
@@ -23,7 +25,7 @@ export default function SelectRecipient({ navigation }) {
         title="수신인 선택"
         buttonLabel="다음"
         onPressBack={() => navigation.goBack()}
-        onPressButton={() => navigation.navigate('SelectMusic')}
+        onPressButton={handlePressNext}
         buttonDisabled={!isNextEnabled}
       />
 
@@ -35,14 +37,13 @@ export default function SelectRecipient({ navigation }) {
       />
 
       <FlatList
-        data={filteredRecipients}
+        data={userList}
         keyExtractor={item => item.id}
-        contentContainerStyle={styles.listContainer}
         renderItem={({ item }) => (
           <ListRow
-            title={item.username}
-            subtitle={item.nickname}
-            img={item.img}
+            title={item.nickname}
+            subtitle={item.username}
+            img={item.image}
             imageSource={item.imageSource}
             caption
             selected={selectedRecipientId === item.id}
