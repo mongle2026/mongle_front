@@ -17,7 +17,7 @@ import ColorItem from '../components/ColorItem';
 import StampItem from '../components/StampItem';
 
 import UseLetterCoverSelect, { TABS } from './hook/UseLetterCoverSelect';
-import { PATTERNS, STAMPS, TEMPLATES } from './data/letterCoverData';
+import { PATTERNS, STAMPS, TEMPLATES, resolvePatternColor } from './data/letterCoverData';
 
 import { colors, shadow } from '../../../shared/styles/color';
 import { gap, padding, radius } from '../../../shared/styles/token';
@@ -103,16 +103,23 @@ export default function LetterCoverSelect({ navigation }) {
     const onPress = () => handleSelectItem(item.id);
 
     switch (activeTab) {
-      case 'template':
+      case 'template': {
+        const resolved = resolvePatternColor(item.patternColorId);
+        const PatternSvg = resolved?.color?.frontImg?.default ?? resolved?.color?.frontImg;
+        const colorHex = resolved?.color?.color;
+        const stamp = STAMPS.find(s => s.id === item.stampId);
         return (
           <Templete
             key={item.id}
             label={item.label}
-            imageSource={item.preview}
+            PatternSvg={PatternSvg}
+            color={colorHex}
+            stampImage={stamp?.image}
             isSelected={selectedItems.template === item.id}
             onPress={onPress}
           />
         );
+      }
       case 'pattern':
         return (
           <PatternItem
@@ -245,7 +252,7 @@ const styles = StyleSheet.create({
     top: padding.M,
     left: FLAP_LEFT,
     width: FLAP_RENDER_WIDTH,
-    transform: [{ rotate: '-0.25deg' }, { translateY: -0.4 }],
+    transform: [{ rotate: '-0.25deg' }, { translateY: -1.4 }],
     ...shadow.middleDown,
   },
   stamp: {
@@ -268,7 +275,7 @@ const styles = StyleSheet.create({
     paddingVertical: padding.XL,
   },
   sectionTemplate: {
-    paddingHorizontal: padding.M,
+    paddingHorizontal: padding.XL,
   },
   section3Col: {
     paddingHorizontal: padding.XL,
