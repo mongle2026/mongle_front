@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
   stamp: {
     position: 'absolute',
     top: ENV_MARGIN_V + padding.XL,
-    right: ENV_MARGIN_H + padding.XL,
+    left: ENV_MARGIN_H + padding.XL,
     width: 72,
     height: 106,
   },

@@ -18,7 +18,7 @@ export default function Templete({ label, PatternSvg, color, stampImage, isSelec
           )}
         </View>
 
-{/* 우표 */}
+        {/* 우표 */}
         <View style={styles.stampBox}>
           {stampImage && (
             <Image source={stampImage} style={styles.stampImage} resizeMode="cover" />
