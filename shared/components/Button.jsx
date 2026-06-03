@@ -43,8 +43,11 @@ const styles = StyleSheet.create({
   critical: {
     backgroundColor: colors.bgCriticalSolid,
   },
-  neutralWeak: {
+  layerWeak: {
     backgroundColor: colors.bgLayerWeak,
+  },
+  defaultWeak: {
+    backgroundColor: colors.bgDefaultWeak,
   },
 
   text: {
@@ -57,8 +60,11 @@ const styles = StyleSheet.create({
   criticalText: {
     color: colors.fgNeutral,
   },
-  neutralWeakText: {
+  layerWeakText: {
     color: colors.fgLayerNeutralWeak,
+  },
+  defaultWeakText: {
+    color: colors.fgNeutral,
   }
   
 });
