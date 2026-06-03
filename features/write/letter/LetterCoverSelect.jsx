@@ -154,7 +154,7 @@ export default function LetterCoverSelect({ navigation }) {
     <View style={styles.screen}>
       <TopNavigation
         title="편지 봉투 선택"
-        buttonLabel="다음"
+        buttonLabel="전송"
         onPressBack={() => navigation.goBack()}
         onPressButton={() => {}}
         buttonDisabled={!isNextEnabled}
