@@ -87,13 +87,12 @@ export default function SendAnimationScreen({ navigation, route }) {
         <Profile imageOnly style={styles.profileOverlay} />
       </Animated.View>
 
-      {toastVisible && (
-        <Toast
-          type="success"
-          message={`편지가 ${deliveryLabel} 0시의 나에게 전송됐어요.`}
-          style={styles.toast}
-        />
-      )}
+      <Toast
+        type="success"
+        message={`편지가 ${deliveryLabel} 0시의 나에게 전송됐어요.`}
+        visible={toastVisible}
+        style={styles.toast}
+      />
 
     </Animated.View>
   );

@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Animated } from 'react-native';
 
 import ButtonText from './ButtonText';
 import { colors, palette, shadow } from '../styles/color';
@@ -18,12 +19,45 @@ export default function Toast({
   type = 'warning',
   actionLabel,
   onPressAction,
+  visible = true,
   style,
 }) {
   const Icon = TOAST_ICON[type];
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(16)).current;
+
+  useEffect(() => {
+    if (visible) {
+      Animated.parallel([
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 220,
+          useNativeDriver: true,
+        }),
+        Animated.timing(translateY, {
+          toValue: 0,
+          duration: 220,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      Animated.parallel([
+        Animated.timing(opacity, {
+          toValue: 0,
+          duration: 180,
+          useNativeDriver: true,
+        }),
+        Animated.timing(translateY, {
+          toValue: 16,
+          duration: 180,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [visible]);
 
   return (
-    <View style={[styles.wrapper, style]}>
+    <Animated.View style={[styles.wrapper, { opacity, transform: [{ translateY }] }, style]}>
       <View style={styles.container}>
         <Icon width={20} height={20} />
 
@@ -39,7 +73,7 @@ export default function Toast({
           />
         )}
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
