@@ -13,11 +13,65 @@ import FoldCorner from '../../../assets/write/graphic_paper.svg';
 import BottomBar from '../components/BottomBar.jsx';
 import axios from 'axios';
 import Profile from '../../../shared/components/Profile.jsx';
+import Img from '../components/Img.jsx';
+import * as ImagePicker from "expo-image-picker";
+
+const MAX_IMAGES = 2;
 
 const RecordScreen = ({ navigation }) => {
   const recordForm = useRecordFormStore();
   const recordType = useRecordFormStore(state => state.recordType);
-  // const recordType = "LETTER";
+  // const recordType = "FEED";
+  // 나
+  const userId = '1';
+
+  const pickImages = async () => {
+    try {
+      console.log('클릭');
+
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (!permissionResult.granted) {
+        alert('사진 접근 권한이 필요합니다.');
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: 'images',
+        allowsMultipleSelection: true,
+        selectionLimit: MAX_IMAGES,
+        quality: 0.8,
+      });
+
+      if (!result.canceled) {
+        const selectedImages = result.assets.map((asset, index) => ({
+          uri: asset.uri,
+          name: asset.fileName ?? `image-${Date.now()}-${index}.jpg`,
+          type: asset.mimeType ?? 'image/jpeg',
+          fileType: 'IMAGE',
+        }));
+
+        const currentImages = recordForm.files.filter(
+          file => file.fileType === 'IMAGE'
+        );
+
+        const otherFiles = recordForm.files.filter(
+          file => file.fileType !== 'IMAGE'
+        );
+
+        const nextImages = [...currentImages, ...selectedImages].slice(0, 2);
+
+        recordForm.setFiles([...otherFiles, ...nextImages]);
+      }
+    } catch (error) {
+      console.log('pickImages error:', error);
+    }
+  };
+
+  const handleRemoveImage = uri => {
+    recordForm.removeFile(uri);
+  };
 
   const handleCommit = async () => {
     // Alert.alert('게시 실행', `platform: ${Platform.OS}`);
@@ -38,7 +92,7 @@ const RecordScreen = ({ navigation }) => {
     // };
     // formData.append('music', JSON.stringify(music));
 
-    formData.append('userId', '1');
+    formData.append('userId', userId);
     formData.append('visibility', "PUBLIC");
 
 
@@ -87,7 +141,7 @@ const RecordScreen = ({ navigation }) => {
       try {
         const response = await axios.post(
           // 192.168.0.3
-          'http://192.168.0.3:3000/feed',
+          'http://172.19.19.169:3000/feed',
           formData,
           {
             headers: {
@@ -121,13 +175,9 @@ const RecordScreen = ({ navigation }) => {
         index: 0,
         routes: [{ name: 'Main' }],
       });
-    } else if (recordType === "LETTER") {
-      // 편지 전용 
-      if (recordForm.receiver) {
-        formData.append('receiverId', String(recordForm.receiver.id));
-      }
 
-      // navigation.navigate('Letter');
+    } else if (recordType === "LETTER") {
+      navigation.navigate('LetterCoverSelect');
     }
   };
 
@@ -140,11 +190,15 @@ const RecordScreen = ({ navigation }) => {
         <TopNavigation
           title='편지 작성'
           buttonLabel='다음'
+          onPressButton={handleCommit}
+          onPressBack={() => navigation.goBack()}
+          buttonDisabled={false}
         />
         : <TopNavigation
           title='피드 작성'
           buttonLabel='게시'
           onPressButton={handleCommit}
+          onPressBack={() => navigation.goBack()}
           buttonDisabled={false}
         />
       }
@@ -160,9 +214,9 @@ const RecordScreen = ({ navigation }) => {
             contentContainerStyle={styles.sectionContent}
           >
             {recordType === "LETTER" &&
-              <Profile 
-              name={recordForm.receiver.nickname}
-              imageSource={recordForm.receiver.image}
+              <Profile
+                name={recordForm.receiver.nickname}
+                imageSource={recordForm.receiver.image}
               />
             }
 
@@ -175,13 +229,21 @@ const RecordScreen = ({ navigation }) => {
             <RecordText
               recordForm={recordForm}
             />
-
+            {/* 
             <RecordImage
               recordForm={recordForm}
+            /> */}
+
+            <Img
+              recordForm={recordForm}
+              onPressAdd={pickImages}
+              onPressDelete={handleRemoveImage}
             />
           </ScrollView>
         </View>
-        <BottomBar />
+        <BottomBar 
+          onPressImage={pickImages}
+        />
       </View>
     </KeyboardAvoidingView>
   )
