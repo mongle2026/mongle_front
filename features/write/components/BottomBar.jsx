@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Keyboard, Platform, View, StyleSheet } from 'react-native';
+import { Keyboard, Platform, View, StyleSheet, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ButtonIcon from '../../../shared/components/ButtonIcon';
@@ -9,8 +9,6 @@ import { padding } from '../../../shared/styles/token';
 import ImageIcon from '../../../assets/icons/ic_image.svg';
 import ImageDisabledIcon from '../../../assets/icons/ic_image_disabled.svg';
 
-const KEYBOARD_EXTRA_OFFSET = Platform.OS === 'android' ? 48 : 0;
-
 export default function BottomBar({
   onPressImage,
   disabledImage = false,
@@ -18,24 +16,36 @@ export default function BottomBar({
   const CurrentImageIcon = disabledImage ? ImageDisabledIcon : ImageIcon;
 
   const insets = useSafeAreaInsets();
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [keyboardBottom, setKeyboardBottom] = useState(0);
 
   useEffect(() => {
     const showSub = Keyboard.addListener('keyboardDidShow', event => {
-      console.log('keyboardDidShow:', event.endCoordinates.height);
-      setKeyboardHeight(event.endCoordinates.height);
+      const windowHeight = Dimensions.get('window').height;
+      const keyboardTopY = event.endCoordinates.screenY;
+
+      const keyboardHeightInWindow = Math.max(0, windowHeight - keyboardTopY);
+
+      console.log('keyboard event height:', event.endCoordinates.height);
+      console.log('keyboard height in window:', keyboardHeightInWindow);
+      console.log('bottom inset:', insets.bottom);
+
+      setKeyboardBottom(keyboardHeightInWindow);
     });
 
     const hideSub = Keyboard.addListener('keyboardDidHide', () => {
-      console.log('keyboardDidHide');
-      setKeyboardHeight(0);
+      setKeyboardBottom(0);
     });
 
     return () => {
       showSub.remove();
       hideSub.remove();
     };
-  }, []);
+  }, [insets.bottom]);
+
+  const bottomValue =
+    keyboardBottom > 0
+      ? keyboardBottom
+      : insets.bottom;
 
   return (
     // <Animated.View style={[styles.container, bottomBarStyle]}>
@@ -43,9 +53,7 @@ export default function BottomBar({
       style={[
         styles.container,
         {
-          bottom: keyboardHeight > 0
-            ? keyboardHeight + KEYBOARD_EXTRA_OFFSET
-            : insets.bottom,
+          bottom: bottomValue
         },
       ]}
     >
