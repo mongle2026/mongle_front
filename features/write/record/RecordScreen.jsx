@@ -1,6 +1,5 @@
 import React from 'react'
 import { Alert, KeyboardAvoidingView, ScrollView, Text, TextInput, View, StyleSheet, Platform, Pressable, Image } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRecordFormStore } from '../record/store/useRecordFormStore.js';
 import RecordImage from '../record/components/RecordImage.jsx';
 import RecordAudio from '../record/components/RecordAudio.jsx';
@@ -16,12 +15,14 @@ import Profile from '../../../shared/components/Profile.jsx';
 import Img from '../components/Img.jsx';
 import * as ImagePicker from "expo-image-picker";
 
+
+const API_BASE_URL = 'http://192.168.0.5:3000';
 const MAX_IMAGES = 2;
 
 const RecordScreen = ({ navigation }) => {
   const recordForm = useRecordFormStore();
-  const recordType = useRecordFormStore(state => state.recordType);
-  // const recordType = "FEED";
+  // const recordType = useRecordFormStore(state => state.recordType);
+  const recordType = "LETTER";
   // 나
   const userId = '1';
 
@@ -78,6 +79,11 @@ const RecordScreen = ({ navigation }) => {
     const formData = new FormData();
     console.log('게시 시점 music:', recordForm.music);
     console.log('navigation state:', navigation.getState?.());
+
+    if (recordForm.music === null || recordForm.text === '') {
+      console.log('여기에 alert 팝업 뜨기');
+      return;
+    };
 
     // 임시 데이터 
     // const music = {
@@ -141,7 +147,7 @@ const RecordScreen = ({ navigation }) => {
       try {
         const response = await axios.post(
           // 192.168.0.3
-          'http://172.19.19.169:3000/feed',
+          `${API_BASE_URL}/feed`,
           formData,
           {
             headers: {
@@ -182,10 +188,7 @@ const RecordScreen = ({ navigation }) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
+    <View style={{ flex: 1 }}>
       {recordType === "LETTER" ?
         <TopNavigation
           title='편지 작성'
@@ -241,11 +244,11 @@ const RecordScreen = ({ navigation }) => {
             />
           </ScrollView>
         </View>
-        <BottomBar 
+        <BottomBar
           onPressImage={pickImages}
         />
       </View>
-    </KeyboardAvoidingView>
+    </View>
   )
 }
 
