@@ -8,7 +8,7 @@ import getTomorrowCalendarDate from './hook/getTomorrowCalendarDate';
 import { colors } from '../../../shared/styles/color';
 import { useRecordFormStore } from '../record/store/useRecordFormStore';
 
-const SelectDateScreen = ({navigation}) => {
+const SelectDateScreen = ({ navigation }) => {
   const [visible, setVisible] = React.useState(false);
   const [date, setDate] = React.useState(undefined);
   const [selectedDate, setSelectedDate] = useState(getTomorrowCalendarDate);
@@ -16,6 +16,8 @@ const SelectDateScreen = ({navigation}) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [buttonDisabled, setButtonDisalbed] = useState(true);
   const setDeliveryAt = useRecordFormStore((state) => state.setDeliveryAt);
+  const recordForm = useRecordFormStore();
+
 
 
   useEffect(() => {
@@ -29,20 +31,21 @@ const SelectDateScreen = ({navigation}) => {
     setDeliveryAt(`${selectedDate.dateString} 00:00:00`);
     console.log('선택한 날짜:', `${selectedDate.dateString} 00:00:00`);
 
-    navigation.navigate('Record');
+    console.log('recordForm: ', recordForm);
+    // navigation.navigate('LetterCoverSelect');
   };
 
   return (
-    <View>
+    <View style={styles.container}>
       <TopNavigation
         title='나에게 전송'
-        buttonLabel='다음'
+        buttonLabel='전송'
         buttonDisabled={buttonDisabled}
         onPressBack={() => navigation.goBack()}
         onPressButton={handlePressNext}
       />
 
-      <View style={styles.container}>
+      <View>
         <SelectDateText
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
@@ -69,7 +72,8 @@ const SelectDateScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({
   container: {
-    color: colors.bgDefault
+    flex:1,
+    backgroundColor: colors.bgDefault
   }
 });
 
