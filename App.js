@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { View, StyleSheet } from 'react-native';
 
-import SelectMusic from './features/write/music/SelectMusic';
+import LetterScreen from './features/write/letter/LetterScreen';
 import { colors } from './shared/styles/color';
 
 const Stack = createNativeStackNavigator();
@@ -24,8 +24,8 @@ export default function App() {
 
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen
-          name="SelectMusic"
-          component={SelectMusic}
+          name="LetterScreen"
+          component={LetterScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>
