@@ -1,46 +1,13 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { View, StyleSheet } from 'react-native';
 
-import ListRow from './features/write/components/ListRow';
+import SelectMusic from './features/write/music/SelectMusic';
 import { colors } from './shared/styles/color';
 
 const Stack = createNativeStackNavigator();
-
-function ListRowTestScreen() {
-  return (
-    <View style={styles.container}>
-      <ListRow
-        title="name(나)"
-        subtitle="@memeow"
-        img="profile"
-        caption
-        selected={false}
-        onPress={() => console.log('첫 번째 선택')}
-      />
-
-      <ListRow
-        title="코코"
-        subtitle="@cocokim"
-        img="profile"
-        caption
-        selected
-        onPress={() => console.log('두 번째 선택')}
-      />
-
-      <ListRow
-        title="Warm On A Cold Night"
-        subtitle="Honne"
-        img="music"
-        caption
-        selected={false}
-        onPress={() => console.log('음악 선택')}
-      />
-    </View>
-  );
-}
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -52,13 +19,13 @@ export default function App() {
   if (!fontsLoaded) return null;
 
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={{ ...DarkTheme, colors: { ...DarkTheme.colors, background: colors.bgDefault } }}>
       <StatusBar style="light" />
 
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen
-          name="ListRowTest"
-          component={ListRowTestScreen}
+          name="SelectMusic"
+          component={SelectMusic}
         />
       </Stack.Navigator>
     </NavigationContainer>

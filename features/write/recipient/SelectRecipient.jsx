@@ -1,10 +1,14 @@
-import { View, FlatList } from 'react-native';
+import { View, FlatList, StyleSheet } from 'react-native';
 
 import TopNavigation from '../../../shared/components/TopNavigation';
 import SearchField from '../../../shared/components/SearchField';
 import ListRow from '../components/ListRow';
 
 import UseSelectRecipient from './hook/UseSelectRecipient';
+
+const styles = StyleSheet.create({
+  screen: { flex: 1 },
+});
 
 export default function SelectRecipient({ navigation }) {
   const {
@@ -18,7 +22,7 @@ export default function SelectRecipient({ navigation }) {
   } = UseSelectRecipient();
 
   return (
-    <View>
+    <View style={styles.screen}>
       <TopNavigation
         title="수신인 선택"
         buttonLabel="다음"
@@ -37,7 +41,7 @@ export default function SelectRecipient({ navigation }) {
       <FlatList
         data={filteredRecipients}
         keyExtractor={item => item.id}
-        contentContainerStyle={styles.listContainer}
+
         renderItem={({ item }) => (
           <ListRow
             title={item.username}

@@ -1,4 +1,4 @@
-import { View, FlatList } from 'react-native';
+import { View, FlatList, StyleSheet } from 'react-native';
 
 import TopNavigation from '../../../shared/components/TopNavigation';
 import SearchField from '../../../shared/components/SearchField';
@@ -23,7 +23,7 @@ export default function SelectMusic({
   } = UseSelectMusic();
 
   return (
-    <View>
+    <View style={styles.screen}>
       <TopNavigation
         title="음악 선택"
         buttonLabel="다음"
@@ -46,7 +46,6 @@ export default function SelectMusic({
       <FlatList
         data={filteredMusicList}
         keyExtractor={item => item.id}
-        contentContainerStyle={styles.listContainer}
         renderItem={({ item }) => (
           <ListRow
             title={item.title}
@@ -62,3 +61,9 @@ export default function SelectMusic({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
+});
