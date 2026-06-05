@@ -13,69 +13,25 @@ import BottomBar from '../components/BottomBar.jsx';
 import axios from 'axios';
 import Profile from '../../../shared/components/Profile.jsx';
 import Img from '../components/Img.jsx';
-import * as ImagePicker from "expo-image-picker";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { usePickImages } from './hook/usePickImages.js';
 
 
 const API_BASE_URL = 'http://192.168.0.5:3000';
-const MAX_IMAGES = 2;
+const BOTTOM_BAR_HEIGHT = 40;
 
 const RecordScreen = ({ navigation }) => {
   const recordForm = useRecordFormStore();
   // const recordType = useRecordFormStore(state => state.recordType);
-  const recordType = "LETTER";
+  const recordType = "FEED";
   // 나
   const userId = '1';
 
-  const pickImages = async () => {
-    try {
-      console.log('클릭');
+  const insets = useSafeAreaInsets();
+  const pickImages = usePickImages();
 
-      const permissionResult =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-      if (!permissionResult.granted) {
-        alert('사진 접근 권한이 필요합니다.');
-        return;
-      }
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: 'images',
-        allowsMultipleSelection: true,
-        selectionLimit: MAX_IMAGES,
-        quality: 0.8,
-      });
-
-      if (!result.canceled) {
-        const selectedImages = result.assets.map((asset, index) => ({
-          uri: asset.uri,
-          name: asset.fileName ?? `image-${Date.now()}-${index}.jpg`,
-          type: asset.mimeType ?? 'image/jpeg',
-          fileType: 'IMAGE',
-        }));
-
-        const currentImages = recordForm.files.filter(
-          file => file.fileType === 'IMAGE'
-        );
-
-        const otherFiles = recordForm.files.filter(
-          file => file.fileType !== 'IMAGE'
-        );
-
-        const nextImages = [...currentImages, ...selectedImages].slice(0, 2);
-
-        recordForm.setFiles([...otherFiles, ...nextImages]);
-      }
-    } catch (error) {
-      console.log('pickImages error:', error);
-    }
-  };
-
-  const handleRemoveImage = uri => {
-    recordForm.removeFile(uri);
-  };
 
   const handleCommit = async () => {
-    // Alert.alert('게시 실행', `platform: ${Platform.OS}`);
     const formData = new FormData();
     console.log('게시 시점 music:', recordForm.music);
     console.log('navigation state:', navigation.getState?.());
@@ -146,7 +102,6 @@ const RecordScreen = ({ navigation }) => {
       // =========== 전송 ============
       try {
         const response = await axios.post(
-          // 192.168.0.3
           `${API_BASE_URL}/feed`,
           formData,
           {
@@ -206,7 +161,14 @@ const RecordScreen = ({ navigation }) => {
         />
       }
 
-      <View style={styles.container}>
+      <View
+        style={[
+          styles.container,
+          {
+            paddingBottom: BOTTOM_BAR_HEIGHT + insets.bottom,
+          },
+        ]}
+      >
         <View style={styles.sectionWrapper}>
           <FoldCorner
             style={styles.fold}
@@ -232,15 +194,10 @@ const RecordScreen = ({ navigation }) => {
             <RecordText
               recordForm={recordForm}
             />
-            {/* 
+
             <RecordImage
               recordForm={recordForm}
-            /> */}
-
-            <Img
-              recordForm={recordForm}
               onPressAdd={pickImages}
-              onPressDelete={handleRemoveImage}
             />
           </ScrollView>
         </View>
