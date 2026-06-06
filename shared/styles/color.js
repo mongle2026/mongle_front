@@ -20,12 +20,18 @@ export const palette = {
     40: '#bfc2c7', 50: '#a6adb6', 60: '#8f9399', 70: '#747a81',
     80: '#54595f', 90: '#34373a', 100: '#1a1b1c',
   },
+  pink: {
+    10: '#ffe0eb', 20: '#ffc2d7', 30: '#ff99bd', 40: '#ff85af',
+    50: '#fa6196', 60: '#f42f74', 70: '#e40c57', 80: '#b00742',
+    90: '#890634', 100: '#550722',
+  },
   yellow: {
     10: '#fff9e7', 20: '#ffebad', 30: '#ffe69b', 40: '#ffdd78',
     50: '#ffd158', 60: '#ffc038', 70: '#f9b137', 80: '#eea338',
     90: '#c17c1a', 100: '#965b13',
   },
   grayOpacity: {
+    50: '#1a1b1c80',
     75: '#1a1b1cbf',
   },
 };
@@ -63,4 +69,5 @@ export const colors = {
   fgCritical:        palette.red[50],
   fgPositive:        palette.green[50],
   fgDisabled:        palette.gray[80],
+  fgLayerWeak:       palette.gray[40],
 };
