@@ -22,6 +22,7 @@ import { PATTERNS, STAMPS, TEMPLATES, resolvePatternColor } from './data/letterC
 import { colors, shadow } from '../../../shared/styles/color';
 import { gap, padding, radius } from '../../../shared/styles/token';
 import { useRecordFormStore } from '../record/store/useRecordFormStore';
+import { createRecordFormData } from '../utils/createRecordFormData ';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -160,25 +161,10 @@ export default function LetterCoverSelect({ navigation }) {
       navigation.navigate('SelectDate');
 
     } else {
-      const formData = new FormData();
-
-      formData.append('userId', userId);
-      formData.append('visibility', "PUBLIC");
-      // 글 기록
-      formData.append('text', recordForm.text);
-
-      // 노래 
-      formData.append('music', JSON.stringify(recordForm.music));
-
-      // 사진, 음성 
-      recordForm.files.forEach((file, index) => {
-        formData.append('files', {
-          uri: file.uri,
-          name: file.name ?? `file-${Date.now()}-${index}.jpg`,
-          type: file.type ?? 'image/jpeg',
-        });
-
-        formData.append('fileTypes', file.fileType);
+      const formData = createRecordFormData({
+        userId,
+        recordForm,
+        recordType
       });
     }
   }

@@ -4,9 +4,10 @@ import TopNavigation from '../../../shared/components/TopNavigation'
 import SelectDateText from './components/SelectDateText';
 import SelectDateButtons from './components/SelectDateButtons';
 import SelectDateCalendar from './components/SelectDateCalendar';
-import getTomorrowCalendarDate from './hook/getTomorrowCalendarDate';
+import getTomorrowCalendarDate from './utils/getTomorrowCalendarDate';
 import { colors } from '../../../shared/styles/color';
 import { useRecordFormStore } from '../record/store/useRecordFormStore';
+import { createRecordFormData } from '../utils/createRecordFormData ';
 
 const SelectDateScreen = ({ navigation }) => {
   const [visible, setVisible] = React.useState(false);
@@ -17,6 +18,7 @@ const SelectDateScreen = ({ navigation }) => {
   const [buttonDisabled, setButtonDisalbed] = useState(true);
   const setDeliveryAt = useRecordFormStore((state) => state.setDeliveryAt);
   const recordForm = useRecordFormStore();
+  const userId = '1';
 
 
 
@@ -28,10 +30,16 @@ const SelectDateScreen = ({ navigation }) => {
   const handlePressNext = () => {
     if (dateType === null) return;
 
-    setDeliveryAt(`${selectedDate.dateString} 00:00:00`);
     console.log('선택한 날짜:', `${selectedDate.dateString} 00:00:00`);
+    console.log('전역변수', recordForm.deliveryAt);
+    console.log('dateType: ', dateType);
 
-    console.log('recordForm: ', recordForm);
+    const formData = createRecordFormData({
+      userId,
+      recordForm,
+    });
+
+    console.log('formData', formData);
     // navigation.navigate('LetterCoverSelect');
   };
 
@@ -55,6 +63,7 @@ const SelectDateScreen = ({ navigation }) => {
           dateType={dateType}
           setDateType={setDateType}
           setIsCalendarOpen={setIsCalendarOpen}
+          setDeliveryAt={setDeliveryAt}
         />
 
         <SelectDateCalendar
@@ -64,6 +73,7 @@ const SelectDateScreen = ({ navigation }) => {
           setDateType={setDateType}
           isCalendarOpen={isCalendarOpen}
           setIsCalendarOpen={setIsCalendarOpen}
+          setDeliveryAt={setDeliveryAt}
         />
       </View>
     </View>
@@ -72,7 +82,7 @@ const SelectDateScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex:1,
+    flex: 1,
     backgroundColor: colors.bgDefault
   }
 });

@@ -15,6 +15,7 @@ import Profile from '../../../shared/components/Profile.jsx';
 import Img from '../components/Img.jsx';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePickImages } from './hook/usePickImages.js';
+import { createRecordFormData } from '../utils/createRecordFormData .js';
 
 
 const API_BASE_URL = 'http://192.168.0.5:3000';
@@ -23,7 +24,7 @@ const BOTTOM_BAR_HEIGHT = 40;
 const RecordScreen = ({ navigation }) => {
   const recordForm = useRecordFormStore();
   // const recordType = useRecordFormStore(state => state.recordType);
-  const recordType = "FEED";
+  const recordType = "LETTER";
   // 나
   const userId = '1';
 
@@ -32,72 +33,17 @@ const RecordScreen = ({ navigation }) => {
 
 
   const handleCommit = async () => {
-    const formData = new FormData();
-    console.log('게시 시점 music:', recordForm.music);
-    console.log('navigation state:', navigation.getState?.());
-
     if (recordForm.music === null || recordForm.text === '') {
       console.log('여기에 alert 팝업 뜨기');
       return;
     };
 
-    // 임시 데이터 
-    // const music = {
-    //   externalId: '269573364',
-    //   musicTitle: 'Billie Jean',
-    //   musicArtist: 'Michael Jackson',
-    //   musicGenre: ['팝'],
-    //   musicArtwork:
-    //     'https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/32/4f/fd/324ffda2-9e51-8f6a-0c2d-c6fd2b41ac55/074643811224.jpg/100x100bb.jpg',
-    //   previewUrl:
-    //     'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/dc/bc/8a/dcbc8a3e-4ce1-c00d-cc02-eda2212053c7/mzaf_8347559338388601510.plus.aac.p.m4a',
-    // };
-    // formData.append('music', JSON.stringify(music));
-
-    formData.append('userId', userId);
-    formData.append('visibility', "PUBLIC");
-
-
-    // 글 기록
-    formData.append('text', recordForm.text);
-
-    // 노래 
-    formData.append('music', JSON.stringify(recordForm.music));
-
-    // 사진, 음성 
-    recordForm.files.forEach((file, index) => {
-      formData.append('files', {
-        uri: file.uri,
-        name: file.name ?? `file-${Date.now()}-${index}.jpg`,
-        type: file.type ?? 'image/jpeg',
-      });
-
-      formData.append('fileTypes', file.fileType);
-    });
-
-    // console.log('recordForm.files:', recordForm.files);
-
-    // recordForm.files.forEach((file, index) => {
-    //   console.log(`file ${index}:`, {
-    //     uri: file.uri,
-    //     name: file.name,
-    //     type: file.type,
-    //     fileType: file.fileType,
-    //   });
-    // });
-
-
-
-
-    console.log('게시 눌림');
-    console.log('보낼 음악 제목:', recordForm.music.musicTitle);
-
-
     if (recordType === "FEED") {
-      // ========== 추가 append ===========
-      // 공개 범위
-      // formData.append('visibility', recordForm.visibility);
-
+      const formData = createRecordFormData({
+        userId,
+        recordForm,
+        recordType
+      });
 
       // =========== 전송 ============
       try {

@@ -2,19 +2,30 @@ import React, { useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import Button from '../../../../shared/components/Button';
 import { padding, gap } from '../../../../shared/styles/token';
+import { getOneWeekLater, getOneMonthLater, getOneYearLater} from '../utils/date';
 
-const SelectDateButtons = (
-  {
-    dateType,
-    setDateType,
-    setIsCalendarOpen,
-  }
-) => {
+const SelectDateButtons = ({
+  dateType,
+  setDateType,
+  setIsCalendarOpen,
+  setDeliveryAt,
+}) => {
   const [selectedDateType, setSelectedDateType] = useState(null);
 
   const handleSelectDate = value => {
     setDateType(prev => (prev === value ? null : value))
     setIsCalendarOpen(false);
+
+    if (value === 'week') {
+      const deliveryAt = getOneWeekLater();
+      setDeliveryAt(deliveryAt);
+    } else if (value === 'month') {
+      const deliveryAt = getOneMonthLater();
+      setDeliveryAt(deliveryAt);
+    } else if (value === 'year') {
+      const deliveryAt = getOneYearLater();
+      setDeliveryAt(deliveryAt);
+    }
   };
 
   return (
