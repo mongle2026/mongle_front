@@ -21,6 +21,7 @@ import { PATTERNS, STAMPS, TEMPLATES, resolvePatternColor, useLetterCoverStore }
 
 import { colors, shadow } from '../../../shared/styles/color';
 import { gap, padding, radius } from '../../../shared/styles/token';
+import { useRecordFormStore } from '../record/store/useRecordFormStore';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -30,12 +31,12 @@ const ITEM_3COL = (SCREEN_WIDTH - padding.XL * 2 - gap.M * 2) / 3;
 const TAB_COLUMNS = { template: 2, pattern: 3, color: 3, stamp: 3 };
 
 // 봉투 미리보기 사이즈 (front SVG viewBox: 342.6 × 253.33)
-const ENVELOPE_WIDTH  = SCREEN_WIDTH - padding.XL * 2;
+const ENVELOPE_WIDTH = SCREEN_WIDTH - padding.XL * 2;
 const ENVELOPE_HEIGHT = ENVELOPE_WIDTH * (253.33 / 342.6);
 // flap SVG viewBox: 325.17 × 173.2 — front와 동일한 픽셀-퍼-유닛 스케일로 렌더링
-const FLAP_RENDER_WIDTH  = ENVELOPE_WIDTH * (325.17 / 342.6);
+const FLAP_RENDER_WIDTH = ENVELOPE_WIDTH * (325.17 / 342.6);
 const FLAP_RENDER_HEIGHT = FLAP_RENDER_WIDTH * (173.2 / 325.17);
-const FLAP_LEFT          = (ENVELOPE_WIDTH - FLAP_RENDER_WIDTH) / 2;
+const FLAP_LEFT = (ENVELOPE_WIDTH - FLAP_RENDER_WIDTH) / 2;
 // back SVG clipPath 기준 봉투 shape 여백 (~15.8 가로, ~13.92 세로 SVG units)
 const ENV_MARGIN_H = ENVELOPE_WIDTH * (15.8 / 342.6);
 const ENV_MARGIN_V = ENVELOPE_WIDTH * (13.92 / 342.6);
@@ -64,13 +65,13 @@ export default function LetterCoverSelect({ navigation }) {
 
   // 현재 선택된 color/stamp resolve
   const selectedPattern = PATTERNS.find(p => p.id === selectedItems.patternId);
-  const selectedColor   = selectedPattern?.colors.find(c => c.id === selectedItems.colorId);
-  const selectedStamp   = STAMPS.find(s => s.id === selectedItems.stampId);
+  const selectedColor = selectedPattern?.colors.find(c => c.id === selectedItems.colorId);
+  const selectedStamp = STAMPS.find(s => s.id === selectedItems.stampId);
 
   const FrontSvg = selectedColor?.frontImg?.default ?? selectedColor?.frontImg;
-  const FlapSvg  = selectedColor?.flapImg?.default  ?? selectedColor?.flapImg;
-  const backSrc  = selectedColor?.backImg ?? selectedColor?.frontImg;
-  const BackSvg  = backSrc?.default ?? backSrc;
+  const FlapSvg = selectedColor?.flapImg?.default ?? selectedColor?.flapImg;
+  const backSrc = selectedColor?.backImg ?? selectedColor?.frontImg;
+  const BackSvg = backSrc?.default ?? backSrc;
 
   const handleFlip = () => {
     flipProgress.value = withTiming(flipProgress.value === 0 ? 1 : 0, { duration: 500 });
@@ -89,12 +90,12 @@ export default function LetterCoverSelect({ navigation }) {
   // 탭별 데이터
   const TAB_DATA = {
     template: TEMPLATES,
-    pattern:  PATTERNS,
-    color:    currentColors,
-    stamp:    STAMPS,
+    pattern: PATTERNS,
+    color: currentColors,
+    stamp: STAMPS,
   };
   const currentData = TAB_DATA[activeTab];
-  const numColumns  = TAB_COLUMNS[activeTab];
+  const numColumns = TAB_COLUMNS[activeTab];
 
   const rows = [];
   for (let i = 0; i < currentData.length; i += numColumns) {
@@ -152,20 +153,45 @@ export default function LetterCoverSelect({ navigation }) {
     }
   };
 
+  const receiver = useRecordFormStore(state => state.receiver.id);
+  // 임시 하드코딩
+  const userId = '1';
+
+  const handleCommit = async () => {
+    if (userId === receiver) {
+      navigation.navigate('SelectDate');
+
+    } else {
+      const formData = new FormData();
+
+      formData.append('userId', userId);
+      formData.append('visibility', "PUBLIC");
+      // 글 기록
+      formData.append('text', recordForm.text);
+
+      // 노래 
+      formData.append('music', JSON.stringify(recordForm.music));
+
+      // 사진, 음성 
+      recordForm.files.forEach((file, index) => {
+        formData.append('files', {
+          uri: file.uri,
+          name: file.name ?? `file-${Date.now()}-${index}.jpg`,
+          type: file.type ?? 'image/jpeg',
+        });
+
+        formData.append('fileTypes', file.fileType);
+      });
+    }
+  }
+
   return (
     <View style={styles.screen}>
       <TopNavigation
         title="편지 봉투 선택"
-        buttonLabel="전송"
+        buttonLabel={userId === receiver ? '다음' : '전송'}
         onPressBack={() => navigation.goBack()}
-        onPressButton={() => {
-          setEnvelope({
-            patternId: selectedItems.patternId,
-            colorId:   selectedItems.colorId,
-            stampId:   selectedItems.stampId,
-          });
-          // TODO: navigation.navigate('DateSelect');
-        }}
+        onPressButton={handleCommit}
         buttonDisabled={!isNextEnabled}
       />
 

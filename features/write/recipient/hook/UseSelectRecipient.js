@@ -1,4 +1,6 @@
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
+import { useRecordFormStore } from '../../record/store/useRecordFormStore';
+import axios from 'axios';
 
 const MOCK_RECIPIENTS = [
   {
@@ -27,9 +29,62 @@ const MOCK_RECIPIENTS = [
   },
 ];
 
-export default function useSelectRecipient() {
+const API_BASE_URL = 'http://192.168.0.3:3000';
+
+export default function useSelectRecipient(navigation) {
   const [keyword, setKeyword] = useState('');
   const [selectedRecipientId, setSelectedRecipientId] = useState(null);
+
+  // setRecordType은 지금 메인 없어서 임의로 넣은거임 메인에서 선택하는거 나오면 바로 삭제 
+  const setRecordType = useRecordFormStore((state) => state.setRecordType);
+  const setReceiver = useRecordFormStore((state) => state.setReceiver);
+  const [userList, setUserList] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const trimmedKeyword = keyword.trim();
+
+    if (!trimmedKeyword) {
+      setUserList([]);
+      setLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+
+    setLoading(true);
+
+    const timer = setTimeout(async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/user/search`, {
+          params: {
+            keyword: trimmedKeyword,
+          },
+          signal: controller.signal,
+        });
+
+        console.log(response.data)
+
+        setUserList(response.data);
+      } catch (error) {
+        if (error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {
+          return;
+        }
+
+        console.log('사용자 검색 실패:', error.message);
+        setUserList([]);
+      } finally {
+        setLoading(false);
+      }
+    }, 400);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [keyword]);
+
+
 
   const filteredRecipients = useMemo(() => {
     const trimmedKeyword = keyword.trim();
@@ -47,7 +102,11 @@ export default function useSelectRecipient() {
   }, [keyword]);
 
   const selectedRecipient = useMemo(() => {
-    return MOCK_RECIPIENTS.find(
+    // return MOCK_RECIPIENTS.find(
+    //   recipient => recipient.id === selectedRecipientId
+    // );
+
+    return userList.find(
       recipient => recipient.id === selectedRecipientId
     );
   }, [selectedRecipientId]);
@@ -72,17 +131,24 @@ export default function useSelectRecipient() {
   const handlePressNext = () => {
     if (!selectedRecipient) return;
 
+    setReceiver(selectedRecipient);
+
+    // 메인화면에서 선택하는 버튼 없어서 하드코딩한거임 
+    setRecordType("LETTER");
     console.log('선택한 수신인:', selectedRecipient);
+
+    navigation.navigate('SelectMusic');
   };
 
   return {
-  keyword,
-  filteredRecipients,
-  selectedRecipientId,
-  isNextEnabled,
-  handleChangeKeyword,
-  handleFocusSearch,
-  handleSelectRecipient,
-  handlePressNext,
-};
+    keyword,
+    filteredRecipients,
+    userList,
+    selectedRecipientId,
+    isNextEnabled,
+    handleChangeKeyword,
+    handleFocusSearch,
+    handleSelectRecipient,
+    handlePressNext,
+  };
 }

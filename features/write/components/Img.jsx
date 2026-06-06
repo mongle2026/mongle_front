@@ -1,52 +1,79 @@
-import { ImageBackground, Pressable, StyleSheet, View } from 'react-native';
+import { ImageBackground, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import ButtonIcon from '../../../shared/components/ButtonIcon';
 import XIcon from '../../../assets/icons/ic_x.svg';
 import PlusIcon from '../../../assets/icons/ic_plus.svg';
 
 import { colors } from '../../../shared/styles/color';
-import { radius } from '../../../shared/styles/token';
+import { gap, padding, radius } from '../../../shared/styles/token';
 
 export default function Img({
+  recordForm,
   imageSource,
   onPressAdd,
   onPressDelete,
   style,
 }) {
-  const hasImage = Boolean(imageSource);
+  const images = recordForm.files.filter(file => file.fileType === 'IMAGE');
 
-  if (hasImage) {
-    return (
-      <View style={[styles.container, style]}>
-        <ImageBackground
-          source={imageSource}
-          resizeMode="cover"
-          style={styles.image}
-        >
-          <View style={styles.deleteButtonWrapper}>
-            <ButtonIcon
-              Icon={XIcon}
-              size="S"
-              variant="overlay"
-              onPress={onPressDelete}
-            />
-          </View>
-        </ImageBackground>
-      </View>
-    );
-  }
+  const hasImage = Boolean(images);
+
+  const handleRemoveImage = uri => {
+    recordForm.removeFile(uri);
+  };
+
 
   return (
-    <Pressable
-      onPress={onPressAdd}
-      style={[styles.container, styles.addContainer, style]}
+    <ScrollView
+      horizontal
+      style={styles.previewContainer}
+      contentContainerStyle={{ gap: gap.S }}
     >
-      <PlusIcon width={24} height={24} />
-    </Pressable>
+      {images.map((image, index) => (
+        <View style={[styles.container, style]}>
+          <ImageBackground
+            key={`${image.uri}-${index}`}
+            source={{ uri: image.uri }}
+            resizeMode="cover"
+            style={styles.image}
+          >
+            <View style={styles.deleteButtonWrapper}>
+              <ButtonIcon
+                Icon={XIcon}
+                size="S"
+                variant="overlay"
+                onPress={() => handleRemoveImage(image.uri)}
+              />
+            </View>
+          </ImageBackground>
+        </View>
+      ))}
+      {images.length == 1 && (
+        <Pressable
+          onPress={onPressAdd}
+          style={[styles.container, styles.addContainer, style]}
+        >
+          <PlusIcon width={24} height={24} />
+        </Pressable>
+      )}
+    </ScrollView>
   );
+
+
+  // return (
+  //   <Pressable
+  //     onPress={onPressAdd}
+  //     style={[styles.container, styles.addContainer, style]}
+  //   >
+  //     <PlusIcon width={24} height={24} />
+  //   </Pressable>
+  // );
 }
 
 const styles = StyleSheet.create({
+  previewContainer: {
+    paddingHorizontal: padding.L,
+  },
   container: {
     width: 165.5,
     height: 169.5,

@@ -23,7 +23,7 @@ export default function ListRow({
         style={[styles.row, selected ? styles.selected : styles.default]}
       >
         <Image
-          source={imageSource}
+          source={{ uri: imageSource }}
           style={[
             styles.image,
             img === 'profile' ? styles.profileImage : styles.musicImage,

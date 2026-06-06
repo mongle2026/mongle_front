@@ -3,6 +3,7 @@ import {
   View,
   TextInput,
   StyleSheet,
+  Platform,
 } from 'react-native';
 import { typo } from '../../../../shared/styles/typo';
 import { padding } from '../../../../shared/styles/token';
@@ -13,7 +14,7 @@ const NOTE_LINE_HEIGHT = 33;
 const MIN_LINES = 15;
 const TOP_GAP = 8;
 const BOTTOM_GAP = 16;
-const TEXT_TOP_OFFSET = 4;
+const TEXT_TOP_OFFSET = Platform.OS === 'ios' ? -4 : 4;
 
 const RecordText = ({ recordForm }) => {
   const minTextHeight = NOTE_LINE_HEIGHT * MIN_LINES;

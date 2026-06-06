@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 const initialState = {
-  recordType: null, // 'post' | 'letter'
+  recordType: null, // 'FEED' | 'LETTER'
 
   receiver: null,
 
@@ -11,6 +11,8 @@ const initialState = {
   files: [],
 
   visibility: 'PUBLIC',
+
+  deliveryAt: null,
 };
 
 export const useRecordFormStore = create((set) => ({
@@ -19,7 +21,7 @@ export const useRecordFormStore = create((set) => ({
   setRecordType: (recordType) =>
     set((state) => ({
       recordType,
-      receiver: recordType === 'post' ? null : state.receiver,
+      receiver: recordType === 'FEED' ? null : state.receiver,
     })),
 
   setReceiver: (receiver) =>
@@ -55,6 +57,11 @@ export const useRecordFormStore = create((set) => ({
   setVisibility: (visibility) =>
     set({
       visibility,
+    }),
+
+  setDeliveryAt: (deliveryAt) =>
+    set({
+      deliveryAt,
     }),
 
   resetForm: () =>

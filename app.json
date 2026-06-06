@@ -25,6 +25,7 @@
         "backgroundImage": "./assets/icons/android-icon-background.png",
         "monochromeImage": "./assets/icons/android-icon-monochrome.png"
       },
+      "softwareKeyboardLayoutMode": "pan",
       "package": "com.dongle44.mongle_front"
     },
     "web": {
