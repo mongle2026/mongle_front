@@ -29,15 +29,14 @@ LocaleConfig.locales['ko-custom'] = {
 
 LocaleConfig.defaultLocale = 'ko-custom';
 
-const monthNames = LocaleConfig.locales['ko-custom'].monthNames;
+// const monthNames = LocaleConfig.locales['ko-custom'].monthNames;
 
-const getTomorrowDateString = () => {
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
+// const getTomorrowDateString = () => {
+//   const tomorrow = new Date();
+//   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  return getLocalDateString(tomorrow);
-};
-
+//   return getLocalDateString(tomorrow);
+// };
 
 const SelectDateCalendar = ({
   selectedDate,
@@ -46,31 +45,32 @@ const SelectDateCalendar = ({
   setDateType,
   isCalendarOpen,
   setIsCalendarOpen,
+  setDeliveryAt,
 }) => {
-  const [visibleMonth, setVisibleMonth] = useState(
-    selectedDate.dateString.slice(0, 7)
-  );
+  // const [visibleMonth, setVisibleMonth] = useState(
+  //   selectedDate.dateString.slice(0, 7)
+  // );
 
   const todayDateString = getLocalDateString();
-  const minSelectableDate = getTomorrowDateString();
+  // const minSelectableDate = getTomorrowDateString();
 
-  const visibleYear = Number(visibleMonth.split('-')[0]);
-  const visibleMonthNumber = Number(visibleMonth.split('-')[1]);
+  // const visibleYear = Number(visibleMonth.split('-')[0]);
+  // const visibleMonthNumber = Number(visibleMonth.split('-')[1]);
 
-  const handleSelectDate = day => {
-    setSelectedDate(day);
-    setVisibleMonth(day.dateString.slice(0, 7));
-  };
+  // const handleSelectDate = day => {
+  //   setSelectedDate(day);
+  //   setVisibleMonth(day.dateString.slice(0, 7));
+  // };
 
-  const handlePressPrevMonth = () => {
-    const nextDate = new Date(visibleYear, visibleMonthNumber - 2, 1);
-    setVisibleMonth(getCalendarDate(nextDate).dateString.slice(0, 7));
-  };
+  // const handlePressPrevMonth = () => {
+  //   const nextDate = new Date(visibleYear, visibleMonthNumber - 2, 1);
+  //   setVisibleMonth(getCalendarDate(nextDate).dateString.slice(0, 7));
+  // };
 
-  const handlePressNextMonth = () => {
-    const nextDate = new Date(visibleYear, visibleMonthNumber, 1);
-    setVisibleMonth(getCalendarDate(nextDate).dateString.slice(0, 7));
-  };
+  // const handlePressNextMonth = () => {
+  //   const nextDate = new Date(visibleYear, visibleMonthNumber, 1);
+  //   setVisibleMonth(getCalendarDate(nextDate).dateString.slice(0, 7));
+  // };
 
 
   const handlePressDateButton = value => {
@@ -78,10 +78,12 @@ const SelectDateCalendar = ({
     setIsCalendarOpen(prev => !prev);
   };
 
-  // const handleSelectDate = day => {
-  //   setSelectedDate(day);
-  //   // setIsCalendarOpen(false);
-  // };
+  const handleSelectDate = day => {
+    if (day.dateString <= todayDateString) return;
+
+    setSelectedDate(day);
+    setDeliveryAt(`${day.dateString} 00:00:00`);
+  };
 
   return (
     <View style={styles.container}>
@@ -92,7 +94,7 @@ const SelectDateCalendar = ({
         onPress={() => handlePressDateButton('date')}
       />
 
-      {isCalendarOpen && (
+      {/* {isCalendarOpen && (
         <View style={styles.calendarContainer}>
           <View style={styles.customHeader}>
             <Pressable style={styles.monthButton}>
@@ -117,8 +119,6 @@ const SelectDateCalendar = ({
             current={`${visibleMonth}-01`}
             minDate={minSelectableDate}
             hideExtraDays={false}
-            hideArrows
-            renderHeader={() => null}
             onDayPress={handleSelectDate}
             markedDates={{
               [selectedDate.dateString]: {
@@ -157,6 +157,36 @@ const SelectDateCalendar = ({
             }}
           />
         </View>
+      )} */}
+
+      {isCalendarOpen && (
+        <View style={styles.calendarWrapper}>
+          <Calendar
+            minDate={todayDateString}
+            onDayPress={handleSelectDate}
+            markedDates={{
+              [selectedDate?.dateString]: {
+                selected: true,
+                selectedColor: colors.fgBrand,
+              },
+              [todayDateString]: {
+                disabled: true,
+                disableTouchEvent: true,
+                customStyles: {
+                  container: {
+                    backgroundColor: colors.bgLayerWeak,
+                    borderRadius: 20,
+                  },
+                },
+              },
+            }}
+            markingType="custom"
+            theme={{
+              arrowColor: colors.fgBrand,
+              
+            }}
+          />
+        </View>
       )}
     </View >
   )
@@ -174,79 +204,85 @@ const styles = StyleSheet.create({
     ...typo.labelSmall,
     color: colors.fgPlaceholder
   },
-
-  calendarContainer: {
+  calendarWrapper: {
     width: '100%',
-    alignSelf: 'stretch',
+    padding: padding.L,
     borderRadius: 5,
-    backgroundColor: '#FFFFFF',
-    overflow: 'hidden',
-  },
-  customHeader: {
-    paddingTop: 21,
-    paddingHorizontal: 32,
-    paddingBottom: 16,
-    alignItems: 'flex-start',
-    alignSelf: 'stretch',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 0,
+    backgroundColor: '#ffffff',
   },
 
-  monthText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: colors.fgLayerNeutral,
-  },
-  arrowGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  arrowButton: {
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  arrowText: {
-    fontSize: 28,
-    color: '#4A4A4A',
-    lineHeight: 30,
-  },
+  // calendarContainer: {
+  //   width: '100%',
+  //   alignSelf: 'stretch',
+  //   borderRadius: 5,
+  //   backgroundColor: '#FFFFFF',
+  //   overflow: 'hidden',
+  // },
+  // customHeader: {
+  //   paddingTop: 21,
+  //   paddingHorizontal: 32,
+  //   paddingBottom: 16,
+  //   alignItems: 'flex-start',
+  //   alignSelf: 'stretch',
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-between',
+  //   gap: 0,
+  // },
+
+  // monthText: {
+  //   fontSize: 15,
+  //   fontWeight: '600',
+  //   color: colors.fgLayerNeutral,
+  // },
+  // arrowGroup: {
+  //   flexDirection: 'row',
+  //   alignItems: 'center',
+  // },
+  // arrowButton: {
+  //   width: 32,
+  //   height: 32,
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  // },
+  // arrowText: {
+  //   fontSize: 28,
+  //   color: '#4A4A4A',
+  //   lineHeight: 30,
+  // },
 
 
-  calendar: {
-    paddingHorizontal: 21,
-    paddingBottom: 10,
-  },
-  
-  dayCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 100,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  // calendar: {
+  //   paddingHorizontal: 21,
+  //   paddingBottom: 10,
+  // },
 
-  todayCircle: {
-    backgroundColor: colors.bgLayerWeak,
-  },
+  // dayCircle: {
+  //   width: 36,
+  //   height: 36,
+  //   borderRadius: 100,
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  // },
 
-  selectedCircle: {
-    backgroundColor: '#64A8FF',
-  },
+  // todayCircle: {
+  //   backgroundColor: colors.bgLayerWeak,
+  // },
 
-  dayText: {
-    color: '#222222',
-  },
+  // selectedCircle: {
+  //   backgroundColor: '#64A8FF',
+  // },
 
-  disabledDayText: {
-    color: '#BFC2C7',
-  },
+  // dayText: {
+  //   color: '#222222',
+  // },
 
-  selectedDayText: {
-    color: '#FFFFFF',
-  },
+  // disabledDayText: {
+  //   color: '#BFC2C7',
+  // },
+
+  // selectedDayText: {
+  //   color: '#FFFFFF',
+  // },
 })
 
 export default SelectDateCalendar
