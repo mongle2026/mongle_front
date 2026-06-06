@@ -15,6 +15,7 @@ export default function SelectMusic({
     keyword,
     filteredMusicList,
     musicList,
+    popularMusicList,
     selectedMusicId,
     isNextEnabled,
     handleChangeKeyword,
@@ -47,7 +48,7 @@ export default function SelectMusic({
       <FlatList
         style={{ flex: 1 }}
         bounces={!!keyword.trim()}
-        data={musicList}
+        data={!keyword.trim() ? popularMusicList : musicList}
         keyExtractor={item => item.externalId}
         renderItem={({ item }) => (
           <ListRow
