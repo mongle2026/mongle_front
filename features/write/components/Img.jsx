@@ -13,6 +13,7 @@ export default function Img({
   onPressAdd,
   onPressDelete,
   style,
+  variant,
 }) {
   const images = recordForm.files.filter(file => file.fileType === 'IMAGE');
 
@@ -22,6 +23,18 @@ export default function Img({
     recordForm.removeFile(uri);
   };
 
+
+  if (variant === 'ImgOnly') {
+    return (
+      <View style={[styles.container, style]}>
+        <ImageBackground
+          source={imageSource}
+          resizeMode="cover"
+          style={styles.image}
+        />
+      </View>
+    );
+  }
 
   return (
     <ScrollView
