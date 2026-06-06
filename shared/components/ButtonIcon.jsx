@@ -5,17 +5,16 @@ import { padding, radius } from '../styles/token';
 
 const BUTTON_SIZE = {
   S: 28,
+  M: 40,
   L: 40,
+  XL: 40,
 };
 
 const ICON_SIZE = {
   S: 12,
-  L: 16,
-};
-
-const BUTTON_PADDING = {
-  S: padding.M,
-  L: padding.L,
+  M: 16,
+  L: 20,
+  XL: 32,
 };
 
 export default function ButtonIcon({
@@ -37,9 +36,8 @@ export default function ButtonIcon({
         {
           width: BUTTON_SIZE[size],
           height: BUTTON_SIZE[size],
-          padding: BUTTON_PADDING[size],
+          ...(size === 'S' && { padding: padding.M }),
         },
-        disabled && styles.disabled,
         style,
       ]}
     >
