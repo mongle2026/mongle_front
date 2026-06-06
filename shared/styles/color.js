@@ -69,5 +69,5 @@ export const colors = {
   fgCritical:        palette.red[50],
   fgPositive:        palette.green[50],
   fgDisabled:        palette.gray[80],
-  fgLayerWeak:       palette.gray[40],
+  fgNeutralWeak:     palette.gray[40],
 };
