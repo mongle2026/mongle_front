@@ -24,6 +24,7 @@ export default function ButtonIcon({
   variant = 'overlay',
   onPress,
   disabled = false,
+  iconColor,
   style,
 }) {
   return (
@@ -42,7 +43,7 @@ export default function ButtonIcon({
         style,
       ]}
     >
-      <Icon width={ICON_SIZE[size]} height={ICON_SIZE[size]} />
+      <Icon width={ICON_SIZE[size]} height={ICON_SIZE[size]} color={iconColor} />
     </Pressable>
   );
 }
