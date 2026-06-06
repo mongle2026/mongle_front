@@ -22,15 +22,16 @@ export default function App() {
   if (!fontsLoaded) return null;
 
   return (
-    <NavigationContainer theme={{ ...DarkTheme, colors: { ...DarkTheme.colors, background: colors.bgDefault } }}>
     <SafeAreaProvider>
-    <NavigationContainer>
+    <NavigationContainer theme={{ ...DarkTheme, colors: { ...DarkTheme.colors, background: colors.bgDefault } }}>
       <StatusBar style="light" />
 
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen
           name="LetterScreen"
           component={LetterScreen}
+        />
+        <Stack.Screen
           name="SelectRecipientScreen"
           component={SelectRecipientScreen}
         />
