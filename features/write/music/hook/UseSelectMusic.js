@@ -80,6 +80,7 @@ export default function UseSelectMusic(navigation) {
           signal: controller.signal,
         });
 
+        console.log('음악 검색 응답:', JSON.stringify(response.data));
         setMusicList(response.data);
       } catch (error) {
         if (error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {

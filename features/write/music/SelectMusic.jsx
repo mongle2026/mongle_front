@@ -24,7 +24,7 @@ export default function SelectMusic({
   } = UseSelectMusic(navigation);
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <TopNavigation
         title="음악 선택"
         buttonLabel="다음"
@@ -45,6 +45,8 @@ export default function SelectMusic({
       )}
 
       <FlatList
+        style={{ flex: 1 }}
+        bounces={!!keyword.trim()}
         data={musicList}
         keyExtractor={item => item.externalId}
         renderItem={({ item }) => (

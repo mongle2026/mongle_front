@@ -18,7 +18,7 @@ export default function SelectRecipient({ navigation }) {
   } = UseSelectRecipient();
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <TopNavigation
         title="수신인 선택"
         buttonLabel="다음"
@@ -35,6 +35,7 @@ export default function SelectRecipient({ navigation }) {
       />
 
       <FlatList
+        style={{ flex: 1 }}
         data={filteredRecipients}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (

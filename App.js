@@ -2,6 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import SelectRecipientScreen from './features/write/recipient/SelectRecipientScreen.jsx';
 import SelectMusic from './features/write/music/SelectMusic.jsx';
@@ -19,6 +20,7 @@ export default function App() {
   if (!fontsLoaded) return null;
 
   return (
+    <SafeAreaProvider>
     <NavigationContainer>
       <StatusBar style="light" />
 
@@ -37,5 +39,6 @@ export default function App() {
         />
       </Stack.Navigator>
     </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
