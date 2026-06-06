@@ -5,6 +5,7 @@ import { useFonts } from 'expo-font';
 
 import SelectRecipientScreen from './features/write/recipient/SelectRecipientScreen.jsx';
 import SelectMusic from './features/write/music/SelectMusic.jsx';
+import RecordScreen from './features/write/record/RecordScreen.jsx';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,6 +30,10 @@ export default function App() {
         <Stack.Screen
           name="SelectMusic"
           component={SelectMusic}
+        />
+        <Stack.Screen
+          name="Record"
+          component={RecordScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>
