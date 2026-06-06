@@ -17,7 +17,7 @@ import ColorItem from '../components/ColorItem';
 import StampItem from '../components/StampItem';
 
 import UseLetterCoverSelect, { TABS } from './hook/UseLetterCoverSelect';
-import { PATTERNS, STAMPS, TEMPLATES, resolvePatternColor } from './data/letterCoverData';
+import { PATTERNS, STAMPS, TEMPLATES, resolvePatternColor, useLetterCoverStore } from './data/letterCoverData';
 
 import { colors, shadow } from '../../../shared/styles/color';
 import { gap, padding, radius } from '../../../shared/styles/token';
@@ -51,6 +51,8 @@ export default function LetterCoverSelect({ navigation }) {
     handleSelectItem,
     isNextEnabled,
   } = UseLetterCoverSelect();
+
+  const { setEnvelope } = useLetterCoverStore();
 
   // 플립 애니메이션 — 0: 앞면, 1: 뒷면
   const flipProgress = useSharedValue(0);

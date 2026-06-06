@@ -1,3 +1,12 @@
+import { create } from 'zustand';
+
+export const useLetterCoverStore = create((set) => ({
+  patternId: 'p1',
+  colorId:   'p1_c1',
+  stampId:   's1',
+  setEnvelope: ({ patternId, colorId, stampId }) => set({ patternId, colorId, stampId }),
+}));
+
 export const PATTERNS = [
   {
     id: 'p1',
@@ -120,3 +129,4 @@ export function resolvePatternColor(patternColorId) {
   }
   return null;
 }
+

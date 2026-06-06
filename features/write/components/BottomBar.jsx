@@ -14,6 +14,15 @@ export default function BottomBar({
   disabledImage = false,
 }) {
   const CurrentImageIcon = disabledImage ? ImageDisabledIcon : ImageIcon;
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const show = Keyboard.addListener(showEvent, () => setKeyboardVisible(true));
+    const hide = Keyboard.addListener(hideEvent, () => setKeyboardVisible(false));
+    return () => { show.remove(); hide.remove(); };
+  }, []);
 
   const insets = useSafeAreaInsets();
   const [keyboardBottom, setKeyboardBottom] = useState(0);
@@ -74,7 +83,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    height: 40,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',

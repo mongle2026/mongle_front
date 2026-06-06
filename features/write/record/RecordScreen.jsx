@@ -4,6 +4,7 @@ import { useRecordFormStore } from '../record/store/useRecordFormStore.js';
 import RecordImage from '../record/components/RecordImage.jsx';
 import RecordAudio from '../record/components/RecordAudio.jsx';
 import TopNavigation from '../../../shared/components/TopNavigation.jsx';
+import XIcon from '../../../assets/icons/ic_x.svg';
 import Music from '../../../shared/components/Music';
 import RecordText from '../record/components/RecordText.jsx';
 import { padding, gap } from '../../../shared/styles/token';
@@ -97,6 +98,7 @@ const RecordScreen = ({ navigation }) => {
           onPressButton={handleCommit}
           onPressBack={() => navigation.goBack()}
           buttonDisabled={false}
+          backIcon={XIcon}
         />
         : <TopNavigation
           title='피드 작성'
@@ -104,6 +106,7 @@ const RecordScreen = ({ navigation }) => {
           onPressButton={handleCommit}
           onPressBack={() => navigation.goBack()}
           buttonDisabled={false}
+          backIcon={XIcon}
         />
       }
 
