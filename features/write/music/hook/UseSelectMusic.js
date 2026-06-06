@@ -4,46 +4,46 @@ import { useRecordFormStore } from '../../record/store/useRecordFormStore';
 
 const MOCK_MUSIC_LIST = [
   {
-    id: '1',
-    title: 'Warm On A Cold Night',
-    artist: 'Honne',
-    img: 'music',
+    externalId: '1',
+    musicTitle: 'Warm On A Cold Night',
+    musicArtist: 'Honne',
+    musicArtwork: null,
   },
   {
-    id: '2',
-    title: 'Day 1',
-    artist: 'Honne',
-    img: 'music',
+    externalId: '2',
+    musicTitle: 'Day 1',
+    musicArtist: 'Honne',
+    musicArtwork: null,
   },
   {
-    id: '3',
-    title: 'Location Unknown',
-    artist: 'Honne',
-    img: 'music',
+    externalId: '3',
+    musicTitle: 'Location Unknown',
+    musicArtist: 'Honne',
+    musicArtwork: null,
   },
   {
-    id: '4',
-    title: 'Someone That Loves You',
-    artist: 'Honne',
-    img: 'music',
+    externalId: '4',
+    musicTitle: 'Someone That Loves You',
+    musicArtist: 'Honne',
+    musicArtwork: null,
   },
   {
-    id: '5',
-    title: 'No Song Without You',
-    artist: 'Honne',
-    img: 'music',
+    externalId: '5',
+    musicTitle: 'No Song Without You',
+    musicArtist: 'Honne',
+    musicArtwork: null,
   },
   {
-    id: '6',
-    title: 'Free Love',
-    artist: 'Honne',
-    img: 'music',
+    externalId: '6',
+    musicTitle: 'Free Love',
+    musicArtist: 'Honne',
+    musicArtwork: null,
   },
   {
-    id: '7',
-    title: 'Me & You',
-    artist: 'Honne',
-    img: 'music',
+    externalId: '7',
+    musicTitle: 'Me & You',
+    musicArtist: 'Honne',
+    musicArtwork: null,
   },
 ];
 
@@ -80,6 +80,7 @@ export default function UseSelectMusic(navigation) {
           signal: controller.signal,
         });
 
+        console.log('음악 검색 응답:', JSON.stringify(response.data));
         setMusicList(response.data);
       } catch (error) {
         if (error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {
@@ -111,8 +112,8 @@ export default function UseSelectMusic(navigation) {
 
     return MOCK_MUSIC_LIST.filter(music => {
       return (
-        music.title.includes(trimmedKeyword) ||
-        music.artist.includes(trimmedKeyword)
+        music.musicTitle.includes(trimmedKeyword) ||
+        music.musicArtist.includes(trimmedKeyword)
       );
     });
   }, [keyword]);

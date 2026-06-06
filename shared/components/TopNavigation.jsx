@@ -5,6 +5,7 @@ import ButtonIcon from './ButtonIcon';
 import ButtonText from './ButtonText';
 
 import ChevronIcon from '../../assets/icons/ic_chevron.svg';
+import XIcon from '../../assets/icons/ic_x.svg';
 
 import { colors } from '../styles/color';
 import { padding } from '../styles/token';
@@ -18,6 +19,7 @@ export default function TopNavigation({
   showBackButton = true,
   showTextButton = true,
   buttonDisabled = false,
+  backIcon: BackIcon = ChevronIcon,
   style,
 }) {
   return (
@@ -28,7 +30,7 @@ export default function TopNavigation({
         <View style={styles.leftSide}>
           {showBackButton && (
             <ButtonIcon
-              Icon={ChevronIcon}
+              Icon={BackIcon}
               size="L"
               variant="none"
               onPress={onPressBack}
