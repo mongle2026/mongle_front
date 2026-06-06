@@ -1,8 +1,10 @@
 import { Image, Text, View, StyleSheet } from 'react-native';
 
+import PlayFillIcon from '../../assets/icons/ic_play_fill.svg';
 import { colors } from '../styles/color';
 import { padding, gap, radius } from '../styles/token';
 import { typo } from '../styles/typo';
+import ButtonIcon from './ButtonIcon';
 
 const DEFAULT_COVER_IMAGE = require('../../assets/write/cover_img.png');
 
@@ -10,6 +12,8 @@ export default function Music({
   title = '노래 제목',
   artist = '가수명',
   imageSource,
+  button = false,
+  onPressButton,
   style,
 }) {
   const currentImageSource = typeof imageSource === 'string' ? { uri: imageSource } : DEFAULT_COVER_IMAGE;
@@ -32,6 +36,16 @@ export default function Music({
             {artist}
           </Text>
         </View>
+
+        {button && (
+          <ButtonIcon
+            Icon={PlayFillIcon}
+            size="XL"
+            variant="none"
+            iconColor={colors.fgLayerNeutral}
+            onPress={onPressButton}
+          />
+        )}
       </View>
     </View>
   );
