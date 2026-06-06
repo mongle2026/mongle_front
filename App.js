@@ -4,7 +4,6 @@ import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import LetterScreen from './features/write/letter/LetterScreen';
 import { colors } from './shared/styles/color';
 import SelectRecipientScreen from './features/write/recipient/SelectRecipientScreen.jsx';
 import SelectMusic from './features/write/music/SelectMusic.jsx';
@@ -27,11 +26,7 @@ export default function App() {
       <StatusBar style="light" />
 
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen
-          name="LetterScreen"
-          component={LetterScreen}
-        />
-        <Stack.Screen
+<Stack.Screen
           name="SelectRecipientScreen"
           component={SelectRecipientScreen}
         />
