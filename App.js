@@ -37,7 +37,6 @@ const NAV_ITEMS = [
 
 function TestScreen() {
   const [activeTab, setActiveTab] = useState('추천');
-  const [isPlaying, setIsPlaying] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
@@ -56,13 +55,7 @@ function TestScreen() {
       />
 
       {/* MusicPlay */}
-      <MusicPlay
-        title="음악 선택"
-        artist="Honne"
-        isPlaying={isPlaying}
-        progress={0.4}
-        onPressPlay={() => setIsPlaying(p => !p)}
-      />
+      <MusicPlay title="음악 선택" artist="Honne" />
     </View>
   );
 }

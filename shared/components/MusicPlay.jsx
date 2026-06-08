@@ -1,12 +1,5 @@
-import { useRef, useEffect } from 'react';
-import {
-  Animated,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { useRef, useEffect, useState } from 'react';
+import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import WaveBack from '../../assets/shared/graphic_wave_back.svg';
 import WaveFront from '../../assets/shared/graphic_wave_front.svg';
@@ -18,8 +11,8 @@ import { typo } from '../styles/typo';
 
 const WAVE_WIDTH = 327;
 const WAVE_HEIGHT = 29;
-const BUTTON_SIZE = 40;
 const ICON_SIZE = 32;
+const DURATION = 30;
 
 const DEFAULT_COVER = require('../../assets/write/cover_img.png');
 
@@ -27,72 +20,93 @@ export default function MusicPlay({
   title = '음악 선택',
   artist = 'Honne',
   imageSource,
-  isPlaying = false,
-  progress = 0, // 0~1
   onPressPlay,
 }) {
-  const animatedProgress = useRef(new Animated.Value(progress)).current;
+  const [isPlaying, setIsPlaying] = useState(false);
+  const intervalRef = useRef(null);
+  const elapsedRef = useRef(0); // 멈춘 위치 기억
+  const progressAnim = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    Animated.timing(animatedProgress, {
-      toValue: progress,
-      duration: 200,
-      useNativeDriver: false,
-    }).start();
-  }, [progress]);
-
-  const waveWidth = animatedProgress.interpolate({
+  const waveWidth = progressAnim.interpolate({
     inputRange: [0, 1],
     outputRange: [0, WAVE_WIDTH],
   });
 
+  const startPlayback = () => {
+    setIsPlaying(true);
+
+    intervalRef.current = setInterval(() => {
+      elapsedRef.current += 1;
+      Animated.timing(progressAnim, {
+        toValue: elapsedRef.current / DURATION,
+        duration: 950,
+        useNativeDriver: false,
+      }).start();
+
+      if (elapsedRef.current >= DURATION) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+        elapsedRef.current = 0;
+        setIsPlaying(false);
+        setTimeout(() => {
+          Animated.timing(progressAnim, {
+            toValue: 0,
+            duration: 400,
+            useNativeDriver: false,
+          }).start();
+        }, 500);
+      }
+    }, 1000);
+  };
+
+  const stopPlayback = () => {
+    clearInterval(intervalRef.current);
+    intervalRef.current = null;
+    setIsPlaying(false);
+    // elapsedRef는 유지 → 재개 시 이어서 진행
+  };
+
+  const handlePress = () => {
+    onPressPlay?.();
+    if (isPlaying) {
+      stopPlayback();
+    } else {
+      startPlayback();
+    }
+  };
+
+  useEffect(() => {
+    return () => clearInterval(intervalRef.current);
+  }, []);
+
   const coverSource = imageSource
-    ? typeof imageSource === 'string'
-      ? { uri: imageSource }
-      : imageSource
+    ? typeof imageSource === 'string' ? { uri: imageSource } : imageSource
     : DEFAULT_COVER;
 
   return (
     <View style={styles.outer}>
       <View style={styles.card}>
-        {/* Music row */}
+        {/* 음악 정보 */}
         <View style={styles.row}>
           <Image source={coverSource} style={styles.cover} resizeMode="cover" />
-
           <View style={styles.texts}>
-            <Text style={styles.title} numberOfLines={1}>
-              {title}
-            </Text>
-            <Text style={styles.artist} numberOfLines={1}>
-              {artist}
-            </Text>
+            <Text style={styles.title} numberOfLines={1}>{title}</Text>
+            <Text style={styles.artist} numberOfLines={1}>{artist}</Text>
           </View>
-
-          <Pressable style={styles.playButton} onPress={onPressPlay}>
-            {isPlaying ? (
-              <PlayFillIcon
-                width={ICON_SIZE}
-                height={ICON_SIZE}
-                color={colors.fgLayerNeutral}
-              />
-            ) : (
-              <PauseFillIcon
-                width={ICON_SIZE}
-                height={ICON_SIZE}
-                color={colors.fgLayerNeutral}
-              />
-            )}
+          <Pressable style={styles.playButton} onPress={handlePress}>
+            {isPlaying
+              ? <PauseFillIcon width={ICON_SIZE} height={ICON_SIZE} color={colors.fgLayerNeutral} />
+              : <PlayFillIcon  width={ICON_SIZE} height={ICON_SIZE} color={colors.fgLayerNeutral} />
+            }
           </Pressable>
         </View>
 
-        {/* Waveform */}
+        {/* 파형 */}
         <View style={styles.waveContainer}>
-          <WaveBack
-            width={WAVE_WIDTH}
-            height={WAVE_HEIGHT}
-            style={StyleSheet.absoluteFill}
-          />
-          <Animated.View style={[styles.waveFrontClip, { width: waveWidth }]}>
+          {/* 회색 전체 파형 (배경) */}
+          <WaveBack width={WAVE_WIDTH} height={WAVE_HEIGHT} style={StyleSheet.absoluteFill} />
+          {/* 진행된 만큼 진한 파형 클리핑 */}
+          <Animated.View style={{ width: waveWidth, height: WAVE_HEIGHT, overflow: 'hidden' }}>
             <WaveFront width={WAVE_WIDTH} height={WAVE_HEIGHT} />
           </Animated.View>
         </View>
@@ -145,17 +159,12 @@ const styles = StyleSheet.create({
   playButton: {
     width: 40,
     height: 40,
-    borderRadius: BUTTON_SIZE / 2,
-    padding: padding.S,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
   waveContainer: {
     width: WAVE_WIDTH,
     height: WAVE_HEIGHT,
-  },
-  waveFrontClip: {
-    height: WAVE_HEIGHT,
-    overflow: 'hidden',
   },
 });
