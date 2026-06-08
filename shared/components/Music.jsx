@@ -1,4 +1,4 @@
-import { Image, Text, View, StyleSheet } from 'react-native';
+import { Image, Text, View, StyleSheet, Pressable } from 'react-native';
 
 import PlayFillIcon from '../../assets/icons/ic_play_fill.svg';
 import { colors } from '../styles/color';
@@ -14,6 +14,7 @@ export default function Music({
   imageSource,
   button = false,
   empty = false,
+  onPress,
   onPressButton,
   style,
 }) {
@@ -21,10 +22,8 @@ export default function Music({
 
   return (
     <View style={[styles.wrapper, style]}>
-      <View style={styles.container}>
-        {empty ? (
-          <View style={styles.coverEmpty} />
-        ) : (
+      <Pressable style={styles.container} onPress={onPress} disabled={!onPress}>
+        {!empty && (
           <Image
             source={currentImageSource}
             style={styles.cover}
@@ -53,7 +52,7 @@ export default function Music({
             onPress={onPressButton}
           />
         )}
-      </View>
+      </Pressable>
     </View>
   );
 }
@@ -66,7 +65,6 @@ const styles = StyleSheet.create({
   },
   container: {
     width: '100%',
-    minHeight: 72,
     flexDirection: 'row',
     alignItems: 'center',
     padding: padding.M,
@@ -83,7 +81,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: radius.XS,
-    backgroundColor: colors.fgNeutralWeak,
+    backgroundColor: colors.bgLayerWeak,
   },
   textContainer: {
     flex: 1,
