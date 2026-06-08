@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { View, Modal, Animated, PanResponder, Pressable, StyleSheet } from 'react-native';
 
 import { colors, shadow } from '../styles/color';
@@ -11,8 +11,11 @@ export default function BottomSheet({ children, visible = false, onClose, style 
   const slideAnim = useRef(new Animated.Value(SHEET_HEIGHT)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
+  const [modalVisible, setModalVisible] = useState(visible);
+
   useEffect(() => {
     if (visible) {
+      setModalVisible(true);
       Animated.parallel([
         Animated.timing(slideAnim, {
           toValue: 0,
@@ -26,8 +29,18 @@ export default function BottomSheet({ children, visible = false, onClose, style 
         }),
       ]).start();
     } else {
-      slideAnim.setValue(SHEET_HEIGHT);
-      opacityAnim.setValue(0);
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: SHEET_HEIGHT,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacityAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start(() => setModalVisible(false));
     }
   }, [visible]);
 
@@ -78,7 +91,7 @@ export default function BottomSheet({ children, visible = false, onClose, style 
 
   return (
     <Modal
-      visible={visible}
+      visible={modalVisible}
       transparent
       animationType="none"
       onRequestClose={handleClose}
