@@ -13,8 +13,11 @@ import Carousel from './shared/components/Carousel.jsx';
 import BottomNavigationItem from './shared/components/BottomNavigationItem.jsx';
 import BottomNavigation from './shared/components/BottomNavigation.jsx';
 import FAB from './shared/components/FAB.jsx';
+import MusicPlay from './shared/components/MusicPlay.jsx';
+import TopNavigationItem from './features/feed/components/TopNavigationItem.jsx';
 import IcHome from './assets/icons/ic_home.svg';
 import IcLetter from './assets/icons/ic_letter.svg';
+import { useState } from 'react';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,17 +35,25 @@ const NAV_ITEMS = [
 ];
 
 function TestScreen() {
-  return (
-    <View style={{ flex: 1, backgroundColor: colors.bgLayerWeak }}>
-      <View style={{ flex: 1, justifyContent: 'center', gap: 32, paddingHorizontal: 16 }}>
-        {/* Carousel: 1장(dots 없음, 스크롤 고정) */}
-        <Carousel images={ONE_IMAGE} />
+  const [activeTab, setActiveTab] = useState('추천');
+  const [isPlaying, setIsPlaying] = useState(false);
 
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.bgDefault, gap: 32, justifyContent: 'center', paddingHorizontal: 16 }}>
+      {/* TopNavigationItem */}
+      <View style={{ flexDirection: 'row', gap: 16 }}>
+        <TopNavigationItem label="추천" isActive={activeTab === '추천'} onPress={() => setActiveTab('추천')} />
+        <TopNavigationItem label="팔로잉" isActive={activeTab === '팔로잉'} onPress={() => setActiveTab('팔로잉')} />
       </View>
 
-      {/* FAB */}
-      <FAB />
-    
+      {/* MusicPlay */}
+      <MusicPlay
+        title="음악 선택"
+        artist="Honne"
+        isPlaying={isPlaying}
+        progress={0.4}
+        onPressPlay={() => setIsPlaying(p => !p)}
+      />
     </View>
   );
 }
