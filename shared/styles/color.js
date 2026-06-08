@@ -56,6 +56,7 @@ export const colors = {
   bgDefaultWeak:     palette.gray[90],
   bgSurface:         palette.gray[80],
   bgOverlay:         palette.grayOpacity[75],
+  bgOverlayWeak:     palette.grayOpacity[50],
   bgBrandSolid:      palette.mongle[50],
   bgCriticalSolid:   palette.red[50],
 

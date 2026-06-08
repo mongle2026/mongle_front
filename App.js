@@ -11,6 +11,7 @@ import SelectMusic from './features/write/music/SelectMusic.jsx';
 import RecordScreen from './features/write/record/RecordScreen.jsx';
 import Carousel from './shared/components/Carousel.jsx';
 import BottomNavigationItem from './shared/components/BottomNavigationItem.jsx';
+import BottomNavigation from './shared/components/BottomNavigation.jsx';
 import IcHome from './assets/icons/ic_home.svg';
 import IcLetter from './assets/icons/ic_letter.svg';
 
@@ -23,23 +24,23 @@ const TWO_IMAGES = [
 ];
 const PROFILE_SOURCE = require('./assets/write/profile_img.png');
 
+const NAV_ITEMS = [
+  { type: 'icon',    isActive: true,  Icon: IcHome },
+  { type: 'icon',    isActive: false, Icon: IcLetter },
+  { type: 'profile', isActive: false, profileSource: PROFILE_SOURCE },
+];
+
 function TestScreen() {
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bgLayerWeak, justifyContent: 'center', gap: 32, paddingHorizontal: 16 }}>
-      {/* Carousel: 1장(dots 없음, 스크롤 고정) */}
-      <Carousel images={ONE_IMAGE} />
+    <View style={{ flex: 1, backgroundColor: colors.bgLayerWeak }}>
+      <View style={{ flex: 1, justifyContent: 'center', gap: 32, paddingHorizontal: 16 }}>
+        {/* Carousel: 1장(dots 없음, 스크롤 고정) */}
+        <Carousel images={ONE_IMAGE} />
 
-      {/* BottomNavigationItem 4 variants */}
-      <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
-        {/* Icon + active */}
-        <BottomNavigationItem type="icon" isActive Icon={IcHome} />
-        {/* Icon + inactive */}
-        <BottomNavigationItem type="icon" isActive={false} Icon={IcHome} />
-        {/* Profile + active */}
-        <BottomNavigationItem type="profile" isActive profileSource={PROFILE_SOURCE} />
-        {/* Profile + inactive */}
-        <BottomNavigationItem type="profile" isActive={false} profileSource={PROFILE_SOURCE} />
       </View>
+
+      {/* BottomNavigation */}
+      <BottomNavigation items={NAV_ITEMS} />
     </View>
   );
 }

@@ -21,7 +21,7 @@ export default function BottomNavigationItem({
             <Icon
               width={ICON_SIZE}
               height={ICON_SIZE}
-              color={colors.fgNeutral}
+              color={isActive ? colors.fgNeutral : colors.fgLayerNeutralWeak}
             />
           )
         ) : (
