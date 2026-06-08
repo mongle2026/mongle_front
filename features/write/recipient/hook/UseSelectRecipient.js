@@ -102,14 +102,10 @@ export default function useSelectRecipient(onClose) {
   }, [keyword]);
 
   const selectedRecipient = useMemo(() => {
-    // return MOCK_RECIPIENTS.find(
-    //   recipient => recipient.id === selectedRecipientId
-    // );
-
-    return userList.find(
+    return filteredRecipients.find(
       recipient => recipient.id === selectedRecipientId
     );
-  }, [selectedRecipientId]);
+  }, [selectedRecipientId, filteredRecipients]);
 
   const isNextEnabled = Boolean(selectedRecipientId);
 
@@ -125,7 +121,11 @@ export default function useSelectRecipient(onClose) {
   };
 
   const handleSelectRecipient = recipientId => {
+    const recipient = filteredRecipients.find(r => r.id === recipientId);
+    if (!recipient) return;
     setSelectedRecipientId(recipientId);
+    setReceiver(recipient);
+    onClose?.();
   };
 
   const handlePressNext = () => {

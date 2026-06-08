@@ -17,7 +17,7 @@ export default function SelectMusic({ visible, onClose, searchPlaceholder = '기
 
   const {
     keyword,
-    musicList,
+    filteredMusicList,
     selectedMusicId,
     handleChangeKeyword,
     handleFocusSearch,
@@ -45,7 +45,7 @@ export default function SelectMusic({ visible, onClose, searchPlaceholder = '기
             <ListHeader title="Apple Music 인기곡 10곡" />
           )}
           <View style={styles.listContainer}>
-            {musicList.map(item => (
+            {filteredMusicList.map(item => (
               <ListRow
                 key={item.externalId}
                 title={item.musicTitle}

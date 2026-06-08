@@ -103,7 +103,11 @@ export default function UseSelectMusic(_, onClose) {
   };
 
   const handleSelectMusic = musicId => {
+    const selected = filteredMusicList.find(m => m.externalId === musicId);
+    if (!selected) return;
     setSelectedMusicId(musicId);
+    setMusic(selected);
+    onClose?.();
   };
 
   const handlePressNext = () => {
