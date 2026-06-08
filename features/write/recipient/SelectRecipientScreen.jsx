@@ -1,59 +1,89 @@
-import { View, FlatList, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { View, ScrollView, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
-import TopNavigation from '../../../shared/components/TopNavigation';
 import SearchField from '../../../shared/components/SearchField';
 import ListRow from '../components/ListRow';
+import BottomSheet from '../../../shared/components/BottomSheet';
+import { colors } from '../../../shared/styles/color';
+import { padding, radius } from '../../../shared/styles/token';
 
 import UseSelectRecipient from './hook/UseSelectRecipient';
 
-const styles = StyleSheet.create({
-  screen: { flex: 1 },
-});
+export default function SelectRecipient({ visible, onClose }) {
+  const [searchFieldHeight, setSearchFieldHeight] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
 
-export default function SelectRecipient({ navigation }) {
   const {
     keyword,
     filteredRecipients,
     selectedRecipientId,
-    isNextEnabled,
     handleChangeKeyword,
     handleFocusSearch,
     handleSelectRecipient,
-  } = UseSelectRecipient();
+  } = UseSelectRecipient(onClose);
 
   return (
-    <View style={{ flex: 1 }}>
-      <TopNavigation
-        title="수신인 선택"
-        buttonLabel="다음"
-        onPressBack={() => navigation.goBack()}
-        onPressButton={() => navigation.navigate('SelectMusic')}
-        buttonDisabled={!isNextEnabled}
-      />
+    <BottomSheet visible={visible} onClose={onClose}>
+      <View style={styles.container}>
+        <SearchField
+          value={keyword}
+          onChangeText={handleChangeKeyword}
+          onFocus={handleFocusSearch}
+          placeholder="편지를 받을 사람을 검색해 주세요."
+          onLayout={e => setSearchFieldHeight(e.nativeEvent.layout.height)}
+        />
 
-      <SearchField
-        value={keyword}
-        onChangeText={handleChangeKeyword}
-        onFocus={handleFocusSearch}
-        placeholder="편지를 받을 사람을 검색해 주세요."
-      />
+        <ScrollView
+          style={styles.list}
+          bounces={!!keyword.trim()}
+          onScroll={e => setScrolled(e.nativeEvent.contentOffset.y > 0)}
+          scrollEventThrottle={16}
+        >
+          <View style={styles.listContainer}>
+            {filteredRecipients.map(item => (
+              <ListRow
+                key={item.id}
+                title={item.username}
+                subtitle={item.nickname}
+                img={item.img}
+                imageSource={item.imageSource}
+                caption
+                selected={selectedRecipientId === item.id}
+                onPress={() => handleSelectRecipient(item.id)}
+              />
+            ))}
+          </View>
+        </ScrollView>
 
-      <FlatList
-        style={{ flex: 1 }}
-        data={filteredRecipients}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => (
-          <ListRow
-            title={item.username}
-            subtitle={item.nickname}
-            img={item.profile}
-            imageSource={item.imageSource}
-            caption
-            selected={selectedRecipientId === item.id}
-            onPress={() => handleSelectRecipient(item.id)}
+        {scrolled && (
+          <LinearGradient
+            colors={[colors.bgLayerDefault, colors.bgLayerDefault + '00']}
+            style={[styles.gradient, { top: searchFieldHeight }]}
+            pointerEvents="none"
           />
         )}
-      />
-    </View>
+      </View>
+    </BottomSheet>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  list: {
+    flex: 1,
+  },
+  listContainer: {
+    borderRadius: radius.XS,
+    overflow: 'hidden',
+  },
+  gradient: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    height: padding.XL,
+    zIndex: 1,
+  },
+});

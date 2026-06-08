@@ -74,6 +74,8 @@ export default function App() {
         <Stack.Screen
           name="Test"
           component={TestScreen}
+          name="Record"
+          component={RecordScreen}
         />
         <Stack.Screen
           name="SelectRecipientScreen"
@@ -82,10 +84,6 @@ export default function App() {
         <Stack.Screen
           name="SelectMusic"
           component={SelectMusic}
-        />
-        <Stack.Screen
-          name="Record"
-          component={RecordScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>
