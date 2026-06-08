@@ -12,6 +12,7 @@ import RecordScreen from './features/write/record/RecordScreen.jsx';
 import Carousel from './shared/components/Carousel.jsx';
 import BottomNavigationItem from './shared/components/BottomNavigationItem.jsx';
 import BottomNavigation from './shared/components/BottomNavigation.jsx';
+import FAB from './shared/components/FAB.jsx';
 import IcHome from './assets/icons/ic_home.svg';
 import IcLetter from './assets/icons/ic_letter.svg';
 
@@ -39,8 +40,9 @@ function TestScreen() {
 
       </View>
 
-      {/* BottomNavigation */}
-      <BottomNavigation items={NAV_ITEMS} />
+      {/* FAB */}
+      <FAB />
+    
     </View>
   );
 }

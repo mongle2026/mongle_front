@@ -14,12 +14,13 @@ export default function FAB({ onPress }) {
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
+    width: '44',
     height: 44,
     backgroundColor: colors.bgBrandSolid,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
+    borderRadius: 200,
     ...shadow.middleDown,
   },
 });
