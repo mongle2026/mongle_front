@@ -46,6 +46,13 @@ export const shadow = {
     shadowRadius: 15,
     elevation: 4, // Android
   },
+  middleUp: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 15,
+    elevation: 4, // Android
+  },
 };
 
 // ── colors: Color System의 시맨틱 토큰, palette 참조를 실제 값으로 resolve ──
@@ -55,6 +62,7 @@ export const colors = {
   bgLayerWeak:       palette.gray[10],
   bgDefaultWeak:     palette.gray[90],
   bgSurface:         palette.gray[80],
+  bgLayerSurface:    palette.gray[20],
   bgOverlay:         palette.grayOpacity[75],
   bgBrandSolid:      palette.mongle[50],
   bgCriticalSolid:   palette.red[50],

@@ -1,4 +1,4 @@
-import { Image, Text, View, StyleSheet } from 'react-native';
+import { Image, Text, View, StyleSheet, Pressable } from 'react-native';
 
 import PlayFillIcon from '../../assets/icons/ic_play_fill.svg';
 import { colors } from '../styles/color';
@@ -9,10 +9,12 @@ import ButtonIcon from './ButtonIcon';
 const DEFAULT_COVER_IMAGE = require('../../assets/write/cover_img.png');
 
 export default function Music({
-  title = '노래 제목',
+  title,
   artist = '가수명',
   imageSource,
   button = false,
+  empty = false,
+  onPress,
   onPressButton,
   style,
 }) {
@@ -20,24 +22,28 @@ export default function Music({
 
   return (
     <View style={[styles.wrapper, style]}>
-      <View style={styles.container}>
-        <Image
-          source={currentImageSource}
-          style={styles.cover}
-          resizeMode="cover"
-        />
+      <Pressable style={styles.container} onPress={onPress} disabled={!onPress}>
+        {!empty && (
+          <Image
+            source={currentImageSource}
+            style={styles.cover}
+            resizeMode="cover"
+          />
+        )}
 
         <View style={styles.textContainer}>
-          <Text style={styles.title} numberOfLines={1}>
-            {title}
+          <Text style={empty ? styles.titleEmpty : styles.title} numberOfLines={1}>
+            {title ?? (empty ? '음악 선택' : '노래 제목')}
           </Text>
 
-          <Text style={styles.artist} numberOfLines={1}>
-            {artist}
-          </Text>
+          {!empty && (
+            <Text style={styles.artist} numberOfLines={1}>
+              {artist}
+            </Text>
+          )}
         </View>
 
-        {button && (
+        {button && !empty && (
           <ButtonIcon
             Icon={PlayFillIcon}
             size="XL"
@@ -46,7 +52,7 @@ export default function Music({
             onPress={onPressButton}
           />
         )}
-      </View>
+      </Pressable>
     </View>
   );
 }
@@ -59,7 +65,6 @@ const styles = StyleSheet.create({
   },
   container: {
     width: '100%',
-    minHeight: 72,
     flexDirection: 'row',
     alignItems: 'center',
     padding: padding.M,
@@ -72,6 +77,12 @@ const styles = StyleSheet.create({
     height: 56,
     borderRadius: radius.XS,
   },
+  coverEmpty: {
+    width: 56,
+    height: 56,
+    borderRadius: radius.XS,
+    backgroundColor: colors.bgLayerWeak,
+  },
   textContainer: {
     flex: 1,
     alignItems: 'flex-start',
@@ -79,6 +90,12 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typo.titleXSmall,
+    color: colors.fgLayerNeutral,
+    alignSelf: 'stretch',
+    textAlign: 'left',
+  },
+  titleEmpty: {
+    ...typo.titleMedium,
     color: colors.fgLayerNeutral,
     alignSelf: 'stretch',
     textAlign: 'left',

@@ -1,67 +1,94 @@
-import { View, FlatList, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { View, ScrollView, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
-import TopNavigation from '../../../shared/components/TopNavigation';
 import SearchField from '../../../shared/components/SearchField';
 import ListHeader from '../../../shared/components/ListHeader';
 import ListRow from '../components/ListRow';
+import BottomSheet from '../../../shared/components/BottomSheet';
+import { colors } from '../../../shared/styles/color';
+import { padding, radius } from '../../../shared/styles/token';
 
 import UseSelectMusic from './hook/UseSelectMusic';
 
-export default function SelectMusic({
-  navigation,
-  searchPlaceholder = '기록할 음악을 검색해 주세요.',
-}) {
+export default function SelectMusic({ visible, onClose, searchPlaceholder = '기록할 음악을 검색해 주세요.' }) {
+  const [searchFieldHeight, setSearchFieldHeight] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
+
   const {
     keyword,
     filteredMusicList,
     musicList,
     popularMusicList,
     selectedMusicId,
-    isNextEnabled,
     handleChangeKeyword,
     handleFocusSearch,
     handleSelectMusic,
-    handlePressNext,
-  } = UseSelectMusic(navigation);
+  } = UseSelectMusic(null, onClose);
 
   return (
-    <View style={{ flex: 1 }}>
-      <TopNavigation
-        title="음악 선택"
-        buttonLabel="다음"
-        onPressBack={() => navigation.goBack()}
-        onPressButton={handlePressNext}
-        buttonDisabled={!isNextEnabled}
-      />
+    <BottomSheet visible={visible} onClose={onClose}>
+      <View style={styles.container}>
+        <SearchField
+          value={keyword}
+          onChangeText={handleChangeKeyword}
+          onFocus={handleFocusSearch}
+          placeholder={searchPlaceholder}
+          onLayout={e => setSearchFieldHeight(e.nativeEvent.layout.height)}
+        />
 
-      <SearchField
-        value={keyword}
-        onChangeText={handleChangeKeyword}
-        onFocus={handleFocusSearch}
-        placeholder={searchPlaceholder}
-      />
+        <ScrollView
+          style={styles.list}
+          bounces={!!keyword.trim()}
+          onScroll={e => setScrolled(e.nativeEvent.contentOffset.y > 0)}
+          scrollEventThrottle={16}
+        >
+          {!keyword.trim() && (
+            <ListHeader title="Apple Music 인기곡 10곡" />
+          )}
+          <View style={styles.listContainer}>
+            {filteredMusicList.map(item => (
+              <ListRow
+                key={item.externalId}
+                title={item.musicTitle}
+                subtitle={item.musicArtist}
+                imageSource={item.musicArtwork}
+                caption
+                selected={selectedMusicId === item.externalId}
+                onPress={() => handleSelectMusic(item.externalId)}
+              />
+            ))}
+          </View>
+        </ScrollView>
 
-      {!keyword.trim() && (
-        <ListHeader title="Apple Music 인기곡 10곡" />
-      )}
-
-      <FlatList
-        style={{ flex: 1 }}
-        bounces={!!keyword.trim()}
-        data={!keyword.trim() ? popularMusicList : musicList}
-        keyExtractor={item => item.externalId}
-        renderItem={({ item }) => (
-          <ListRow
-            title={item.musicTitle}
-            subtitle={item.musicArtist}
-            img={item.musicArtwork}
-            imageSource={item.musicArtwork}
-            caption
-            selected={selectedMusicId === item.externalId}
-            onPress={() => handleSelectMusic(item.externalId)}
+        {scrolled && (
+          <LinearGradient
+            colors={[colors.bgLayerDefault, colors.bgLayerDefault + '00']}
+            style={[styles.gradient, { top: searchFieldHeight }]}
+            pointerEvents="none"
           />
         )}
-      />
-    </View>
+      </View>
+    </BottomSheet>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  list: {
+    flex: 1,
+  },
+  listContainer: {
+    borderRadius: radius.XS,
+    overflow: 'hidden',
+  },
+  gradient: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    height: padding.XL,
+    zIndex: 1,
+  },
+});

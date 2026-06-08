@@ -17,6 +17,8 @@ import Img from '../components/Img.jsx';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePickImages } from './hook/usePickImages.js';
 import { createRecordFormData } from '../utils/createRecordFormData .js';
+import SelectRecipient from '../recipient/SelectRecipientScreen.jsx';
+import SelectMusic from '../music/SelectMusic.jsx';
 
 
 const API_BASE_URL = 'http://192.168.0.5:3000';
@@ -31,6 +33,8 @@ const RecordScreen = ({ navigation }) => {
 
   const insets = useSafeAreaInsets();
   const pickImages = usePickImages();
+  const [recipientOpen, setRecipientOpen] = React.useState(false);
+  const [musicOpen, setMusicOpen] = React.useState(false);
 
 
   const handleCommit = async () => {
@@ -91,6 +95,15 @@ const RecordScreen = ({ navigation }) => {
 
   return (
     <View style={{ flex: 1 }}>
+      <SelectRecipient
+        visible={recipientOpen}
+        onClose={() => setRecipientOpen(false)}
+      />
+      <SelectMusic
+        visible={musicOpen}
+        onClose={() => setMusicOpen(false)}
+        searchPlaceholder="함께 보낼 음악을 검색해 주세요."
+      />
       {recordType === "LETTER" ?
         <TopNavigation
           title='편지 작성'
@@ -127,17 +140,23 @@ const RecordScreen = ({ navigation }) => {
             style={styles.section}
             contentContainerStyle={styles.sectionContent}
           >
-            {recordType === "LETTER" &&
-              <Profile
-                name={recordForm.receiver.nickname}
-                imageSource={recordForm.receiver.image}
-              />
-            }
+            {recordType === "LETTER" && (
+              recordForm.receiver
+                ? <Profile
+                    name={recordForm.receiver.nickname}
+                    imageSource={recordForm.receiver.image}
+                    tailText="에게"
+                    onPress={() => setRecipientOpen(true)}
+                  />
+                : <Profile type="empty" onPress={() => setRecipientOpen(true)} />
+            )}
 
             <Music
-              title={recordForm.music?.musicTitle ?? ''}
-              artist={recordForm.music?.musicArtist ?? ''}
+              title={recordForm.music?.musicTitle}
+              artist={recordForm.music?.musicArtist}
               imageSource={recordForm.music?.musicArtwork}
+              empty={!recordForm.music}
+              onPress={() => setMusicOpen(true)}
             />
 
             <RecordText
