@@ -24,7 +24,7 @@ const BOTTOM_BAR_HEIGHT = 40;
 const RecordScreen = ({ navigation }) => {
   const recordForm = useRecordFormStore();
   // const recordType = useRecordFormStore(state => state.recordType);
-  const recordType = "FEED";
+  const recordType = "LETTER";
   // 나
   const userId = '1';
 
@@ -181,10 +181,11 @@ const RecordScreen = ({ navigation }) => {
             style={styles.section}
             contentContainerStyle={styles.sectionContent}
           >
-            {recordType === "LETTER" &&
+            {recordType === "LETTER" && recordForm.receiver &&
               <Profile
                 name={recordForm.receiver.nickname}
                 imageSource={recordForm.receiver.image}
+                tailText="에게"
               />
             }
 

@@ -3,53 +3,21 @@ import axios from 'axios';
 import { useRecordFormStore } from '../../record/store/useRecordFormStore';
 
 const MOCK_MUSIC_LIST = [
-  {
-    externalId: '1',
-    musicTitle: 'Warm On A Cold Night',
-    musicArtist: 'Honne',
-    musicArtwork: null,
-  },
-  {
-    externalId: '2',
-    musicTitle: 'Day 1',
-    musicArtist: 'Honne',
-    musicArtwork: null,
-  },
-  {
-    externalId: '3',
-    musicTitle: 'Location Unknown',
-    musicArtist: 'Honne',
-    musicArtwork: null,
-  },
-  {
-    externalId: '4',
-    musicTitle: 'Someone That Loves You',
-    musicArtist: 'Honne',
-    musicArtwork: null,
-  },
-  {
-    externalId: '5',
-    musicTitle: 'No Song Without You',
-    musicArtist: 'Honne',
-    musicArtwork: null,
-  },
-  {
-    externalId: '6',
-    musicTitle: 'Free Love',
-    musicArtist: 'Honne',
-    musicArtwork: null,
-  },
-  {
-    externalId: '7',
-    musicTitle: 'Me & You',
-    musicArtist: 'Honne',
-    musicArtwork: null,
-  },
+  { externalId: '1', musicTitle: 'Warm On A Cold Night', musicArtist: 'Honne', musicArtwork: null },
+  { externalId: '2', musicTitle: 'Day 1', musicArtist: 'Honne', musicArtwork: null },
+  { externalId: '3', musicTitle: 'Location Unknown', musicArtist: 'Honne', musicArtwork: null },
+  { externalId: '4', musicTitle: 'Someone That Loves You', musicArtist: 'Honne', musicArtwork: null },
+  { externalId: '5', musicTitle: 'No Song Without You', musicArtist: 'Honne', musicArtwork: null },
+  { externalId: '6', musicTitle: 'Free Love', musicArtist: 'Honne', musicArtwork: null },
+  { externalId: '7', musicTitle: 'Me & You', musicArtist: 'Honne', musicArtwork: null },
+  { externalId: '8', musicTitle: 'Crying Over You', musicArtist: 'Honne', musicArtwork: null },
+  { externalId: '9', musicTitle: 'By Your Side', musicArtist: 'Honne', musicArtwork: null },
+  { externalId: '10', musicTitle: 'Gone Are The Days', musicArtist: 'Honne', musicArtwork: null },
 ];
 
 const API_BASE_URL = 'http://192.168.0.3:3000';
 
-export default function UseSelectMusic(navigation) {
+export default function UseSelectMusic(_, onClose) {
   const [keyword, setKeyword] = useState('');
   const [selectedMusicId, setSelectedMusicId] = useState(null);
 
@@ -140,11 +108,8 @@ export default function UseSelectMusic(navigation) {
 
   const handlePressNext = () => {
     if (!selectedMusic) return;
-
     setMusic(selectedMusic);
-    // console.log('선택한 음악:', selectedMusic);
-
-    navigation.navigate('Record');
+    onClose?.();
   };
 
   return {

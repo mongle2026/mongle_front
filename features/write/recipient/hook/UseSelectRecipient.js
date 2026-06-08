@@ -31,7 +31,7 @@ const MOCK_RECIPIENTS = [
 
 const API_BASE_URL = 'http://192.168.0.3:3000';
 
-export default function useSelectRecipient(navigation) {
+export default function useSelectRecipient(onClose) {
   const [keyword, setKeyword] = useState('');
   const [selectedRecipientId, setSelectedRecipientId] = useState(null);
 
@@ -132,12 +132,9 @@ export default function useSelectRecipient(navigation) {
     if (!selectedRecipient) return;
 
     setReceiver(selectedRecipient);
-
-    // 메인화면에서 선택하는 버튼 없어서 하드코딩한거임 
     setRecordType("LETTER");
-    console.log('선택한 수신인:', selectedRecipient);
 
-    navigation.navigate('SelectMusic');
+    onClose?.();
   };
 
   return {

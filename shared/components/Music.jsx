@@ -9,10 +9,11 @@ import ButtonIcon from './ButtonIcon';
 const DEFAULT_COVER_IMAGE = require('../../assets/write/cover_img.png');
 
 export default function Music({
-  title = '노래 제목',
+  title,
   artist = '가수명',
   imageSource,
   button = false,
+  empty = false,
   onPressButton,
   style,
 }) {
@@ -21,23 +22,29 @@ export default function Music({
   return (
     <View style={[styles.wrapper, style]}>
       <View style={styles.container}>
-        <Image
-          source={currentImageSource}
-          style={styles.cover}
-          resizeMode="cover"
-        />
+        {empty ? (
+          <View style={styles.coverEmpty} />
+        ) : (
+          <Image
+            source={currentImageSource}
+            style={styles.cover}
+            resizeMode="cover"
+          />
+        )}
 
         <View style={styles.textContainer}>
-          <Text style={styles.title} numberOfLines={1}>
-            {title}
+          <Text style={empty ? styles.titleEmpty : styles.title} numberOfLines={1}>
+            {title ?? (empty ? '음악 선택' : '노래 제목')}
           </Text>
 
-          <Text style={styles.artist} numberOfLines={1}>
-            {artist}
-          </Text>
+          {!empty && (
+            <Text style={styles.artist} numberOfLines={1}>
+              {artist}
+            </Text>
+          )}
         </View>
 
-        {button && (
+        {button && !empty && (
           <ButtonIcon
             Icon={PlayFillIcon}
             size="XL"
@@ -72,6 +79,12 @@ const styles = StyleSheet.create({
     height: 56,
     borderRadius: radius.XS,
   },
+  coverEmpty: {
+    width: 56,
+    height: 56,
+    borderRadius: radius.XS,
+    backgroundColor: colors.fgNeutralWeak,
+  },
   textContainer: {
     flex: 1,
     alignItems: 'flex-start',
@@ -79,6 +92,12 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typo.titleXSmall,
+    color: colors.fgLayerNeutral,
+    alignSelf: 'stretch',
+    textAlign: 'left',
+  },
+  titleEmpty: {
+    ...typo.titleMedium,
     color: colors.fgLayerNeutral,
     alignSelf: 'stretch',
     textAlign: 'left',
