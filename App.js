@@ -26,17 +26,17 @@ export default function App() {
       <StatusBar style="light" />
 
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-<Stack.Screen
+        <Stack.Screen
+          name="Record"
+          component={RecordScreen}
+        />
+        <Stack.Screen
           name="SelectRecipientScreen"
           component={SelectRecipientScreen}
         />
         <Stack.Screen
           name="SelectMusic"
           component={SelectMusic}
-        />
-        <Stack.Screen
-          name="Record"
-          component={RecordScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>
