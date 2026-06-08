@@ -10,6 +10,7 @@ export default function SearchField({
   onFocus,
   placeholder = '검색어',
   editable = true,
+  iconColor = colors.fgLayerNeutralWeak,
   style,
 }) {
   const hasValue = value.length > 0;
@@ -17,7 +18,7 @@ export default function SearchField({
   return (
     <View style={[styles.wrapper, style]}>
       <View style={styles.container}>
-        <SearchIcon width={20} height={20} />
+        <SearchIcon width={20} height={20} color={iconColor} />
 
         <TextInput
           value={value}
