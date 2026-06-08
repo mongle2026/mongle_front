@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 import { colors } from './shared/styles/color';
 import SelectRecipientScreen from './features/write/recipient/SelectRecipientScreen.jsx';
@@ -42,21 +42,17 @@ function TestScreen() {
   const [isLiked, setIsLiked] = useState(false);
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bgDefault, gap: 32, justifyContent: 'center', paddingHorizontal: 16 }}>
+    <ScrollView style={{ flex: 1, backgroundColor: colors.bgLayerDefault }} contentContainerStyle={{ gap: 24, paddingBottom: 40 }}>
       {/* TopNavigation */}
       <TopNavigation activeTab={activeTab} onTabPress={setActiveTab} />
 
-      {/* BottomBar */}
-      <BottomBar
-        name="수신인 선택"
-        isFollowing={isFollowing} onPressFollow={() => setIsFollowing(f => !f)}
-        isBookmarked={isBookmarked} onPressBookmark={() => setIsBookmarked(b => !b)}
-        isLiked={isLiked} onPressLike={() => setIsLiked(l => !l)}
-      />
-
       {/* MusicPlay */}
-      <MusicPlay title="음악 선택" artist="Honne" />
-    </View>
+      <MusicPlay
+        title="음악 선택"
+        artist="Honne"
+        audioUri="https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/dc/bc/8a/dcbc8a3e-4ce1-c00d-cc02-eda2212053c7/mzaf_8347559338388601510.plus.aac.p.m4a"
+      />
+    </ScrollView>
   );
 }
 

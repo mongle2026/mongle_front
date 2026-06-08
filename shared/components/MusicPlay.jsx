@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Audio } from 'expo-av';
 
 import WaveBack from '../../assets/shared/graphic_wave_back.svg';
 import WaveFront from '../../assets/shared/graphic_wave_front.svg';
@@ -20,11 +21,13 @@ export default function MusicPlay({
   title = '음악 선택',
   artist = 'Honne',
   imageSource,
+  audioUri,
   onPressPlay,
 }) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const soundRef = useRef(null);
   const intervalRef = useRef(null);
-  const elapsedRef = useRef(0); // 멈춘 위치 기억
+  const elapsedRef = useRef(0);
   const progressAnim = useRef(new Animated.Value(0)).current;
 
   const waveWidth = progressAnim.interpolate({
@@ -32,9 +35,16 @@ export default function MusicPlay({
     outputRange: [0, WAVE_WIDTH],
   });
 
-  const startPlayback = () => {
-    setIsPlaying(true);
+  // 오디오 초기화
+  useEffect(() => {
+    Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
+    return () => {
+      clearInterval(intervalRef.current);
+      soundRef.current?.unloadAsync();
+    };
+  }, []);
 
+  const startWaveTimer = () => {
     intervalRef.current = setInterval(() => {
       elapsedRef.current += 1;
       Animated.timing(progressAnim, {
@@ -59,25 +69,50 @@ export default function MusicPlay({
     }, 1000);
   };
 
-  const stopPlayback = () => {
+  const stopWaveTimer = () => {
     clearInterval(intervalRef.current);
     intervalRef.current = null;
-    setIsPlaying(false);
-    // elapsedRef는 유지 → 재개 시 이어서 진행
   };
 
-  const handlePress = () => {
+  const handlePress = async () => {
     onPressPlay?.();
+
     if (isPlaying) {
-      stopPlayback();
+      // 일시정지
+      stopWaveTimer();
+      await soundRef.current?.pauseAsync();
+      setIsPlaying(false);
     } else {
-      startPlayback();
+      // 재생
+      if (audioUri) {
+        if (!soundRef.current) {
+          // 처음 재생 - 사운드 로드
+          const { sound } = await Audio.Sound.createAsync(
+            { uri: audioUri },
+            { shouldPlay: true, positionMillis: elapsedRef.current * 1000 }
+          );
+          soundRef.current = sound;
+          sound.setOnPlaybackStatusUpdate((status) => {
+            if (status.didJustFinish) {
+              stopWaveTimer();
+              elapsedRef.current = 0;
+              setIsPlaying(false);
+              Animated.timing(progressAnim, {
+                toValue: 0,
+                duration: 400,
+                useNativeDriver: false,
+              }).start();
+            }
+          });
+        } else {
+          // 이어서 재생
+          await soundRef.current.playFromPositionAsync(elapsedRef.current * 1000);
+        }
+      }
+      setIsPlaying(true);
+      startWaveTimer();
     }
   };
-
-  useEffect(() => {
-    return () => clearInterval(intervalRef.current);
-  }, []);
 
   const coverSource = imageSource
     ? typeof imageSource === 'string' ? { uri: imageSource } : imageSource
@@ -103,9 +138,7 @@ export default function MusicPlay({
 
         {/* 파형 */}
         <View style={styles.waveContainer}>
-          {/* 회색 전체 파형 (배경) */}
           <WaveBack width={WAVE_WIDTH} height={WAVE_HEIGHT} style={StyleSheet.absoluteFill} />
-          {/* 진행된 만큼 진한 파형 클리핑 */}
           <Animated.View style={{ width: waveWidth, height: WAVE_HEIGHT, overflow: 'hidden' }}>
             <WaveFront width={WAVE_WIDTH} height={WAVE_HEIGHT} />
           </Animated.View>
