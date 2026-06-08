@@ -14,7 +14,7 @@ import BottomNavigationItem from './shared/components/BottomNavigationItem.jsx';
 import BottomNavigation from './shared/components/BottomNavigation.jsx';
 import FAB from './shared/components/FAB.jsx';
 import MusicPlay from './shared/components/MusicPlay.jsx';
-import TopNavigationItem from './features/feed/components/TopNavigationItem.jsx';
+import TopNavigation from './features/feed/components/TopNavigation.jsx';
 import IcHome from './assets/icons/ic_home.svg';
 import IcLetter from './assets/icons/ic_letter.svg';
 import { useState } from 'react';
@@ -40,11 +40,8 @@ function TestScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bgDefault, gap: 32, justifyContent: 'center', paddingHorizontal: 16 }}>
-      {/* TopNavigationItem */}
-      <View style={{ flexDirection: 'row', gap: 16 }}>
-        <TopNavigationItem label="추천" isActive={activeTab === '추천'} onPress={() => setActiveTab('추천')} />
-        <TopNavigationItem label="팔로잉" isActive={activeTab === '팔로잉'} onPress={() => setActiveTab('팔로잉')} />
-      </View>
+      {/* TopNavigation */}
+      <TopNavigation activeTab={activeTab} onTabPress={setActiveTab} />
 
       {/* MusicPlay */}
       <MusicPlay
