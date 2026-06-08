@@ -62,6 +62,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: padding.M,
     paddingVertical: padding.S,
   },
+  withTail: { width: 155 },
+  withoutTail: { width: 127 },
   profileImage: {
     width: 34,
     height: 34,
