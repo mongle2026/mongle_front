@@ -16,7 +16,7 @@ export default function Profile({
   const currentImageSource = imageSource || DEFAULT_PROFILE_IMAGE;
 
   return (
-    <View style={[styles.container, style]}>
+    <View style={[styles.container, tailText ? styles.withTail : styles.withoutTail, style]}>
       <Image
         source={currentImageSource}
         style={styles.profileImage}
@@ -40,13 +40,14 @@ export default function Profile({
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: padding.M,
     paddingVertical: padding.S,
     gap: gap.M,
   },
+  withTail: { width: 155 },
+  withoutTail: { width: 127 },
   profileImage: {
     width: 34,
     height: 34,

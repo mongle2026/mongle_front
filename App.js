@@ -15,6 +15,7 @@ import BottomNavigation from './shared/components/BottomNavigation.jsx';
 import FAB from './shared/components/FAB.jsx';
 import MusicPlay from './shared/components/MusicPlay.jsx';
 import TopNavigation from './features/feed/components/TopNavigation.jsx';
+import BottomBar from './features/feed/components/BottomBar.jsx';
 import IcHome from './assets/icons/ic_home.svg';
 import IcLetter from './assets/icons/ic_letter.svg';
 import { useState } from 'react';
@@ -37,11 +38,22 @@ const NAV_ITEMS = [
 function TestScreen() {
   const [activeTab, setActiveTab] = useState('추천');
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bgDefault, gap: 32, justifyContent: 'center', paddingHorizontal: 16 }}>
       {/* TopNavigation */}
       <TopNavigation activeTab={activeTab} onTabPress={setActiveTab} />
+
+      {/* BottomBar */}
+      <BottomBar
+        name="수신인 선택"
+        isFollowing={isFollowing} onPressFollow={() => setIsFollowing(f => !f)}
+        isBookmarked={isBookmarked} onPressBookmark={() => setIsBookmarked(b => !b)}
+        isLiked={isLiked} onPressLike={() => setIsLiked(l => !l)}
+      />
 
       {/* MusicPlay */}
       <MusicPlay
