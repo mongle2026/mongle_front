@@ -107,19 +107,6 @@ export default function UseSelectMusic(_, onClose) {
     });
   }, [keyword]);
 
-  const selectedMusic = useMemo(() => {
-    // return MOCK_MUSIC_LIST.find(music => music.id === selectedMusicId);
-    const trimmedKeyword = keyword.trim();
-
-    if (trimmedKeyword) {
-      return musicList.find(music => music.externalId === selectedMusicId);
-    } else {
-      return popularMusicList.find(music => music.externalId === selectedMusicId);
-    }
-  }, [selectedMusicId]);
-
-  const isNextEnabled = Boolean(selectedMusicId);
-
   const handleChangeKeyword = text => {
     setKeyword(text);
     setSelectedMusicId(null);
@@ -130,16 +117,16 @@ export default function UseSelectMusic(_, onClose) {
   };
 
   const handleSelectMusic = musicId => {
-    const selected = filteredMusicList.find(m => m.externalId === musicId);
+    // const selected = filteredMusicList.find(m => m.externalId === musicId);
+    const trimmedKeyword = keyword.trim();
+
+    const selected = trimmedKeyword
+      ? musicList.find(music => music.externalId === musicId)
+      : popularMusicList.find(music => music.externalId === musicId);
+
     if (!selected) return;
     setSelectedMusicId(musicId);
     setMusic(selected);
-    onClose?.();
-  };
-
-  const handlePressNext = () => {
-    if (!selectedMusic) return;
-    setMusic(selectedMusic);
     onClose?.();
   };
 
@@ -149,10 +136,8 @@ export default function UseSelectMusic(_, onClose) {
     musicList,
     popularMusicList,
     selectedMusicId,
-    isNextEnabled,
     handleChangeKeyword,
     handleFocusSearch,
     handleSelectMusic,
-    handlePressNext,
   };
 }

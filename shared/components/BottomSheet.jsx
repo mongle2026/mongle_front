@@ -95,6 +95,7 @@ export default function BottomSheet({ children, visible = false, onClose, style 
       transparent
       animationType="none"
       onRequestClose={handleClose}
+      statusBarTranslucent
     >
       <Animated.View style={[styles.overlay, { opacity: opacityAnim }]}>
         <Pressable style={StyleSheet.absoluteFill} onPress={handleClose} />

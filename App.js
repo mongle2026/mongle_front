@@ -21,25 +21,23 @@ export default function App() {
   if (!fontsLoaded) return null;
 
   return (
-    <SafeAreaProvider>
-    <NavigationContainer theme={{ ...DarkTheme, colors: { ...DarkTheme.colors, background: colors.bgDefault } }}>
-      <StatusBar style="light" />
+      <NavigationContainer theme={{ ...DarkTheme, colors: { ...DarkTheme.colors, background: colors.bgDefault } }}>
+        <StatusBar style="light" />
 
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen
-          name="Record"
-          component={RecordScreen}
-        />
-        <Stack.Screen
-          name="SelectRecipientScreen"
-          component={SelectRecipientScreen}
-        />
-        <Stack.Screen
-          name="SelectMusic"
-          component={SelectMusic}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
-    </SafeAreaProvider>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen
+            name="Record"
+            component={RecordScreen}
+          />
+          <Stack.Screen
+            name="SelectRecipientScreen"
+            component={SelectRecipientScreen}
+          />
+          <Stack.Screen
+            name="SelectMusic"
+            component={SelectMusic}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
   );
 }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Alert, KeyboardAvoidingView, ScrollView, Text, TextInput, View, StyleSheet, Platform, Pressable, Image } from 'react-native'
 import { useRecordFormStore } from '../record/store/useRecordFormStore.js';
 import RecordImage from '../record/components/RecordImage.jsx';
@@ -19,9 +19,12 @@ import { usePickImages } from './hook/usePickImages.js';
 import { createRecordFormData } from '../utils/createRecordFormData .js';
 import SelectRecipient from '../recipient/SelectRecipientScreen.jsx';
 import SelectMusic from '../music/SelectMusic.jsx';
+import { useToast } from './hook/useToast.js';
+import Toast from '../../../shared/components/Toast.jsx';
+import { useFloatingBottomOffset } from './hook/useFloatingBottomOffset.js';
 
-
-const API_BASE_URL = 'http://192.168.0.5:3000';
+const API_BASE_URL = 'http://192.168.0.3:3000';
+// const API_BASE_URL = 'http://192.168.0.5:3000';
 const BOTTOM_BAR_HEIGHT = 40;
 
 const RecordScreen = ({ navigation }) => {
@@ -30,16 +33,25 @@ const RecordScreen = ({ navigation }) => {
   const recordType = "LETTER";
   // 나
   const userId = '1';
+  const [toastVisible, setToastVisible] = useState(false);
 
   const insets = useSafeAreaInsets();
   const pickImages = usePickImages();
   const [recipientOpen, setRecipientOpen] = React.useState(false);
   const [musicOpen, setMusicOpen] = React.useState(false);
 
+  const { toast, showToast } = useToast();
+  const bottomValue = useFloatingBottomOffset();
+
 
   const handleCommit = async () => {
     if (recordForm.music === null || recordForm.text === '') {
-      console.log('여기에 alert 팝업 뜨기');
+      // setToastVisible(true);
+      showToast({
+        message: '음악과 내용을 모두 입력해주세요.',
+        type: 'warning',
+        duration: 2000,
+      });
       return;
     };
 
@@ -124,55 +136,98 @@ const RecordScreen = ({ navigation }) => {
       }
 
       <View
-        style={[
-          styles.container,
-          {
-            paddingBottom: BOTTOM_BAR_HEIGHT + insets.bottom,
-          },
-        ]}
+        style={styles.container}
       >
-        <View style={styles.sectionWrapper}>
+        <ScrollView
+          style={styles.section}
+          contentContainerStyle={[
+            styles.sectionContent,
+            {
+              paddingBottom: bottomValue + BOTTOM_BAR_HEIGHT,
+            },
+          ]}
+        >
           <FoldCorner
             style={styles.fold}
           />
+          {recordType === "LETTER" && (
+            recordForm.receiver
+              ? <Profile
+                name={recordForm.receiver.nickname}
+                imageSource={recordForm.receiver.image}
+                tailText="에게"
+                onPress={() => setRecipientOpen(true)}
+              />
+              : <Profile type="empty" onPress={() => setRecipientOpen(true)} />
+          )}
 
-          <ScrollView
-            style={styles.section}
-            contentContainerStyle={styles.sectionContent}
-          >
-            {recordType === "LETTER" && (
-              recordForm.receiver
-                ? <Profile
-                    name={recordForm.receiver.nickname}
-                    imageSource={recordForm.receiver.image}
-                    tailText="에게"
-                    onPress={() => setRecipientOpen(true)}
-                  />
-                : <Profile type="empty" onPress={() => setRecipientOpen(true)} />
-            )}
+          <Music
+            title={recordForm.music?.musicTitle}
+            artist={recordForm.music?.musicArtist}
+            imageSource={recordForm.music?.musicArtwork}
+            empty={!recordForm.music}
+            onPress={() => setMusicOpen(true)}
+          />
 
-            <Music
-              title={recordForm.music?.musicTitle}
-              artist={recordForm.music?.musicArtist}
-              imageSource={recordForm.music?.musicArtwork}
-              empty={!recordForm.music}
-              onPress={() => setMusicOpen(true)}
-            />
+          <RecordText
+            recordForm={recordForm}
+            onShowToast={showToast}
+          />
 
-            <RecordText
-              recordForm={recordForm}
-            />
+          <RecordImage
+            recordForm={recordForm}
+            onPressAdd={pickImages}
+            onShowToast={showToast}
+          />
+        </ScrollView>
 
-            <RecordImage
-              recordForm={recordForm}
-              onPressAdd={pickImages}
-            />
-          </ScrollView>
-        </View>
+      </View>
+      <View
+        pointerEvents="box-none"
+        style={[
+          styles.toastWrapper,
+          {
+            bottom: bottomValue,
+          },
+        ]}
+      >
+        <Toast
+          visible={toast.visible}
+          message={toast.message}
+          type={toast.type}
+        // style={[
+        //   styles.toast,
+        //   {
+        //     bottom: bottomValue,
+        //   },
+        // ]}
+        />
+      </View>
+
+
+      <View
+        style={[
+          styles.bottomBarWrapper,
+          {
+            bottom: bottomValue,
+          },
+        ]}
+      >
         <BottomBar
           onPressImage={pickImages}
         />
       </View>
+
+
+      <View
+        pointerEvents="none"
+        style={[
+          styles.navigationBarCover,
+          {
+            height: insets.bottom,
+          },
+        ]}
+      />
     </View>
   )
 }
@@ -180,7 +235,7 @@ const RecordScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 16,
+    paddingVertical: padding.XL,
     paddingHorizontal: padding.M,
     backgroundColor: colors.bgDefault
   },
@@ -207,6 +262,41 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 10,
     elevation: 10,
+  },
+
+  toast: {
+    position: 'absolute',
+    left: padding.M,
+    right: padding.M,
+    zIndex: 999,
+    elevation: 999,
+  },
+
+  toastWrapper: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    zIndex: 999,
+    elevation: 999,
+    alignItems: 'center',
+  },
+
+  bottomBarWrapper: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    zIndex: 100,
+    elevation: 100,
+  },
+
+  navigationBarCover: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: colors.bgDefault,
+    zIndex: 50,
+    elevation: 50,
   },
 });
 

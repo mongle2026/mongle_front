@@ -30,6 +30,11 @@ const MOCK_RECIPIENTS = [
 ];
 
 const API_BASE_URL = 'http://192.168.0.3:3000';
+// const API_BASE_URL = 'http://172.19.77.207:3000';
+// const API_BASE_URL = 'http://172.19.19.169:3000';
+// const API_BASE_URL = 'http://192.168.0.5:3000';
+
+
 
 export default function useSelectRecipient(onClose) {
   const [keyword, setKeyword] = useState('');
@@ -121,7 +126,14 @@ export default function useSelectRecipient(onClose) {
   };
 
   const handleSelectRecipient = recipientId => {
-    const recipient = filteredRecipients.find(r => r.id === recipientId);
+    // const recipient = filteredRecipients.find(r => r.id === recipientId);
+    
+    const trimmedKeyword = keyword.trim();
+
+    const recipient = trimmedKeyword
+      ? userList.find(r => r.id === recipientId)
+      : filteredRecipients.find(r => r.id === recipientId);
+
     if (!recipient) return;
     setSelectedRecipientId(recipientId);
     setReceiver(recipient);
