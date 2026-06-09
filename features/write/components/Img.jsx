@@ -15,15 +15,6 @@ export default function Img({
   style,
   variant,
 }) {
-  const images = recordForm.files.filter(file => file.fileType === 'IMAGE');
-
-  const hasImage = Boolean(images);
-
-  const handleRemoveImage = uri => {
-    recordForm.removeFile(uri);
-  };
-
-
   if (variant === 'ImgOnly') {
     return (
       <View style={[styles.container, style]}>
@@ -35,6 +26,9 @@ export default function Img({
       </View>
     );
   }
+
+  const images = recordForm.files.filter(file => file.fileType === 'IMAGE');
+  const handleRemoveImage = uri => { recordForm.removeFile(uri); };
 
   return (
     <ScrollView
