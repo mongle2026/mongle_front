@@ -1,23 +1,35 @@
+// React
 import React from 'react'
-import { Alert, KeyboardAvoidingView, ScrollView, Text, TextInput, View, StyleSheet, Platform, Pressable, Image } from 'react-native'
+import { ScrollView, View, StyleSheet } from 'react-native'
+
+// 서드파티
+import axios from 'axios';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+// 스토어 / 훅
 import { useRecordFormStore } from '../record/store/useRecordFormStore.js';
+import { usePickImages } from './hook/usePickImages.js';
+
+// 공통 컴포넌트
+import TopNavigation from '../../../shared/components/TopNavigation.jsx';
+import Music from '../../../shared/components/Music';
+import Profile from '../../../shared/components/Profile.jsx';
+
+// 피처 컴포넌트
+import RecordText from '../record/components/RecordText.jsx';
 import RecordImage from '../record/components/RecordImage.jsx';
 import RecordAudio from '../record/components/RecordAudio.jsx';
-import TopNavigation from '../../../shared/components/TopNavigation.jsx';
-import XIcon from '../../../assets/icons/ic_x.svg';
-import Music from '../../../shared/components/Music';
-import RecordText from '../record/components/RecordText.jsx';
-import { padding, gap } from '../../../shared/styles/token';
-import { colors } from '../../../shared/styles/color';
-import FoldCorner from '../../../assets/write/graphic_paper.svg';
 import BottomBar from '../components/BottomBar.jsx';
-import axios from 'axios';
-import Profile from '../../../shared/components/Profile.jsx';
-import Img from '../components/Img.jsx';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { usePickImages } from './hook/usePickImages.js';
 import SelectRecipient from '../recipient/SelectRecipientScreen.jsx';
 import SelectMusic from '../music/SelectMusic.jsx';
+
+// 스타일
+import { padding } from '../../../shared/styles/token';
+import { colors } from '../../../shared/styles/color';
+
+// 에셋
+import XIcon from '../../../assets/icons/ic_x.svg';
+import FoldCorner from '../../../assets/write/graphic_paper.svg';
 
 
 const API_BASE_URL = 'http://192.168.0.5:3000';
