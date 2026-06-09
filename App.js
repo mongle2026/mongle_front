@@ -4,55 +4,76 @@ import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ScrollView, View } from 'react-native';
+import { useState } from 'react';
 
 import { colors } from './shared/styles/color';
 import SelectRecipientScreen from './features/write/recipient/SelectRecipientScreen.jsx';
 import SelectMusic from './features/write/music/SelectMusic.jsx';
 import RecordScreen from './features/write/record/RecordScreen.jsx';
-import Carousel from './shared/components/Carousel.jsx';
-import BottomNavigationItem from './shared/components/BottomNavigationItem.jsx';
-import BottomNavigation from './shared/components/BottomNavigation.jsx';
-import FAB from './shared/components/FAB.jsx';
-import MusicPlay from './shared/components/MusicPlay.jsx';
 import TopNavigation from './features/feed/components/TopNavigation.jsx';
-import BottomBar from './features/feed/components/BottomBar.jsx';
-import IcHome from './assets/icons/ic_home.svg';
-import IcLetter from './assets/icons/ic_letter.svg';
-import { useState } from 'react';
+import Post from './features/feed/components/Post.jsx';
+import Caption from './features/feed/components/Caption.jsx';
+import FAB from './shared/components/FAB.jsx';
 
 const Stack = createNativeStackNavigator();
 
-const ONE_IMAGE = [require('./assets/write/cover_img.png')];
-const TWO_IMAGES = [
+const PROFILE_SOURCE = require('./assets/write/profile_img.png');
+const POST_IMAGES = [
   require('./assets/write/cover_img.png'),
   require('./assets/write/profile_img.png'),
 ];
-const PROFILE_SOURCE = require('./assets/write/profile_img.png');
-
-const NAV_ITEMS = [
-  { type: 'icon',    isActive: true,  Icon: IcHome },
-  { type: 'icon',    isActive: false, Icon: IcLetter },
-  { type: 'profile', isActive: false, profileSource: PROFILE_SOURCE },
-];
+const CONTENT = '사실 \'읽기\'란 두려운 것이다. 사사키 아타루가 \'읽기\'와 혁관계를 논의하며 가장 먼저 강조했던 것이 읽기란 본래 영적 접속이기에 읽는 자들은 자연스럽게 자기방어를 하게하사실이 아니었던가. 카프카의 소설을 읽는다는 것은 카기기꿈을 자신의 꿈으로 겪어내야 하는 일이고, 머아카. 읽기란 언제나 자신을 낯선 세계로 이끄는 행위이며 그 낯섦 속에서 우리는 비로소 자기 자신을 발견하게 된다. 책 한 권을 덮는 순간 독자는 더 이상 이전의 자신이 아니다.';
 
 function TestScreen() {
   const [activeTab, setActiveTab] = useState('추천');
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
+  const [bookmarked1, setBookmarked1] = useState(false);
+  const [liked1, setLiked1] = useState(false);
+  const [bookmarked2, setBookmarked2] = useState(false);
+  const [liked2, setLiked2] = useState(false);
+  const [bookmarked3, setBookmarked3] = useState(false);
+  const [liked3, setLiked3] = useState(false);
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.bgLayerDefault }} contentContainerStyle={{ gap: 24, paddingBottom: 40 }}>
-      {/* TopNavigation */}
+    <View style={{ flex: 1 }}>
+    <ScrollView
+      style={{ flex: 1, backgroundColor: colors.bgLayerDefault }}
+      contentContainerStyle={{ paddingBottom: 40 }}
+    >
       <TopNavigation activeTab={activeTab} onTabPress={setActiveTab} />
 
-      {/* MusicPlay */}
-      <MusicPlay
-        title="음악 선택"
-        artist="Honne"
-        audioUri="https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/dc/bc/8a/dcbc8a3e-4ce1-c00d-cc02-eda2212053c7/mzaf_8347559338388601510.plus.aac.p.m4a"
+      {/* Caption */}
+      <Caption date="26.06.01 10:35" bookmarkCount={5} />
+
+      {/* textOnly */}
+      <Post
+        type="textOnly"
+        currentView
+        content={CONTENT}
+        name="코코"
+        date="26.05.03"
+        profileSource={PROFILE_SOURCE}
+        isBookmarked={bookmarked1} onPressBookmark={() => setBookmarked1(b => !b)}
+        isLiked={liked1} onPressLike={() => setLiked1(l => !l)}
       />
+
+      {/* img */}
+      <Post
+        type="img"
+        currentView
+        content={CONTENT}
+        images={POST_IMAGES}
+        name="코코"
+        date="26.05.03"
+        profileSource={PROFILE_SOURCE}
+        isBookmarked={bookmarked2} onPressBookmark={() => setBookmarked2(b => !b)}
+        isLiked={liked2} onPressLike={() => setLiked2(l => !l)}
+      />
+
     </ScrollView>
+    <View style={{ position: 'absolute', bottom: 32, left: 0, right: 0, alignItems: 'center' }}>
+      <FAB />
+    </View>
+    </View>
   );
 }
 
@@ -67,26 +88,15 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-    <NavigationContainer theme={{ ...DarkTheme, colors: { ...DarkTheme.colors, background: colors.bgDefault } }}>
-      <StatusBar style="light" />
-
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen
-          name="Test"
-          component={TestScreen}
-          name="Record"
-          component={RecordScreen}
-        />
-        <Stack.Screen
-          name="SelectRecipientScreen"
-          component={SelectRecipientScreen}
-        />
-        <Stack.Screen
-          name="SelectMusic"
-          component={SelectMusic}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+      <NavigationContainer theme={{ ...DarkTheme, colors: { ...DarkTheme.colors, background: colors.bgDefault } }}>
+        <StatusBar style="light" />
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Test" component={TestScreen} />
+          <Stack.Screen name="SelectRecipientScreen" component={SelectRecipientScreen} />
+          <Stack.Screen name="SelectMusic" component={SelectMusic} />
+          <Stack.Screen name="Record" component={RecordScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
     </SafeAreaProvider>
   );
 }
