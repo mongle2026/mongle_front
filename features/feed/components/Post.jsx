@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Img from '../../write/components/Img';
 
@@ -65,6 +65,8 @@ function TextLines({ content, maxLines, expanded, onExpand, fixed }) {
   );
 }
 
+const DOUBLE_TAP_DELAY = 300;
+
 export default function Post({
   type = 'textOnly',
   currentView = true,
@@ -81,9 +83,26 @@ export default function Post({
   onPressBookmark,
   onPressLike,
   onPressMusic,
+  onPressBody,
 }) {
   const [expanded, setExpanded] = useState(false);
+  const lastTapRef = useRef(0);
+  const tapTimerRef = useRef(null);
   const showImages = (type === 'img' || type === 'textShort') && images.length > 0;
+
+  const handleBodyPress = useCallback(() => {
+    const now = Date.now();
+    if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
+      clearTimeout(tapTimerRef.current);
+      lastTapRef.current = 0;
+      onPressLike?.();
+    } else {
+      lastTapRef.current = now;
+      tapTimerRef.current = setTimeout(() => {
+        onPressBody?.();
+      }, DOUBLE_TAP_DELAY);
+    }
+  }, [onPressLike, onPressBody]);
 
   return (
     <View style={[styles.container, !currentView && styles.dimmed]}>
@@ -100,7 +119,7 @@ export default function Post({
       </View>
 
       {/* 텍스트 + 이미지 */}
-      <View style={styles.body}>
+      <Pressable style={styles.body} onPress={handleBodyPress}>
         <TextLines
           content={content}
           maxLines={MAX_LINES[type]}
@@ -120,7 +139,7 @@ export default function Post({
             ))}
           </View>
         )}
-      </View>
+      </Pressable>
 
       {/* 푸터 */}
       <View style={styles.footer}>
@@ -156,9 +175,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgLayerDefault,
     paddingVertical: padding.M,
     gap: gap.M,
+    borderRadius: radius.M,
   },
   dimmed: {
-    opacity: 0,
+    opacity: 0.1,
   },
   musicWrapper: {
     alignSelf: 'stretch',

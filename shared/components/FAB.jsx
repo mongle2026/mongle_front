@@ -1,29 +1,42 @@
-import { useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useState, useRef } from 'react';
+import { Dimensions, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   Easing,
+  interpolateColor,
 } from 'react-native-reanimated';
 
 import { colors, shadow } from '../styles/color';
-import { gap, padding, radius } from '../styles/token';
+import { gap, padding } from '../styles/token';
 import { typo } from '../styles/typo';
 import IcPlus from '../../assets/icons/ic_plus.svg';
 import IcLetter from '../../assets/icons/ic_letter.svg';
 import IcPaper from '../../assets/icons/ic_paper.svg';
 
 const ICON_SIZE = 18;
-
+const FAB_SIZE = 44;
 const TIMING = { duration: 200, easing: Easing.out(Easing.cubic) };
 
 export default function FAB({ onPressFeed, onPressLetter }) {
   const [open, setOpen] = useState(false);
+  const [fabPos, setFabPos] = useState({ left: 0, bottom: 0 });
+  const [subWidth, setSubWidth] = useState(0);
+  const mainRef = useRef(null);
   const progress = useSharedValue(0);
 
   const toggle = () => {
     const next = !open;
+    if (next) {
+      mainRef.current?.measure((x, y, width, height, pageX, pageY) => {
+        const { height: screenHeight } = Dimensions.get('window');
+        setFabPos({
+          left: pageX + width / 2,
+          bottom: screenHeight - pageY - height,
+        });
+      });
+    }
     setOpen(next);
     progress.value = withTiming(next ? 1 : 0, TIMING);
   };
@@ -33,7 +46,7 @@ export default function FAB({ onPressFeed, onPressLetter }) {
     progress.value = withTiming(0, TIMING);
   };
 
-  const iconStyle = useAnimatedStyle(() => ({
+  const iconRotateStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${progress.value * 45}deg` }],
   }));
 
@@ -42,40 +55,48 @@ export default function FAB({ onPressFeed, onPressLetter }) {
     transform: [{ translateY: (1 - progress.value) * 16 }],
   }));
 
+  const mainBgStyle = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(
+      progress.value,
+      [0, 1],
+      [colors.bgBrandSolid, colors.bgLayerDefault],
+    ),
+  }));
+
   return (
     <>
       <Modal visible={open} transparent animationType="none" onRequestClose={close}>
         <Pressable style={styles.backdrop} onPress={close} />
-        <View style={styles.fabPosition} pointerEvents="box-none">
-          <Animated.View style={[styles.subButtons, subStyle]}>
-            <Pressable style={styles.sub} onPress={() => { close(); onPressFeed?.(); }}>
-              <IcPaper width={ICON_SIZE} height={ICON_SIZE} color={colors.fgNeutral} />
-              <Text style={styles.subText}>피드 게시</Text>
-            </Pressable>
-            <Pressable style={styles.sub} onPress={() => { close(); onPressLetter?.(); }}>
-              <IcLetter width={ICON_SIZE} height={ICON_SIZE} color={colors.fgNeutral} />
-              <Text style={styles.subText}>편지 전송</Text>
-            </Pressable>
-          </Animated.View>
-          <Pressable style={styles.close} onPress={close}>
-            <Animated.View style={iconStyle}>
-              <IcPlus
-                width={ICON_SIZE}
-                height={ICON_SIZE}
-                color={colors.fgLayerNeutralWeak}
-              />
-            </Animated.View>
+        {/* sub 버튼들: FAB 오른쪽 정렬, 바로 위에 위치 */}
+        <Animated.View
+          style={[styles.subButtons, subStyle, {
+            left: fabPos.left - subWidth / 2,
+            bottom: fabPos.bottom + FAB_SIZE + gap.M,
+          }]}
+          pointerEvents="box-none"
+          onLayout={e => setSubWidth(e.nativeEvent.layout.width)}
+        >
+          <Pressable style={styles.sub} onPress={() => { close(); onPressFeed?.(); }}>
+            <IcPaper width={ICON_SIZE} height={ICON_SIZE} color={colors.fgNeutral} />
+            <Text style={styles.subText}>피드 게시</Text>
           </Pressable>
-        </View>
+          <Pressable style={styles.sub} onPress={() => { close(); onPressLetter?.(); }}>
+            <IcLetter width={ICON_SIZE} height={ICON_SIZE} color={colors.fgNeutral} />
+            <Text style={styles.subText}>편지 전송</Text>
+          </Pressable>
+        </Animated.View>
       </Modal>
 
-      <Pressable style={styles.main} onPress={toggle}>
-        <Animated.View style={iconStyle}>
-          <IcPlus
-            width={ICON_SIZE}
-            height={ICON_SIZE}
-            color={colors.fgNeutral}
-          />
+      {/* 메인 버튼: open 시 흰 배경 + 회색 × */}
+      <Pressable ref={mainRef} onPress={toggle}>
+        <Animated.View style={[styles.main, mainBgStyle]}>
+          <Animated.View style={iconRotateStyle}>
+            <IcPlus
+              width={ICON_SIZE}
+              height={ICON_SIZE}
+              color={open ? colors.fgLayerNeutralWeak : colors.fgNeutral}
+            />
+          </Animated.View>
         </Animated.View>
       </Pressable>
     </>
@@ -83,37 +104,23 @@ export default function FAB({ onPressFeed, onPressLetter }) {
 }
 
 const styles = StyleSheet.create({
-  // default
   main: {
-    width: 44,
-    height: 44,
+    width: FAB_SIZE,
+    height: FAB_SIZE,
     borderRadius: 100,
-    backgroundColor: colors.bgBrandSolid,
     alignItems: 'center',
     justifyContent: 'center',
     ...shadow.middleDown,
   },
-
   backdrop: {
     ...StyleSheet.absoluteFillObject,
   },
-
-  fabPosition: {
-    position: 'absolute',
-    bottom: 32,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-  },
-
   subButtons: {
     position: 'absolute',
-    bottom: 44 + gap.M,
     alignItems: 'center',
     gap: gap.M,
   },
   sub: {
-    alignSelf: 'center',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -127,19 +134,5 @@ const styles = StyleSheet.create({
   subText: {
     ...typo.labelSmall,
     color: colors.fgNeutral,
-  },
-  bottomRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: gap.M,
-  },
-  close: {
-    width: 44,
-    height: 44,
-    borderRadius: 100,
-    backgroundColor: colors.bgLayerDefault,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...shadow.middleDown,
   },
 });

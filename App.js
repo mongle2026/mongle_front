@@ -14,6 +14,7 @@ import TopNavigation from './features/feed/components/TopNavigation.jsx';
 import Post from './features/feed/components/Post.jsx';
 import Caption from './features/feed/components/Caption.jsx';
 import FAB from './shared/components/FAB.jsx';
+import FeedHomeScreen from './features/feed/home/FeedHomeScreen.jsx';
 
 const Stack = createNativeStackNavigator();
 
@@ -91,6 +92,7 @@ export default function App() {
       <NavigationContainer theme={{ ...DarkTheme, colors: { ...DarkTheme.colors, background: colors.bgDefault } }}>
         <StatusBar style="light" />
         <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="FeedHome" component={FeedHomeScreen} />
           <Stack.Screen name="Test" component={TestScreen} />
           <Stack.Screen name="SelectRecipientScreen" component={SelectRecipientScreen} />
           <Stack.Screen name="SelectMusic" component={SelectMusic} />

@@ -14,7 +14,6 @@ export default function BottomNavigation({ items = [] }) {
 
 const styles = StyleSheet.create({
   container: {
-    width: '192',
     height: 44,
     flexDirection: 'row',
     alignItems: 'center',

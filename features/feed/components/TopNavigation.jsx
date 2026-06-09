@@ -1,10 +1,12 @@
 import { StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import TopNavigationItem from './TopNavigationItem';
 
-export default function TopNavigation({ activeTab, onTabPress }) {
+export default function TopNavigation({ activeTab, onTabPress, style }) {
+  const insets = useSafeAreaInsets();
   return (
-    <View style={styles.container}>
-      <View style={styles.safeArea} />
+    <View style={[styles.container, style]}>
+      <View style={{ height: insets.top }} />
       <View style={styles.nav}>
         <TopNavigationItem
           label="추천"
@@ -25,10 +27,6 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     alignItems: 'flex-start',
-  },
-  safeArea: {
-    height: 58,
-    alignSelf: 'stretch',
   },
   nav: {
     flexDirection: 'row',
