@@ -24,7 +24,7 @@ export default function Dialog({
       <View style={styles.buttonContainer}>
         <Button
           label={cancelLabel}
-          color="neutralWeak"
+          color="layerWeak"
           onPress={onCancel}
           style={styles.button}
         />

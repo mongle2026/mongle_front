@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
     ...typo.titleMedium,
-    color: colors.fgNeutral,
+    color: colors.fgLayerNeutral,
     textAlign: 'left',
   },
 });

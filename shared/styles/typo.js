@@ -15,6 +15,7 @@ const base = { includeFontPadding: false };
 export const typo = {
   titleXSmall:      { ...base, fontFamily: fontFamily.Medium,   fontSize: 14, lineHeight: 21,   letterSpacing: -0.14 },
   titleMedium:      { ...base, fontFamily: fontFamily.SemiBold, fontSize: 15, lineHeight: 22.5, letterSpacing: 0     },
+  titleXLarge:      { ...base, fontFamily: fontFamily.SemiBold, fontSize: 20, lineHeight: 30,   letterSpacing: -0.2  },
   titleLarge:       { ...base, fontFamily: fontFamily.SemiBold, fontSize: 18, lineHeight: 22.5, letterSpacing: 0     },
   labelMedium:      { ...base, fontFamily: fontFamily.SemiBold, fontSize: 16, lineHeight: 16,   letterSpacing: 0     },
   labelSmall:       { ...base, fontFamily: fontFamily.SemiBold, fontSize: 14, lineHeight: 14,   letterSpacing: 0     },

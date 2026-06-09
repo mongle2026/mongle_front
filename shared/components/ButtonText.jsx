@@ -1,4 +1,4 @@
-import { Pressable, Text, StyleSheet } from 'react-native';
+import { Pressable, Text, StyleSheet, Platform } from 'react-native';
 
 import { colors } from '../styles/color';
 import { spacing, padding } from '../styles/token';
@@ -29,19 +29,16 @@ export default function ButtonText({
 const styles = StyleSheet.create({
   button: {
     minWidth: 44,
-    minHeight: 40,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: spacing.M,
-    paddingVertical: 0,
+    paddingVertical: 12,
     flexShrink: 0,
   },
   text: {
     ...typo.labelMedium,
-    lineHeight: 20,
     textAlign: 'center',
-    textAlignVertical: 'center',
     includeFontPadding: false,
     flexShrink: 0,
   },

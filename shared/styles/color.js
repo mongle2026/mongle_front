@@ -20,12 +20,18 @@ export const palette = {
     40: '#bfc2c7', 50: '#a6adb6', 60: '#8f9399', 70: '#747a81',
     80: '#54595f', 90: '#34373a', 100: '#1a1b1c',
   },
+  pink: {
+    10: '#ffe0eb', 20: '#ffc2d7', 30: '#ff99bd', 40: '#ff85af',
+    50: '#fa6196', 60: '#f42f74', 70: '#e40c57', 80: '#b00742',
+    90: '#890634', 100: '#550722',
+  },
   yellow: {
     10: '#fff9e7', 20: '#ffebad', 30: '#ffe69b', 40: '#ffdd78',
     50: '#ffd158', 60: '#ffc038', 70: '#f9b137', 80: '#eea338',
     90: '#c17c1a', 100: '#965b13',
   },
   grayOpacity: {
+    50: '#1a1b1c80',
     75: '#1a1b1cbf',
   },
 };
@@ -40,6 +46,13 @@ export const shadow = {
     shadowRadius: 15,
     elevation: 4, // Android
   },
+  middleUp: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 15,
+    elevation: 4, // Android
+  },
 };
 
 // ── colors: Color System의 시맨틱 토큰, palette 참조를 실제 값으로 resolve ──
@@ -49,7 +62,9 @@ export const colors = {
   bgLayerWeak:       palette.gray[10],
   bgDefaultWeak:     palette.gray[90],
   bgSurface:         palette.gray[80],
+  bgLayerSurface:    palette.gray[20],
   bgOverlay:         palette.grayOpacity[75],
+  bgOverlayWeak:     palette.grayOpacity[50],
   bgBrandSolid:      palette.mongle[50],
   bgCriticalSolid:   palette.red[50],
 
@@ -63,4 +78,5 @@ export const colors = {
   fgCritical:        palette.red[50],
   fgPositive:        palette.green[50],
   fgDisabled:        palette.gray[80],
+  fgNeutralWeak:     palette.gray[40],
 };

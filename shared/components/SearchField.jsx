@@ -10,14 +10,16 @@ export default function SearchField({
   onFocus,
   placeholder = '검색어',
   editable = true,
+  onLayout,
   style,
 }) {
   const hasValue = value.length > 0;
+  const resolvedIconColor = hasValue ? colors.fgLayerNeutral : colors.fgPlaceholder;
 
   return (
-    <View style={[styles.wrapper, style]}>
+    <View style={[styles.wrapper, style]} onLayout={onLayout}>
       <View style={styles.container}>
-        <SearchIcon width={20} height={20} />
+        <SearchIcon width={20} height={20} color={resolvedIconColor} />
 
         <TextInput
           value={value}
@@ -40,34 +42,31 @@ export default function SearchField({
 const styles = StyleSheet.create({
   wrapper: {
     width: '100%',
-    padding: padding.XL,
-    alignItems: 'flex-start',
+    paddingTop: padding.XL,
+    paddingBottom: padding.M,
+    paddingHorizontal: padding.XL,
+    backgroundColor: colors.bgLayerDefault,
   },
   container: {
     width: '100%',
-    height: 39,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: padding.L,
-    paddingVertical: 0,
+    paddingHorizontal: padding.XL,
+    paddingVertical: padding.L,
     gap: gap.M,
     borderRadius: radius.XS,
-    backgroundColor: colors.bgLayerDefault,
+    backgroundColor: colors.bgLayerWeak,
   },
   input: {
     flex: 1,
-    height: 39,
     padding: 0,
     margin: 0,
-
     fontFamily: 'Pretendard-Regular',
     fontSize: 15,
     letterSpacing: -0.15,
-
     color: colors.fgLayerNeutral,
     includeFontPadding: false,
     textAlignVertical: 'center',
-
     paddingTop: Platform.OS === 'ios' ? 1 : 0,
   },
   inputEmpty: {

@@ -5,10 +5,22 @@ import ButtonIcon from './ButtonIcon';
 import ButtonText from './ButtonText';
 
 import ChevronIcon from '../../assets/icons/ic_chevron.svg';
+import XIcon from '../../assets/icons/ic_x.svg';
 
 import { colors } from '../styles/color';
 import { padding } from '../styles/token';
 import { typo } from '../styles/typo';
+
+// theme='light' 를 명시할 때만 light 배경/텍스트 색상 적용, 기본은 dark
+const CONTAINER_THEME = {
+  dark: { backgroundColor: colors.bgDefault },
+  light: { backgroundColor: colors.bgLayerDefault },
+};
+
+const TITLE_THEME = {
+  dark: { color: colors.fgNeutral },
+  light: { color: colors.fgLayerNeutral },
+};
 
 export default function TopNavigation({
   title = 'Title',
@@ -18,17 +30,19 @@ export default function TopNavigation({
   showBackButton = true,
   showTextButton = true,
   buttonDisabled = false,
+  backIcon: BackIcon = ChevronIcon,
+  theme = 'dark',
   style,
 }) {
   return (
-    <View style={[styles.container, style]}>
+    <View style={[styles.container, CONTAINER_THEME[theme], style]}>
       <SafeArea />
 
       <View style={styles.navigation}>
         <View style={styles.leftSide}>
           {showBackButton && (
             <ButtonIcon
-              Icon={ChevronIcon}
+              Icon={BackIcon}
               size="L"
               variant="none"
               onPress={onPressBack}
@@ -36,7 +50,7 @@ export default function TopNavigation({
           )}
         </View>
 
-        <Text style={styles.title} numberOfLines={1}>
+        <Text style={[styles.title, TITLE_THEME[theme]]} numberOfLines={1}>
           {title}
         </Text>
 
@@ -60,7 +74,6 @@ const SIDE_MIN_WIDTH = 64;
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    backgroundColor: colors.bgDefault,
     alignItems: 'flex-start',
   },
   navigation: {
@@ -87,7 +100,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexShrink: 1,
     ...typo.labelMedium,
-    color: colors.fgNeutral,
     textAlign: 'center',
   },
 });
