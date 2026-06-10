@@ -2,16 +2,14 @@ import { create } from 'zustand';
 
 const initialState = {
   recordType: null, // 'FEED' | 'LETTER'
-
   receiver: null,
-
   music: null,
-
   text: '',
   files: [],
-
   visibility: 'PUBLIC',
-
+  pattern: null,
+  color: null,
+  stamp: null,
   deliveryAt: null,
 };
 
@@ -57,6 +55,21 @@ export const useRecordFormStore = create((set) => ({
   setVisibility: (visibility) =>
     set({
       visibility,
+    }),
+
+  setPattern: (pattern) =>
+    set({
+      pattern,
+    }),
+
+  setColor: (color) =>
+    set({
+      color,
+    }),
+
+  setStamp: (stamp) =>
+    set({
+      stamp,
     }),
 
   setDeliveryAt: (deliveryAt) =>

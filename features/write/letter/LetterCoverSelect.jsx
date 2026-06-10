@@ -7,6 +7,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import axios from 'axios';
 
 import TopNavigation from '../../../shared/components/TopNavigation';
 import TabBar from '../../../shared/components/TabBar';
@@ -23,6 +24,8 @@ import { colors, shadow } from '../../../shared/styles/color';
 import { gap, padding, radius } from '../../../shared/styles/token';
 import { useRecordFormStore } from '../record/store/useRecordFormStore';
 import { createRecordFormData } from '../utils/createRecordFormData ';
+
+const API_BASE_URL = 'http://192.168.0.3:3000';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -53,6 +56,7 @@ export default function LetterCoverSelect({ navigation }) {
   } = UseLetterCoverSelect();
 
   const { setEnvelope } = useLetterCoverStore();
+  const { patternId, colorId, stampId } = useLetterCoverStore();
 
   // 플립 애니메이션 — 0: 앞면, 1: 뒷면
   const flipProgress = useSharedValue(0);
@@ -154,22 +158,74 @@ export default function LetterCoverSelect({ navigation }) {
     }
   };
 
+  const recordForm = useRecordFormStore();
   const receiver = useRecordFormStore(state => state.receiver.id);
   // 임시 하드코딩
   const userId = '1';
+  const recordType = "LETTER";
 
   const handleCommit = async () => {
-    if (userId === receiver) {
-      navigation.navigate('SelectDate');
+    try {
+      console.log('handleCommit 실행됨');
+      console.log('userId:', userId);
+      console.log('receiver:', receiver);
+      console.log('recordForm:', recordForm);
+      console.log('recordType:', recordType);
+      console.log('letterCover:', { patternId, colorId, stampId });
 
-    } else {
+      if (userId === receiver) {
+        console.log('나에게 보내기 - SelectDate 이동');
+        navigation.navigate('SelectDate');
+        return;
+      }
+
       const formData = createRecordFormData({
         userId,
         recordForm,
-        recordType
+        recordType,
+        letterCover: {
+          patternId,
+          colorId,
+          stampId,
+        },
       });
+
+      console.log('저장되는 값', formData);
+
+      const response = await axios.post(
+        `${API_BASE_URL}/letter`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          transformRequest: data => data,
+        }
+      );
+
+      console.log('요청 성공:', response.data);
+
+      // recordForm.resetForm();
+
+      // navigation.reset({
+      //   index: 0,
+      //   routes: [{ name: 'Main' }],
+      // });
+
+    } catch (error) {
+      console.log('handleCommit 전체 에러:', error);
+
+      if (error.response) {
+        console.log('요청 실패 상태:', error.response.status);
+        console.log('요청 실패 데이터:', error.response.data);
+        console.log('요청 실패 헤더:', error.response.headers);
+      } else if (error.request) {
+        console.log('응답 없음:', error.request);
+      } else {
+        console.log('요청 설정 또는 프론트 코드 오류:', error.message);
+      }
     }
-  }
+  };
 
   return (
     <View style={styles.screen}>

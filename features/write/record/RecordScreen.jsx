@@ -35,8 +35,8 @@ const RecordScreen = ({ navigation }) => {
   const userId = '1';
 
   const pickImages = usePickImages();
-  const [recipientOpen, setRecipientOpen] = React.useState(false);
-  const [musicOpen, setMusicOpen] = React.useState(false);
+  const [recipientOpen, setRecipientOpen] = useState(false);
+  const [musicOpen, setMusicOpen] = useState(false);
 
   const { toast, showToast } = useToast();
   const bottomValue = useFloatingBottomOffset();

@@ -2,6 +2,7 @@ export const createRecordFormData = ({
   userId,
   recordForm,
   recordType,
+  letterCover,
 }) => {
   const formData = new FormData();
 
@@ -29,10 +30,12 @@ export const createRecordFormData = ({
     formData.append('visibility', "PUBLIC");
   } else if (recordType === "LETTER") {
     // 받는 사람 
-    formData.append('receiver', recordForm.receiver.id);
+    formData.append('receiverId', String(recordForm.receiver.id));
 
-    // 봉투 그것들 값 다 받기
-
+    // 편지 값 (useLetterCoverStore에서 저장된것 사용)
+    formData.append('pattern', letterCover.patternId);
+    formData.append('color', letterCover.colorId);
+    formData.append('stamp', letterCover.stampId);
     if (userId === recordForm.receiver.id) {
       // 도착 날짜
       formData.append('deliveryAt', recordForm.deliveryAt);
