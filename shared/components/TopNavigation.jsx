@@ -32,6 +32,7 @@ export default function TopNavigation({
   buttonDisabled = false,
   backIcon: BackIcon = ChevronIcon,
   theme = 'dark',
+  type = 'brand',
   style,
 }) {
   return (
@@ -58,7 +59,7 @@ export default function TopNavigation({
           {showTextButton && (
             <ButtonText
               label={buttonLabel}
-              type="brand"
+              type={type}
               disabled={buttonDisabled}
               onPress={onPressButton}
             />

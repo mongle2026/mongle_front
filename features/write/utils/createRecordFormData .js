@@ -1,11 +1,8 @@
 export const createRecordFormData = ({
   userId,
   recordForm,
-  // recordType,
+  recordType,
 }) => {
-  // const recordType = useRecordFormStore(state => state.recordType);
-  const recordType = "LETTER";
-
   const formData = new FormData();
 
   formData.append('userId', userId);

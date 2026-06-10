@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Alert, KeyboardAvoidingView, ScrollView, Text, TextInput, View, StyleSheet, Platform, Pressable, Image } from 'react-native'
 import { useRecordFormStore } from '../record/store/useRecordFormStore.js';
 import RecordImage from '../record/components/RecordImage.jsx';
@@ -33,22 +33,52 @@ const RecordScreen = ({ navigation }) => {
   const recordType = "LETTER";
   // 나
   const userId = '1';
-  const [toastVisible, setToastVisible] = useState(false);
 
-  const insets = useSafeAreaInsets();
   const pickImages = usePickImages();
   const [recipientOpen, setRecipientOpen] = React.useState(false);
   const [musicOpen, setMusicOpen] = React.useState(false);
 
   const { toast, showToast } = useToast();
   const bottomValue = useFloatingBottomOffset();
+  const insets = useSafeAreaInsets();
 
+  const [disabled, setDisabled] = useState('disable');
+
+  useEffect(() => {
+    if (recordType === 'LETTER') {
+      if (recordForm.receiver !== null && recordForm.music !== null) {
+        setDisabled('brand');
+      }
+    } else {
+      if (recordForm.music !== null) {
+        setDisabled('brand');
+      }
+    }
+
+  }, [recordForm.receiver, recordForm.music]);
 
   const handleCommit = async () => {
-    if (recordForm.music === null || recordForm.text === '') {
-      // setToastVisible(true);
+    if (recordType === 'LETTER' && recordForm.receiver === null) {
       showToast({
-        message: '음악과 내용을 모두 입력해주세요.',
+        message: '수신인을 지정해 주세요.',
+        type: 'warning',
+        duration: 2000,
+      });
+      return;
+    }
+
+    if (recordForm.music === null) {
+      showToast({
+        message: '음악을 선택해 주세요.',
+        type: 'warning',
+        duration: 2000,
+      });
+      return;
+    }
+
+    if (recordForm.text === '' && recordForm.files.length === 0) {
+      showToast({
+        message: '메시지를 작성하거나 사진을 첨부해 주세요.',
         type: 'warning',
         duration: 2000,
       });
@@ -75,7 +105,7 @@ const RecordScreen = ({ navigation }) => {
           }
         );
 
-        // console.log('요청 성공:', response.data);
+        console.log('요청 성공:', response.data);
       } catch (error) {
         console.log('요청 실패 전체 error:', error);
 
@@ -123,6 +153,7 @@ const RecordScreen = ({ navigation }) => {
           onPressButton={handleCommit}
           onPressBack={() => navigation.goBack()}
           buttonDisabled={false}
+          type={disabled}
           backIcon={XIcon}
         />
         : <TopNavigation
@@ -131,6 +162,7 @@ const RecordScreen = ({ navigation }) => {
           onPressButton={handleCommit}
           onPressBack={() => navigation.goBack()}
           buttonDisabled={false}
+          type={disabled}
           backIcon={XIcon}
         />
       }
