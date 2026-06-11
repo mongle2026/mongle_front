@@ -192,7 +192,7 @@ const RecordScreen = ({ navigation }) => {
           onPressButton={handleCommit}
           onPressBack={onPressBack}
           buttonDisabled={false}
-          type={disabled}
+          type='disabled'
           backIcon={XIcon}
         />
         : <TopNavigation
@@ -201,7 +201,7 @@ const RecordScreen = ({ navigation }) => {
           onPressButton={handleCommit}
           onPressBack={() => navigation.goBack()}
           buttonDisabled={false}
-          type={disabled}
+          type='disabled'
           backIcon={XIcon}
         />
       }
