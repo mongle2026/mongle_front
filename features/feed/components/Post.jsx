@@ -95,14 +95,14 @@ export default function Post({
     if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
       clearTimeout(tapTimerRef.current);
       lastTapRef.current = 0;
-      onPressLike?.();
+      if (!isLiked) onPressLike?.();
     } else {
       lastTapRef.current = now;
       tapTimerRef.current = setTimeout(() => {
         onPressBody?.();
       }, DOUBLE_TAP_DELAY);
     }
-  }, [onPressLike, onPressBody]);
+  }, [isLiked, onPressLike, onPressBody]);
 
   return (
     <View style={[styles.container, !currentView && styles.dimmed]}>
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
   },
   date: {
     ...typo.captionSmall,
-    color: colors.fgLayerNeutralWeak,
+    color: colors.fgNeutralWeak,
   },
   footerRight: {
     flexDirection: 'row',
