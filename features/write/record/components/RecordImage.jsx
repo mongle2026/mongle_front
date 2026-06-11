@@ -10,12 +10,19 @@ import { gap, padding, radius } from '../../../../shared/styles/token';
 const RecordImage = ({
   recordForm,
   onPressAdd,
+  onShowToast,
   style,
 }) => {
   const images = recordForm.files.filter(file => file.fileType === 'IMAGE');
 
   const handleRemoveImage = uri => {
     recordForm.removeFile(uri);
+
+    onShowToast?.({
+      message: '사진을 삭제했습니다.',
+      type: 'success',
+      duration: 2000,
+    });
   };
 
   return (
@@ -25,9 +32,11 @@ const RecordImage = ({
       contentContainerStyle={{ gap: gap.S }}
     >
       {images.map((image, index) => (
-        <View style={[styles.container, style]}>
+        <View
+          key={`${image.uri}-${index}`}
+          style={[styles.container, style]}
+        >
           <ImageBackground
-            key={`${image.uri}-${index}`}
             source={{ uri: image.uri }}
             resizeMode="cover"
             style={styles.image}

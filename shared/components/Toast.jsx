@@ -57,8 +57,14 @@ export default function Toast({
   }, [visible]);
 
   return (
-    <Animated.View style={[styles.wrapper, { opacity, transform: [{ translateY }] }, style]}>
-      <View style={styles.container}>
+    <Animated.View
+      pointerEvents="box-none"
+      style={[styles.wrapper, { opacity, transform: [{ translateY }] }, style]}
+    >
+      <View
+        pointerEvents={visible ? 'auto' : 'none'}
+        style={styles.container}
+      >
         <Icon width={20} height={20} color={colors.fgPositive} />
 
         <Text style={styles.message} numberOfLines={2}>

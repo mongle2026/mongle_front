@@ -16,6 +16,12 @@ const MOCK_MUSIC_LIST = [
 ];
 
 const API_BASE_URL = 'http://192.168.0.3:3000';
+// const API_BASE_URL = 'http://172.19.77.207:3000';
+// const API_BASE_URL = 'http://172.19.19.169:3000';
+// const API_BASE_URL = 'http://192.168.0.5:3000';
+
+
+
 
 export default function UseSelectMusic(_, onClose) {
   const [keyword, setKeyword] = useState('');
@@ -24,13 +30,28 @@ export default function UseSelectMusic(_, onClose) {
   const music = useRecordFormStore((state) => state.music);
   const setMusic = useRecordFormStore((state) => state.setMusic);
   const [musicList, setMusicList] = useState([]);
+  const [popularMusicList, setPopularMusicList] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchPopularMusics = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/music/popular`);
+        setPopularMusicList(response.data);
+      } catch (error) {
+        console.log('인기곡 조회 실패:', error);
+        setPopularMusicList([]);
+      }
+    };
+
+    fetchPopularMusics();
+  }, []);
 
   useEffect(() => {
     const trimmedKeyword = keyword.trim();
 
     if (!trimmedKeyword) {
-      setMusicList(MOCK_MUSIC_LIST);
+      setMusicList([]);
       setLoading(false);
       return;
     }
@@ -86,13 +107,6 @@ export default function UseSelectMusic(_, onClose) {
     });
   }, [keyword]);
 
-  const selectedMusic = useMemo(() => {
-    // return MOCK_MUSIC_LIST.find(music => music.id === selectedMusicId);
-    return musicList.find(music => music.externalId === selectedMusicId);
-  }, [selectedMusicId]);
-
-  const isNextEnabled = Boolean(selectedMusicId);
-
   const handleChangeKeyword = text => {
     setKeyword(text);
     setSelectedMusicId(null);
@@ -103,16 +117,16 @@ export default function UseSelectMusic(_, onClose) {
   };
 
   const handleSelectMusic = musicId => {
-    const selected = filteredMusicList.find(m => m.externalId === musicId);
+    // const selected = filteredMusicList.find(m => m.externalId === musicId);
+    const trimmedKeyword = keyword.trim();
+
+    const selected = trimmedKeyword
+      ? musicList.find(music => music.externalId === musicId)
+      : popularMusicList.find(music => music.externalId === musicId);
+
     if (!selected) return;
     setSelectedMusicId(musicId);
     setMusic(selected);
-    onClose?.();
-  };
-
-  const handlePressNext = () => {
-    if (!selectedMusic) return;
-    setMusic(selectedMusic);
     onClose?.();
   };
 
@@ -120,11 +134,10 @@ export default function UseSelectMusic(_, onClose) {
     keyword,
     filteredMusicList,
     musicList,
+    popularMusicList,
     selectedMusicId,
-    isNextEnabled,
     handleChangeKeyword,
     handleFocusSearch,
     handleSelectMusic,
-    handlePressNext,
   };
 }

@@ -15,12 +15,33 @@ const MIN_LINES = 15;
 const TOP_GAP = 8;
 const BOTTOM_GAP = 16;
 const TEXT_TOP_OFFSET = Platform.OS === 'ios' ? -4 : 4;
+const MAX_TEXT_LENGTH = 2000;
 
-const RecordText = ({ recordForm }) => {
+
+const RecordText = ({ 
+  recordForm,
+  onShowToast, 
+}) => {
   const minTextHeight = NOTE_LINE_HEIGHT * MIN_LINES;
   const minWrapperHeight = TOP_GAP + minTextHeight + BOTTOM_GAP;
 
   const [textHeight, setTextHeight] = useState(minTextHeight);
+
+  const handleChangeText = (text) => {
+    if (text.length > MAX_TEXT_LENGTH) {
+      onShowToast?.({
+        message: '2,000자 이내로 내용을 줄여주세요.',
+        type: 'warning',
+        duration: 2000,
+      });
+
+      recordForm.setText(text.slice(0, MAX_TEXT_LENGTH));
+      return;
+    }
+
+    recordForm.setText(text);
+  };
+
 
   const handleContentSizeChange = (event) => {
     const contentHeight = event.nativeEvent.contentSize.height;
@@ -48,7 +69,7 @@ const RecordText = ({ recordForm }) => {
 
         <TextInput
           value={recordForm.text}
-          onChangeText={recordForm.setText}
+          onChangeText={handleChangeText}
           multiline
           scrollEnabled={false}
           textAlignVertical="top"

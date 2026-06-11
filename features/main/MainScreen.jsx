@@ -3,6 +3,11 @@ import axios from 'axios'
 import { View, FlatList, Image, StyleSheet, Text } from 'react-native';
 
 const API_BASE_URL = 'http://192.168.0.3:3000';
+// const API_BASE_URL = 'http://172.19.77.207:3000';
+// const API_BASE_URL = 'http://172.19.19.169:3000';
+// const API_BASE_URL = 'http://192.168.0.5:3000';
+
+
 
 function FeedItem({ feed }) {
   return (

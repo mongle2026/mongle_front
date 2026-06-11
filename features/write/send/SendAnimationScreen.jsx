@@ -12,43 +12,49 @@ import Toast from '../../../shared/components/Toast';
 import { PATTERNS, useLetterCoverStore } from '../letter/data/letterCoverData';
 import { colors, shadow } from '../../../shared/styles/color';
 import { padding } from '../../../shared/styles/token';
+import { useFloatingBottomOffset } from '../record/hook/useFloatingBottomOffset';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const ENVELOPE_WIDTH     = SCREEN_WIDTH - padding.XL * 2;
-const ENVELOPE_HEIGHT    = ENVELOPE_WIDTH * (253.33 / 342.6);
-const FLAP_RENDER_WIDTH  = ENVELOPE_WIDTH * (325.17 / 342.6);
+const ENVELOPE_WIDTH = SCREEN_WIDTH - padding.XL * 2;
+const ENVELOPE_HEIGHT = ENVELOPE_WIDTH * (253.33 / 342.6);
+const FLAP_RENDER_WIDTH = ENVELOPE_WIDTH * (325.17 / 342.6);
 const FLAP_RENDER_HEIGHT = FLAP_RENDER_WIDTH * (173.2 / 325.17);
-const FLAP_LEFT          = (ENVELOPE_WIDTH - FLAP_RENDER_WIDTH) / 2;
-const ENV_MARGIN_H       = ENVELOPE_WIDTH * (15.8 / 342.6);
-const ENV_MARGIN_V       = ENVELOPE_WIDTH * (13.92 / 342.6);
+const FLAP_LEFT = (ENVELOPE_WIDTH - FLAP_RENDER_WIDTH) / 2;
+const ENV_MARGIN_H = ENVELOPE_WIDTH * (15.8 / 342.6);
+const ENV_MARGIN_V = ENVELOPE_WIDTH * (13.92 / 342.6);
 
 const DISSOLVE_DURATION = 500;
-const FLY_IN_DURATION   = 900;
-const FLY_OUT_DURATION  = 600;
+const FLY_IN_DURATION = 900;
+const FLY_OUT_DURATION = 600;
 
-const FINAL_SCALE       = 48 / ENVELOPE_WIDTH;
+const FINAL_SCALE = 48 / ENVELOPE_WIDTH;
 const FINAL_TRANSLATE_Y = SCREEN_HEIGHT * 0.38;
 
 export default function SendAnimationScreen({ navigation, route }) {
-  const { deliveryLabel = '일주일 뒤' } = route?.params ?? {};
+  const { deliveryLabel = '일주일 뒤', toMe = false } = route?.params ?? {};
   const { patternId, colorId } = useLetterCoverStore();
 
   const selectedColor = PATTERNS.find(p => p.id === patternId)?.colors.find(c => c.id === colorId);
   const FrontSvg = selectedColor?.frontImg?.default ?? selectedColor?.frontImg;
-  const FlapSvg  = selectedColor?.flapImg?.default  ?? selectedColor?.flapImg;
+  const FlapSvg = selectedColor?.flapImg?.default ?? selectedColor?.flapImg;
 
   const [toastVisible, setToastVisible] = useState(false);
+  const bottomValue = useFloatingBottomOffset();
 
   const showToast = () => {
-    setToastVisible(true);
+    if (toMe === true) {
+      setToastVisible(true);
+    } else {
+      setToastVisible(false);
+    }
     setTimeout(() => setToastVisible(false), 2000);
   };
 
-  const screenOpacity      = useSharedValue(0);
-  const envelopeScale      = useSharedValue(1);
+  const screenOpacity = useSharedValue(0);
+  const envelopeScale = useSharedValue(1);
   const envelopeTranslateY = useSharedValue(SCREEN_HEIGHT * 0.5);
-  const envelopeOpacity    = useSharedValue(0);
+  const envelopeOpacity = useSharedValue(0);
 
   useEffect(() => {
     screenOpacity.value = withTiming(1, { duration: DISSOLVE_DURATION }, () => {
@@ -87,12 +93,22 @@ export default function SendAnimationScreen({ navigation, route }) {
         <Profile imageOnly style={styles.profileOverlay} />
       </Animated.View>
 
-      <Toast
-        type="success"
-        message={`편지가 ${deliveryLabel} 0시의 나에게 전송됐어요.`}
-        visible={toastVisible}
-        style={styles.toast}
-      />
+      <View
+        style={[
+          styles.toastWrapper,
+          {
+            bottom: bottomValue,
+          },
+        ]}
+      >
+        <Toast
+          type="success"
+          message={`편지가 ${deliveryLabel} 0시의 나에게 전송됐어요.`}
+          visible={toastVisible}
+          style={styles.toast}
+        />
+      </View>
+
 
     </Animated.View>
   );
@@ -128,5 +144,13 @@ const styles = StyleSheet.create({
     bottom: padding.XL,
     left: 0,
     right: 0,
+  },
+  toastWrapper: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    zIndex: 999,
+    elevation: 999,
+    alignItems: 'center',
   },
 });

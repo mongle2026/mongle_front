@@ -5,6 +5,9 @@ export const useLetterCoverStore = create((set) => ({
   colorId:   'p1_c1',
   stampId:   's1',
   setEnvelope: ({ patternId, colorId, stampId }) => set({ patternId, colorId, stampId }),
+  setPatternId: (patternId) => set({ patternId }),
+  setColorId: (colorId) => set({ colorId }),
+  setStampId: (stampId) => set({ stampId }),
 }));
 
 export const PATTERNS = [

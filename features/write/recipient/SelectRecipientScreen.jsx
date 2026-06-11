@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView, FlatList, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import SearchField from '../../../shared/components/SearchField';
@@ -9,6 +9,8 @@ import { colors } from '../../../shared/styles/color';
 import { padding, radius } from '../../../shared/styles/token';
 
 import UseSelectRecipient from './hook/UseSelectRecipient';
+import Empty from '../../../shared/components/Empty';
+
 
 export default function SelectRecipient({ visible, onClose }) {
   const [searchFieldHeight, setSearchFieldHeight] = useState(0);
@@ -17,11 +19,16 @@ export default function SelectRecipient({ visible, onClose }) {
   const {
     keyword,
     filteredRecipients,
+    userList,
     selectedRecipientId,
     handleChangeKeyword,
     handleFocusSearch,
     handleSelectRecipient,
   } = UseSelectRecipient(onClose);
+
+  const displayUserList = !keyword.trim()
+    ? filteredRecipients
+    : userList;
 
   return (
     <BottomSheet visible={visible} onClose={onClose}>
@@ -40,20 +47,27 @@ export default function SelectRecipient({ visible, onClose }) {
           onScroll={e => setScrolled(e.nativeEvent.contentOffset.y > 0)}
           scrollEventThrottle={16}
         >
-          <View style={styles.listContainer}>
-            {filteredRecipients.map(item => (
-              <ListRow
-                key={item.id}
-                title={item.username}
-                subtitle={item.nickname}
-                img={item.img}
-                imageSource={item.imageSource}
-                caption
-                selected={selectedRecipientId === item.id}
-                onPress={() => handleSelectRecipient(item.id)}
-              />
-            ))}
-          </View>
+          {keyword && userList.length === 0 ? (
+            <Empty
+              title='일치하는 사용자가 없습니다.'
+              body='닉네임이나 아이디를 다시 확인해 보세요.'
+            />
+          ) : (
+            <View style={styles.listContainer}>
+              {displayUserList.map(item => (
+                <ListRow
+                  key={item.id}
+                  title={item.username}
+                  subtitle={item.nickname}
+                  img={item.img}
+                  imageSource={item.imageSource}
+                  caption
+                  selected={selectedRecipientId === item.id}
+                  onPress={() => handleSelectRecipient(item.id)}
+                />
+              ))}
+            </View>
+          )}
         </ScrollView>
 
         {scrolled && (
