@@ -43,7 +43,7 @@ const RecordScreen = ({ navigation }) => {
   const bottomValue = useFloatingBottomOffset();
   const insets = useSafeAreaInsets();
 
-  const [disabled, setDisabled] = useState('disable');
+  const [disabled, setDisabled] = useState('disabled');
   const [isDialogVisible, setIsDialogVisible] = useState(false);
 
 
@@ -192,7 +192,7 @@ const RecordScreen = ({ navigation }) => {
           onPressButton={handleCommit}
           onPressBack={onPressBack}
           buttonDisabled={false}
-          type='disabled'
+          type={disabled}
           backIcon={XIcon}
         />
         : <TopNavigation
@@ -201,7 +201,7 @@ const RecordScreen = ({ navigation }) => {
           onPressButton={handleCommit}
           onPressBack={() => navigation.goBack()}
           buttonDisabled={false}
-          type='disabled'
+          type={disabled}
           backIcon={XIcon}
         />
       }
