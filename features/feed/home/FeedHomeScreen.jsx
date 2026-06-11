@@ -81,6 +81,7 @@ export default function FeedHomeScreen({ navigation }) {
       images={item.files?.filter(f => f.mimeType?.startsWith('image/')).map(f => ({ uri: f.url })) ?? []}
       name={item.user?.nickname ?? ''}
       id={item.user?.userCode}
+      profileSource={item.user?.profileImageUrl ? { uri: item.user.profileImageUrl } : undefined}
       date={item.record?.date ?? ''}
       isBookmarked={item.isBookmarked ?? false}
       isLiked={item.isLiked ?? false}
