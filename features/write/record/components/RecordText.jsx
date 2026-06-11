@@ -18,9 +18,10 @@ const TEXT_TOP_OFFSET = Platform.OS === 'ios' ? -4 : 4;
 const MAX_TEXT_LENGTH = 2000;
 
 
-const RecordText = ({ 
+const RecordText = ({
   recordForm,
-  onShowToast, 
+  onShowToast,
+  recordType,
 }) => {
   const minTextHeight = NOTE_LINE_HEIGHT * MIN_LINES;
   const minWrapperHeight = TOP_GAP + minTextHeight + BOTTOM_GAP;
@@ -74,7 +75,7 @@ const RecordText = ({
           scrollEnabled={false}
           textAlignVertical="top"
           onContentSizeChange={handleContentSizeChange}
-          placeholder="편지를 작성해 주세요"
+          placeholder={recordType === 'LETTER' ? '음악과 함께 보낼 메시지를 작성해 주세요.' : '오늘 하루를 기록해 주세요.'}
           style={[
             styles.input,
             INPUT_TYPO,
