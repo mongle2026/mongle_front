@@ -1,4 +1,6 @@
 import { StyleSheet, View } from 'react-native';
+import * as Haptics from 'expo-haptics';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, palette } from '../../../shared/styles/color';
 import { padding } from '../../../shared/styles/token';
 import Profile from '../../../shared/components/Profile';
@@ -19,15 +21,19 @@ export default function BottomBar({
   onPressBookmark,
   onPressLike,
 }) {
+  const insets = useSafeAreaInsets();
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingBottom: padding.M + insets.bottom }]}>
       {/* 프로필 + 팔로우 */}
       <View style={styles.left}>
         <Profile name={name} imageSource={profileSource} tailText="" />
         <ButtonText
           label={isFollowing ? '팔로잉' : '팔로우'}
           type={isFollowing ? 'neutral' : 'brand'}
-          onPress={onPressFollow}
+          onPress={() => {
+            if (!isFollowing) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            onPressFollow?.();
+          }}
         />
       </View>
 
@@ -38,14 +44,20 @@ export default function BottomBar({
           size="L"
           variant="none"
           iconColor={isBookmarked ? colors.fgBrand : palette.gray[30]}
-          onPress={onPressBookmark}
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            onPressBookmark?.();
+          }}
         />
         <ButtonIcon
           Icon={isLiked ? HeartFill : HeartStroke}
           size="L"
           variant="none"
           iconColor={isLiked ? palette.pink[50] : palette.gray[30]}
-          onPress={onPressLike}
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            onPressLike?.();
+          }}
         />
       </View>
     </View>
