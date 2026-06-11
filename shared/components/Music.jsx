@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   },
   artist: {
     ...typo.captionSmall,
-    color: colors.fgLayerNeutralWeak,
+    color: colors.fgPlaceholder,
     alignSelf: 'stretch',
     textAlign: 'left',
   },

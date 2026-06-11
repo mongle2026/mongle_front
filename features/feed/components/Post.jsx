@@ -12,28 +12,25 @@ import HeartFill from '../../../assets/icons/ic_heart_fill.svg';
 import { colors, palette } from '../../../shared/styles/color';
 import { gap, padding, radius } from '../../../shared/styles/token';
 import { typo } from '../../../shared/styles/typo';
+import { formatDate } from '../../../shared/utils/formatDate';
 
-const MAX_LINES = { textOnly: 12, img: 6, textShort: 6 };
+const MAX_LINES = { textFull: 12, img: 6, textShort: 6 };
+const AUTO_THRESHOLD = 12;
 
-// 줄마다 underline + 마지막 줄에 "더보기" 절대 위치
-function TextLines({ content, maxLines, expanded, onExpand, fixed }) {
+function TextLines({ content, maxLines, onTotalLines }) {
   const [lines, setLines] = useState([]);
   const [measured, setMeasured] = useState(false);
 
   const onTextLayout = useCallback((e) => {
     if (!measured) {
-      setLines(e.nativeEvent.lines);
+      const all = e.nativeEvent.lines;
+      setLines(all);
       setMeasured(true);
+      onTotalLines?.(all.length);
     }
   }, [measured]);
 
-  const hasMore = !expanded && lines.length > maxLines;
-  const sliced = expanded ? lines : lines.slice(0, maxLines);
-
-  // fixed=true면 maxLines만큼 빈 줄 패딩
-  const visibleLines = fixed && !expanded
-    ? [...sliced, ...Array(Math.max(0, maxLines - sliced.length)).fill({ text: '' })]
-    : sliced;
+  const visibleLines = lines.slice(0, maxLines);
 
   if (!measured) {
     return (
@@ -45,22 +42,14 @@ function TextLines({ content, maxLines, expanded, onExpand, fixed }) {
 
   return (
     <View style={styles.linesContainer}>
-      {visibleLines.map((line, i) => {
-        const isLast = i === visibleLines.length - 1;
-        return (
-          <View key={i} style={styles.lineRow}>
-            <Text style={styles.lineText} numberOfLines={1}>
-              {line.text.trimEnd()}
-            </Text>
-            {hasMore && isLast && (
-              <Pressable style={styles.moreButton} onPress={onExpand}>
-                <Text style={styles.moreText}>더보기</Text>
-              </Pressable>
-            )}
-            <View style={styles.underline} />
-          </View>
-        );
-      })}
+      {visibleLines.map((line, i) => (
+        <View key={i} style={styles.lineRow}>
+          <Text style={styles.lineText} numberOfLines={1}>
+            {line.text.trimEnd()}
+          </Text>
+          <View style={styles.underline} />
+        </View>
+      ))}
     </View>
   );
 }
@@ -68,7 +57,7 @@ function TextLines({ content, maxLines, expanded, onExpand, fixed }) {
 const DOUBLE_TAP_DELAY = 300;
 
 export default function Post({
-  type = 'textOnly',
+  type = 'auto',
   currentView = true,
   musicTitle,
   musicArtist,
@@ -85,10 +74,22 @@ export default function Post({
   onPressMusic,
   onPressBody,
 }) {
-  const [expanded, setExpanded] = useState(false);
+  const [resolvedType, setResolvedType] = useState(type !== 'auto' ? type : null);
+  const [imgShort, setImgShort] = useState(false);
+  const effectiveType = type === 'auto' ? (resolvedType ?? 'textShort') : type;
+  const isFixedHeight = effectiveType === 'textShort' || (effectiveType === 'img' && imgShort);
+
+  const handleTotalLines = useCallback((count) => {
+    if (type === 'auto') {
+      setResolvedType(count >= AUTO_THRESHOLD ? 'textFull' : 'textShort');
+    } else if (type === 'img') {
+      setImgShort(count < MAX_LINES.img);
+    }
+  }, [type]);
+
   const lastTapRef = useRef(0);
   const tapTimerRef = useRef(null);
-  const showImages = (type === 'img' || type === 'textShort') && images.length > 0;
+  const showImages = (effectiveType === 'img' || effectiveType === 'textShort') && images.length > 0;
 
   const handleBodyPress = useCallback(() => {
     const now = Date.now();
@@ -105,7 +106,10 @@ export default function Post({
   }, [isLiked, onPressLike, onPressBody]);
 
   return (
-    <View style={[styles.container, !currentView && styles.dimmed]}>
+    <View style={[styles.container, isFixedHeight && styles.fixedHeight, !currentView && styles.dimmed]}>
+      {!currentView && (
+        <Pressable style={styles.focusOverlay} onPress={onPressBody} />
+      )}
 
       {/* 음악 */}
       <View style={styles.musicWrapper}>
@@ -122,10 +126,8 @@ export default function Post({
       <Pressable style={styles.body} onPress={handleBodyPress}>
         <TextLines
           content={content}
-          maxLines={MAX_LINES[type]}
-          expanded={expanded}
-          onExpand={() => setExpanded(true)}
-          fixed={type === 'textOnly'}
+          maxLines={MAX_LINES[effectiveType] ?? MAX_LINES.textShort}
+          onTotalLines={handleTotalLines}
         />
 
         {showImages && (
@@ -145,7 +147,7 @@ export default function Post({
       <View style={styles.footer}>
         <View style={styles.footerLeft}>
           <Profile name={name} imageSource={profileSource} tailText="" />
-          <Text style={styles.date}>{date}</Text>
+          <Text style={styles.date}>{date ? formatDate(date) : ''}</Text>
         </View>
         <View style={styles.footerRight}>
           <ButtonIcon
@@ -176,6 +178,14 @@ const styles = StyleSheet.create({
     paddingVertical: padding.M,
     gap: gap.M,
     borderRadius: radius.M,
+    overflow: 'hidden',
+  },
+  fixedHeight: {
+    height: 520,
+  },
+  focusOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 1,
   },
   dimmed: {
     opacity: 0.1,
@@ -186,6 +196,7 @@ const styles = StyleSheet.create({
     paddingVertical: padding.S,
   },
   body: {
+    flex: 1,
     alignSelf: 'stretch',
     paddingHorizontal: padding.L,
     gap: gap.M,
@@ -213,19 +224,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: colors.strokeNeutralWeak,
   },
-  moreButton: {
-    position: 'absolute',
-    right: 0,
-    bottom: gap.XS + 1, // underline 위
-    backgroundColor: colors.bgLayerDefault,
-    paddingLeft: gap.S,
-  },
-  moreText: {
-    fontFamily: 'Pretendard-Regular',
-    ...typo.bodyMedium,
-    color: colors.fgPlaceholder,
-  },
-
   // Images
   imageRow: {
     flexDirection: 'row',

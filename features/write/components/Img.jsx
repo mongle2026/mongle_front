@@ -82,8 +82,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: padding.L,
   },
   container: {
-    width: 165.5,
-    height: 169.5,
+    width: 160,
+    height: 160,
     overflow: 'hidden',
     borderRadius: radius.XS,
   },

@@ -40,6 +40,7 @@ export default function FeedHomeScreen({ navigation }) {
 
   const [snapOffsets, setSnapOffsets] = useState([]);
   const itemHeightsRef = useRef({});
+  const flatListRef = useRef(null);
 
   const recomputeOffsets = useCallback(() => {
     const paddingTop = insets.top + 58 + padding.M;
@@ -71,7 +72,7 @@ export default function FeedHomeScreen({ navigation }) {
       recomputeOffsets();
     }}>
     <Post
-      type={item.files?.length > 0 ? 'img' : 'textOnly'}
+      type={item.files?.length > 0 ? 'img' : 'auto'}
       currentView={index === currentIndex}
       musicTitle={item.music?.title}
       musicArtist={item.music?.artist}
@@ -84,7 +85,13 @@ export default function FeedHomeScreen({ navigation }) {
       isLiked={item.isLiked ?? false}
       onPressBookmark={() => toggleBookmark(item.feedId)}
       onPressLike={() => toggleLike(item.feedId)}
-      onPressBody={() => navigation.navigate('FeedDetail', { feedId: item.feedId })}
+      onPressBody={() => {
+        if (index !== currentIndex) {
+          flatListRef.current?.scrollToOffset({ offset: snapOffsets[index] ?? 0, animated: true });
+        } else {
+          navigation.navigate('FeedDetail', { feedId: item.feedId });
+        }
+      }}
     />
     </View>
   );
@@ -92,6 +99,7 @@ export default function FeedHomeScreen({ navigation }) {
   return (
     <View style={styles.screen}>
       <FlatList
+        ref={flatListRef}
         data={posts}
         keyExtractor={item => String(item.feedId)}
         renderItem={renderItem}
