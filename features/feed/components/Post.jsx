@@ -65,6 +65,7 @@ export default function Post({
   content = '',
   images = [],
   name = '수신인 선택',
+  id,
   date = '',
   profileSource,
   isBookmarked = false,
@@ -146,7 +147,7 @@ export default function Post({
       {/* 푸터 */}
       <View style={styles.footer}>
         <View style={styles.footerLeft}>
-          <Profile name={name} imageSource={profileSource} tailText="" />
+          <Profile name={name} id={id} imageSource={profileSource} />
           <Text style={styles.date}>{date ? formatDate(date) : ''}</Text>
         </View>
         <View style={styles.footerRight}>

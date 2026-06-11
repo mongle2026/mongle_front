@@ -80,6 +80,7 @@ export default function FeedHomeScreen({ navigation }) {
       content={item.record?.text ?? ''}
       images={item.files?.filter(f => f.mimeType?.startsWith('image/')).map(f => ({ uri: f.url })) ?? []}
       name={item.user?.nickname ?? ''}
+      id={item.user?.loginId}
       date={item.record?.date ?? ''}
       isBookmarked={item.isBookmarked ?? false}
       isLiked={item.isLiked ?? false}

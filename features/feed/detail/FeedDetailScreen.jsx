@@ -66,6 +66,7 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
     content = '',
     images = [],
     name = '',
+    id,
     profileSource,
     isFollowing: initFollowing = false,
     isBookmarked: initBookmarked = false,
@@ -133,6 +134,7 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
 
       <BottomBar
         name={name}
+        id={id}
         profileSource={profileSource}
         isFollowing={isFollowing}
         isBookmarked={isBookmarked}
