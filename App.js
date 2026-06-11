@@ -8,6 +8,7 @@ import { colors } from './shared/styles/color';
 import RecordScreen from './features/write/record/RecordScreen.jsx';
 import LetterCoverSelect from './features/write/letter/LetterCoverSelect.jsx';
 import SelectDateScreen from './features/write/selectdate/SelectDateScreen.jsx';
+import SendAnimationScreen from './features/write/send/SendAnimationScreen.jsx';
 
 const Stack = createNativeStackNavigator();
 
@@ -38,6 +39,11 @@ export default function App() {
           <Stack.Screen
             name="SelectDate"
             component={SelectDateScreen}
+          />
+
+          <Stack.Screen
+            name="SendAnimation"
+            component={SendAnimationScreen}
           />
         </Stack.Navigator>
       </NavigationContainer>

@@ -10,6 +10,8 @@ import { colors } from '../../../shared/styles/color';
 import { useRecordFormStore } from '../record/store/useRecordFormStore';
 import { createRecordFormData } from '../utils/createRecordFormData ';
 import { useLetterCoverStore } from '../letter/data/letterCoverData';
+import getDiffDaysFromToday from './hook/getDiffDaysFromToday ';
+import { getCaptionDateLabel } from './utils/getCaptionDateLabel';
 
 const API_BASE_URL = 'http://192.168.0.3:3000';
 
@@ -22,6 +24,7 @@ const SelectDateScreen = ({ navigation }) => {
   const [buttonDisabled, setButtonDisalbed] = useState(true);
   const setDeliveryAt = useRecordFormStore((state) => state.setDeliveryAt);
   const recordForm = useRecordFormStore();
+  const [dateOffsetLabel, setDateOffsetLabel] = useState('1');
   const userId = '1';
   const recordType = "LETTER";
   const { patternId, colorId, stampId } = useLetterCoverStore();
@@ -32,6 +35,12 @@ const SelectDateScreen = ({ navigation }) => {
     if (dateType === null) setButtonDisalbed(true);
     else setButtonDisalbed(false);
   }, [dateType]);
+
+  useEffect(() => {
+    const diffDays = getDiffDaysFromToday(selectedDate.dateString);
+
+    setDateOffsetLabel(diffDays);
+  }, [selectedDate.dateString])
 
   const handleCommit = async () => {
     if (dateType === null) return;
@@ -66,6 +75,12 @@ const SelectDateScreen = ({ navigation }) => {
       );
 
       console.log('요청 성공:', response.data);
+
+      const captionDate = getCaptionDateLabel(dateType, dateOffsetLabel)
+      navigation.navigate('SendAnimation', {
+        deliveryLabel: captionDate,
+        toMe: true,
+      });
 
       // recordForm.resetForm();
 
@@ -104,6 +119,7 @@ const SelectDateScreen = ({ navigation }) => {
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
           dateType={dateType}
+          dateOffsetLabel={dateOffsetLabel}
         />
         <SelectDateButtons
           dateType={dateType}

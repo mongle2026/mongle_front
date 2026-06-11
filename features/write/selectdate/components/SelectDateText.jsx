@@ -4,32 +4,20 @@ import { typo } from '../../../../shared/styles/typo';
 import { colors } from '../../../../shared/styles/color';
 import getDiffDaysFromToday from '../hook/getDiffDaysFromToday ';
 import { padding } from '../../../../shared/styles/token';
+import { getCaptionDateLabel } from '../utils/getCaptionDateLabel';
 
 const SelectDateText = ({
   selectedDate,
   setSelectedDate,
   dateType,
+  dateOffsetLabel,
 }) => {
-  const [dateOffsetLabel, setDateOffsetLabel] = useState('1');
-
-  const captionDateMap = {
-    null: '선택한 날짜',
-    date: `${dateOffsetLabel}일 뒤`,
-    week: '일주일 뒤',
-    month: '한 달 뒤',
-    year: '일 년 뒤',
-  };
-
-  useEffect(() => {
-    const diffDays = getDiffDaysFromToday(selectedDate.dateString);
-
-    setDateOffsetLabel(diffDays);
-  }, [selectedDate.dateString])
+  const captionDate = getCaptionDateLabel(dateType, dateOffsetLabel)
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>편지가 도착할 날짜를 선택해 주세요.</Text>
-      <Text style={styles.caption}><Text style={styles.selectText}>{captionDateMap[dateType]} 0시</Text> 편지가 도착합니다.</Text>
+      <Text style={styles.caption}><Text style={styles.selectText}>{captionDate} 0시</Text> 편지가 도착합니다.</Text>
     </View>
   )
 }

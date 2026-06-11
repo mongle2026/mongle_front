@@ -204,6 +204,10 @@ export default function LetterCoverSelect({ navigation }) {
       );
 
       console.log('요청 성공:', response.data);
+      navigation.navigate('SendAnimation', {
+        toMe: false,
+      });
+
 
       // recordForm.resetForm();
 
