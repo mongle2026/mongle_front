@@ -24,7 +24,7 @@ export function useToast() {
     ({
       message,
       type = 'warning',
-      duration = 2000,
+      duration = 3000,
       color = colors.fgPositive,
     }) => {
       if (timerRef.current) {

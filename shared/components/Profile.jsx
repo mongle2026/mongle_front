@@ -6,41 +6,63 @@ import { typo } from '../styles/typo';
 
 const DEFAULT_PROFILE_IMAGE = require('../../assets/write/profile_img.png');
 
+// type: 'name' | 'id' | 'empty'
+// name      — 이미지 + 이름/tailText 행
+// id        — 이미지 + @id
+// empty     — 수신인 선택 chip만
+// imageOnly — 이미지만 (편지 커버 등에서 사용)
 export default function Profile({
   name = 'nickname',
+  id,
   tailText,
   imageSource,
   imageOnly = false,
-  type = 'Profile',
+  type = 'name',
   onPress,
   style,
 }) {
   const isEmpty = type === 'empty';
+  const isHorizontal = type === 'id';
   const currentImageSource = imageSource || DEFAULT_PROFILE_IMAGE;
 
-  return (
-    <Pressable style={[styles.container, style]} onPress={onPress} disabled={!onPress}>
-      {!isEmpty && (
-        <Image
-          source={currentImageSource}
-          style={styles.profileImage}
-          resizeMode="cover"
-        />
-      )}
+  if (imageOnly) {
+    return (
+      <Image
+        source={currentImageSource}
+        style={[styles.profileImage, style]}
+        resizeMode="cover"
+      />
+    );
+  }
 
-      {!imageOnly && (
-        isEmpty ? (
-          <View style={styles.emptyChip}>
-            <Text style={styles.name} numberOfLines={1}>수신인 선택</Text>
-          </View>
-        ) : (
-          <View style={styles.textContainer}>
-            <Text style={styles.name} numberOfLines={1}>{name}</Text>
-            {tailText && (
-              <Text style={styles.tailText} numberOfLines={1}>{tailText}</Text>
-            )}
-          </View>
-        )
+  return (
+    <Pressable
+      style={[styles.container, isEmpty && styles.containerEmpty, style]}
+      onPress={onPress}
+      disabled={!onPress}
+    >
+      {isEmpty ? (
+        <View style={styles.emptyChip}>
+          <Text style={styles.emptyText} numberOfLines={1}>수신인 선택</Text>
+        </View>
+      ) : (
+        <>
+          <Image
+            source={currentImageSource}
+            style={styles.profileImage}
+            resizeMode="cover"
+          />
+          {isHorizontal ? (
+            <Text style={styles.idText} numberOfLines={1}>@{id}</Text>
+          ) : (
+            <View style={styles.nameRow}>
+              <Text style={styles.name} numberOfLines={1}>{name}</Text>
+              {tailText && (
+                <Text style={styles.name} numberOfLines={1}>{tailText}</Text>
+              )}
+            </View>
+          )}
+        </>
       )}
     </Pressable>
   );
@@ -56,38 +78,34 @@ const styles = StyleSheet.create({
     gap: gap.M,
     borderRadius: radius.XS,
   },
+  containerEmpty: {
+    gap: 0,
+  },
   emptyChip: {
     backgroundColor: colors.bgLayerWeak,
     borderRadius: radius.M,
     paddingHorizontal: padding.M,
     paddingVertical: padding.S,
   },
-  withTail: { width: 155 },
-  withoutTail: { width: 127 },
+  emptyText: {
+    ...typo.titleMedium,
+    color: colors.fgLayerNeutral,
+  },
   profileImage: {
     width: 34,
     height: 34,
-    borderRadius: radius.XS,
+    borderRadius: 17,
   },
-  emptyProfileImage: {
-    width: 34,
-    height: 34,
-    borderRadius: radius.XS,
-    backgroundColor: colors.bgLayerWeak,
-  },
-  textContainer: {
+  nameRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: gap.XS,
   },
   name: {
-    ...typo.titleMedium,
+    ...typo.labelSmall,
     color: colors.fgLayerNeutral,
-    textAlign: 'left',
   },
-  tailText: {
-    ...typo.bodyMedium,
+  idText: {
+    ...typo.labelSmall,
     color: colors.fgLayerNeutral,
-    textAlign: 'left',
   },
 });

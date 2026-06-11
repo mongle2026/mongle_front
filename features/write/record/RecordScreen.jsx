@@ -260,6 +260,7 @@ const RecordScreen = ({ navigation }) => {
           <RecordText
             recordForm={recordForm}
             onShowToast={showToast}
+            recordType={recordType}
           />
 
           <RecordImage

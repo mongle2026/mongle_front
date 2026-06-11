@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { formatDateDetail } from '../../../shared/utils/formatDate';
 import { Dimensions, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import TopNavigation from '../../../shared/components/TopNavigation';
@@ -11,11 +12,9 @@ import { colors } from '../../../shared/styles/color';
 import { typo } from '../../../shared/styles/typo';
 import { gap, padding } from '../../../shared/styles/token';
 
-function TextLines({ content = '', expanded, onExpand }) {
+function TextLines({ content = '' }) {
   const [lines, setLines] = useState([]);
   const [measured, setMeasured] = useState(false);
-
-  const MAX_LINES = 7;
 
   const onTextLayout = useCallback((e) => {
     if (!measured) {
@@ -23,9 +22,6 @@ function TextLines({ content = '', expanded, onExpand }) {
       setMeasured(true);
     }
   }, [measured]);
-
-  const hasMore = !expanded && lines.length > MAX_LINES;
-  const visibleLines = expanded ? lines : lines.slice(0, MAX_LINES);
 
   if (!measured) {
     return (
@@ -37,22 +33,14 @@ function TextLines({ content = '', expanded, onExpand }) {
 
   return (
     <View style={styles.linesContainer}>
-      {visibleLines.map((line, i) => {
-        const isLast = i === visibleLines.length - 1;
-        return (
-          <View key={i} style={styles.lineRow}>
-            <Text style={styles.lineText} numberOfLines={1}>
-              {line.text.trimEnd()}
-            </Text>
-            {hasMore && isLast && (
-              <Pressable style={styles.moreButton} onPress={onExpand}>
-                <Text style={styles.moreText}>더보기</Text>
-              </Pressable>
-            )}
-            <View style={styles.underline} />
-          </View>
-        );
-      })}
+      {lines.map((line, i) => (
+        <View key={i} style={styles.lineRow}>
+          <Text style={styles.lineText} numberOfLines={1}>
+            {line.text.trimEnd()}
+          </Text>
+          <View style={styles.underline} />
+        </View>
+      ))}
     </View>
   );
 }
@@ -66,6 +54,7 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
     content = '',
     images = [],
     name = '',
+    id,
     profileSource,
     isFollowing: initFollowing = false,
     isBookmarked: initBookmarked = false,
@@ -80,7 +69,6 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
   const [isFollowing, setFollowing] = useState(initFollowing);
   const [isBookmarked, setBookmarked] = useState(initBookmarked);
   const [isLiked, setLiked] = useState(initLiked);
-  const [expanded, setExpanded] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
   return (
@@ -104,17 +92,15 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
           audioUri={audioUri}
         />
 
-        <View style={styles.textSection}>
-          <TextLines
-            content={content}
-            expanded={expanded}
-            onExpand={() => setExpanded(true)}
-          />
-        </View>
+        {!!content && (
+          <View style={styles.textSection}>
+            <TextLines content={content} />
+          </View>
+        )}
 
         <Carousel images={images} onPressImage={setSelectedImage} />
 
-        <Caption date={date} bookmarkCount={bookmarkCount} />
+        <Caption date={date ? formatDateDetail(date) : ''} bookmarkCount={bookmarkCount} />
       </ScrollView>
 
       <Modal visible={!!selectedImage} transparent animationType="fade" statusBarTranslucent>
@@ -133,6 +119,7 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
 
       <BottomBar
         name={name}
+        id={id}
         profileSource={profileSource}
         isFollowing={isFollowing}
         isBookmarked={isBookmarked}
@@ -180,17 +167,6 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     borderTopWidth: 1,
     borderColor: colors.strokeNeutralWeak,
-  },
-  moreButton: {
-    position: 'absolute',
-    right: 0,
-    bottom: gap.XS + 1,
-    backgroundColor: colors.bgLayerDefault,
-    paddingLeft: gap.S,
-  },
-  moreText: {
-    ...typo.bodySmall,
-    color: colors.fgPlaceholder,
   },
   modalDim: {
     flex: 1,

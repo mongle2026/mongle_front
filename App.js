@@ -13,9 +13,12 @@ import Post from './features/feed/components/Post.jsx';
 import Caption from './features/feed/components/Caption.jsx';
 import FAB from './shared/components/FAB.jsx';
 import FeedHomeScreen from './features/feed/home/FeedHomeScreen.jsx';
+import FeedDetailScreen from './features/feed/detail/FeedDetailScreen.jsx';
 import LetterCoverSelect from './features/write/letter/LetterCoverSelect.jsx';
 import SelectDateScreen from './features/write/selectdate/SelectDateScreen.jsx';
 import SendAnimationScreen from './features/write/send/SendAnimationScreen.jsx';
+import SelectRecipientScreen from './features/write/recipient/SelectRecipientScreen.jsx';
+import SelectMusic from './features/write/music/SelectMusic.jsx';
 
 const Stack = createNativeStackNavigator();
 
@@ -113,11 +116,10 @@ export default function App() {
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="FeedHome" component={FeedHomeScreen} />
           <Stack.Screen name="Test" component={TestScreen} />
-          {/* <Stack.Screen name="FeedDetail" component={FeedDetailScreen} /> */}
-          <Stack.Screen
-            name="Record"
-            component={RecordScreen}
-          />
+          <Stack.Screen name="FeedDetail" component={FeedDetailScreen} />
+          <Stack.Screen name="SelectRecipientScreen" component={SelectRecipientScreen} />
+          <Stack.Screen name="SelectMusic" component={SelectMusic} />
+          <Stack.Screen name="Record" component={RecordScreen} />
 
           <Stack.Screen
             name="LetterCoverSelect"

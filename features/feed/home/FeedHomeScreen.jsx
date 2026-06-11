@@ -85,7 +85,7 @@ export default function FeedHomeScreen({ navigation }) {
       recomputeOffsets();
     }}>
       <Post
-        type={item.files?.length > 0 ? 'img' : 'auto'}
+        type={item.files?.length > 0 ? 'img' : 'textFull'}
         currentView={index === currentIndex}
         musicTitle={item.music?.musicTitle}
         musicArtist={item.music?.musicArtist}
@@ -94,7 +94,8 @@ export default function FeedHomeScreen({ navigation }) {
         images={item.files?.filter(f => f.mimeType?.startsWith('image/')).map(f => ({ uri: `${API_BASE_URL}${f.url}` })) ?? []}
         name={item.user?.nickname ?? ''}
         date={item.record?.date ?? ''}
-        profileSource={item.user.hasProfileImage && item.user.profileImageUrl ? { uri: `${API_BASE_URL}${item.user.profileImageUrl}` } : null }
+        id={item.user?.userCode}
+        profileSource={item.user.hasProfileImage && item.user.profileImageUrl ? { uri: `${API_BASE_URL}${item.user.profileImageUrl}` } : null}
         isBookmarked={item.isBookmarked ?? false}
         isLiked={item.isLiked ?? false}
         onPressBookmark={() => toggleBookmark(item.feedId)}
@@ -103,10 +104,56 @@ export default function FeedHomeScreen({ navigation }) {
           if (index !== currentIndex) {
             flatListRef.current?.scrollToOffset({ offset: snapOffsets[index] ?? 0, animated: true });
           } else {
-            navigation.navigate('FeedDetail', { feedId: item.feedId });
+            navigation.navigate('FeedDetail', {
+              feedId: item.feedId,
+              musicTitle: item.music?.musicTitle,
+              musicArtist: item.music?.musicArtist,
+              musicCover: item.music?.musicArtwork ? { uri: item.music.musicArtwork } : undefined,
+              content: item.record?.text ?? '',
+              images: item.files?.filter(f => f.mimeType?.startsWith('image/')).map(f => ({ uri: `${API_BASE_URL}${f.url}` })) ?? [],
+              name: item.user?.nickname ?? '',
+              id: item.user?.userCode,
+              profileSource: item.user.hasProfileImage && item.user.profileImageUrl ? { uri: `${API_BASE_URL}${item.user.profileImageUrl}` } : null,
+              date: item.record?.date ?? '',
+            });
           }
         }}
       />
+      {/* <Post
+        type={item.files?.length > 0 ? 'img' : 'textFull'}
+        currentView={index === currentIndex}
+        musicTitle={item.music?.musicTitle}
+        musicArtist={item.music?.musicArtist}
+        musicCover={item.music?.musicArtwork ? { uri: item.music.musicArtwork } : undefined}
+        content={item.record?.text ?? ''}
+        images={item.files?.filter(f => f.mimeType?.startsWith('image/')).map(f => ({ uri: f.url })) ?? []}
+        name={item.user?.nickname ?? ''}
+        id={item.user?.userCode}
+        profileSource={item.user?.profileImageUrl ? { uri: item.user.profileImageUrl } : undefined}
+        date={item.record?.date ?? ''}
+        isBookmarked={item.isBookmarked ?? false}
+        isLiked={item.isLiked ?? false}
+        onPressBookmark={() => toggleBookmark(item.feedId)}
+        onPressLike={() => toggleLike(item.feedId)}
+        onPressBody={() => {
+          if (index !== currentIndex) {
+            flatListRef.current?.scrollToOffset({ offset: snapOffsets[index] ?? 0, animated: true });
+          } else {
+            navigation.navigate('FeedDetail', {
+              feedId: item.feedId,
+              musicTitle: item.music?.musicTitle,
+              musicArtist: item.music?.musicArtist,
+              musicCover: item.music?.musicArtwork ? { uri: item.music.musicArtwork } : undefined,
+              content: item.record?.text ?? '',
+              images: item.files?.filter(f => f.mimeType?.startsWith('image/')).map(f => ({ uri: f.url })) ?? [],
+              name: item.user?.nickname ?? '',
+              id: item.user?.userCode,
+              profileSource: item.user?.profileImageUrl ? { uri: item.user.profileImageUrl } : undefined,
+              date: item.record?.date ?? '',
+            });
+          }
+        }}
+      /> */}
     </View>
   );
 
