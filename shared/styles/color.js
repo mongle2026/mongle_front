@@ -34,6 +34,9 @@ export const palette = {
     50: '#1a1b1c80',
     75: '#1a1b1cbf',
   },
+  whiteOpacity: {
+    30: '#ffffff4d',
+  },
 };
 
 // ── shadow: boxShadow → RN 호환 props로 변환 ─────────────────────

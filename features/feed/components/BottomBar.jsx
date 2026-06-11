@@ -13,6 +13,7 @@ import HeartFill from '../../../assets/icons/ic_heart_fill.svg';
 
 export default function BottomBar({
   name = '수신인 선택',
+  id,
   profileSource,
   isFollowing = false,
   isBookmarked = false,
@@ -26,7 +27,7 @@ export default function BottomBar({
     <View style={[styles.container, { paddingBottom: padding.M + insets.bottom }]}>
       {/* 프로필 + 팔로우 */}
       <View style={styles.left}>
-        <Profile name={name} imageSource={profileSource} tailText="" />
+        <Profile name={name} id={id} imageSource={profileSource} type="id" />
         <ButtonText
           label={isFollowing ? '팔로잉' : '팔로우'}
           type={isFollowing ? 'neutral' : 'brand'}

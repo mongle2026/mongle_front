@@ -1,10 +1,9 @@
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { colors, palette } from '../styles/color';
 
-const PILL_WIDTH = 80;
 const PILL_HEIGHT = 44;
-const ICON_SIZE = 18;
-const PROFILE_SIZE = 28;
+const ICON_SIZE = 24;
+const PROFILE_SIZE = 24;
 
 export default function BottomNavigationItem({
   type = 'icon',
@@ -21,7 +20,7 @@ export default function BottomNavigationItem({
             <Icon
               width={ICON_SIZE}
               height={ICON_SIZE}
-              color={isActive ? colors.fgNeutral : colors.fgLayerNeutralWeak}
+              color={isActive ? colors.fgNeutral : palette.whiteOpacity[30]}
             />
           )
         ) : (
@@ -52,8 +51,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgDefault,
   },
   profile: {
-    width: 24,
-    height: 24,
+    width: PROFILE_SIZE,
+    height: PROFILE_SIZE,
     borderRadius: 100,
   },
   profileInactive: {

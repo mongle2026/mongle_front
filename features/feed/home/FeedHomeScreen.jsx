@@ -72,14 +72,16 @@ export default function FeedHomeScreen({ navigation }) {
       recomputeOffsets();
     }}>
     <Post
-      type={item.files?.length > 0 ? 'img' : 'auto'}
+      type={item.files?.length > 0 ? 'img' : 'textFull'}
       currentView={index === currentIndex}
-      musicTitle={item.music?.title}
-      musicArtist={item.music?.artist}
-      musicCover={item.music?.coverUrl ? { uri: item.music.coverUrl } : undefined}
+      musicTitle={item.music?.musicTitle}
+      musicArtist={item.music?.musicArtist}
+      musicCover={item.music?.musicArtwork ? { uri: item.music.musicArtwork } : undefined}
       content={item.record?.text ?? ''}
       images={item.files?.filter(f => f.mimeType?.startsWith('image/')).map(f => ({ uri: f.url })) ?? []}
       name={item.user?.nickname ?? ''}
+      id={item.user?.userCode}
+      profileSource={item.user?.profileImageUrl ? { uri: item.user.profileImageUrl } : undefined}
       date={item.record?.date ?? ''}
       isBookmarked={item.isBookmarked ?? false}
       isLiked={item.isLiked ?? false}
@@ -89,7 +91,18 @@ export default function FeedHomeScreen({ navigation }) {
         if (index !== currentIndex) {
           flatListRef.current?.scrollToOffset({ offset: snapOffsets[index] ?? 0, animated: true });
         } else {
-          navigation.navigate('FeedDetail', { feedId: item.feedId });
+          navigation.navigate('FeedDetail', {
+            feedId: item.feedId,
+            musicTitle: item.music?.musicTitle,
+            musicArtist: item.music?.musicArtist,
+            musicCover: item.music?.musicArtwork ? { uri: item.music.musicArtwork } : undefined,
+            content: item.record?.text ?? '',
+            images: item.files?.filter(f => f.mimeType?.startsWith('image/')).map(f => ({ uri: f.url })) ?? [],
+            name: item.user?.nickname ?? '',
+            id: item.user?.userCode,
+            profileSource: item.user?.profileImageUrl ? { uri: item.user.profileImageUrl } : undefined,
+            date: item.record?.date ?? '',
+          });
         }
       }}
     />
