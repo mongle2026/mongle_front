@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   textContainerHorizontal: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: gap.XS,
+    gap: gap.S,
   },
   nameRow: {
     flexDirection: 'row',

@@ -1,20 +1,26 @@
-import { StyleSheet, View } from 'react-native';
-import { shadow, palette, colors } from '../styles/color';
+import { StyleSheet } from 'react-native';
+import { BlurView } from 'expo-blur';
+import { shadow, colors } from '../styles/color';
 import BottomNavigationItem from './BottomNavigationItem';
 
 export default function BottomNavigation({ items = [] }) {
   return (
-    <View style={styles.container}>
+    <BlurView
+      intensity={40}
+      tint="dark"
+      experimentalBlurMethod="dimezisBlurView"
+      style={styles.container}
+    >
       {items.map((item, i) => (
         <BottomNavigationItem key={i} {...item} />
       ))}
-    </View>
+    </BlurView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    height: 44,
+    height: 48,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

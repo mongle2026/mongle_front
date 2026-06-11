@@ -147,7 +147,7 @@ export default function Post({
       {/* 푸터 */}
       <View style={styles.footer}>
         <View style={styles.footerLeft}>
-          <Profile name={name} id={id} imageSource={profileSource} />
+          <Profile name={name} id={id} imageSource={profileSource} type="horizontal" />
           <Text style={styles.date}>{date ? formatDate(date) : ''}</Text>
         </View>
         <View style={styles.footerRight}>
