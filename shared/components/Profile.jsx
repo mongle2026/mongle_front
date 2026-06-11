@@ -106,6 +106,6 @@ const styles = StyleSheet.create({
   },
   idText: {
     ...typo.labelSmall,
-    color: colors.fgNeutralWeak,
+    color: colors.fgLayerNeutral,
   },
 });
