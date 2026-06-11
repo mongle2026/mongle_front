@@ -18,7 +18,9 @@ export default function Music({
   onPressButton,
   style,
 }) {
-  const currentImageSource = typeof imageSource === 'string' ? { uri: imageSource } : DEFAULT_COVER_IMAGE;
+  const currentImageSource = typeof imageSource === 'string'
+    ? { uri: imageSource }
+    : imageSource ?? DEFAULT_COVER_IMAGE;
 
   return (
     <View style={[styles.wrapper, style]}>
