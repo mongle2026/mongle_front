@@ -1,12 +1,12 @@
 import { useRef, useState, useCallback } from 'react';
-import { Dimensions, Image, ScrollView, StyleSheet, View } from 'react-native';
+import { Dimensions, Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { colors, palette } from '../styles/color';
 import {gap,padding} from '../styles/token.js'
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const IMG_HEIGHT = 375;
 
-export default function Carousel({ images = [], style }) {
+export default function Carousel({ images = [], style, onPressImage }) {
   const clipped = images.slice(0, 2);
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef(null);
@@ -30,12 +30,13 @@ export default function Carousel({ images = [], style }) {
         scrollEventThrottle={16}
       >
         {clipped.map((src, i) => (
-          <Image
-            key={i}
-            source={typeof src === 'string' ? { uri: src } : src}
-            style={styles.image}
-            resizeMode="cover"
-          />
+          <Pressable key={i} onPress={() => onPressImage?.(src)}>
+            <Image
+              source={typeof src === 'string' ? { uri: src } : src}
+              style={styles.image}
+              resizeMode="cover"
+            />
+          </Pressable>
         ))}
       </ScrollView>
 
