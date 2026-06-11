@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Alert, KeyboardAvoidingView, ScrollView, Text, TextInput, View, StyleSheet, Platform, Pressable, Image } from 'react-native'
+import { Alert, KeyboardAvoidingView, ScrollView, Text, TextInput, View, StyleSheet, Platform, Pressable, Image, Keyboard, BackHandler } from 'react-native'
 import { useRecordFormStore } from '../record/store/useRecordFormStore.js';
 import RecordImage from '../record/components/RecordImage.jsx';
 import RecordAudio from '../record/components/RecordAudio.jsx';
@@ -22,6 +22,7 @@ import SelectMusic from '../music/SelectMusic.jsx';
 import { useToast } from './hook/useToast.js';
 import Toast from '../../../shared/components/Toast.jsx';
 import { useFloatingBottomOffset } from './hook/useFloatingBottomOffset.js';
+import Dialog from '../../../shared/components/Dialog.jsx';
 
 const API_BASE_URL = 'http://192.168.0.3:3000';
 // const API_BASE_URL = 'http://192.168.0.5:3000';
@@ -43,6 +44,8 @@ const RecordScreen = ({ navigation }) => {
   const insets = useSafeAreaInsets();
 
   const [disabled, setDisabled] = useState('disable');
+  const [isDialogVisible, setIsDialogVisible] = useState(false);
+
 
   useEffect(() => {
     if (recordType === 'LETTER') {
@@ -56,6 +59,42 @@ const RecordScreen = ({ navigation }) => {
     }
 
   }, [recordForm.receiver, recordForm.music]);
+
+  const onPressBack = () => {
+    Keyboard.dismiss();
+    setIsDialogVisible(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogVisible(false);
+  };
+
+  const handleConfirmBack = () => {
+    setIsDialogVisible(false);
+    recordForm.resetForm();
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Home' }],
+    });
+  };
+
+  useEffect(() => {
+    const backAction = () => {
+      if (isDialogVisible) {
+        handleCloseDialog();
+        return true;
+      }
+
+      return false;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [isDialogVisible]);
 
   const handleCommit = async () => {
     if (recordType === 'LETTER' && recordForm.receiver === null) {
@@ -151,7 +190,7 @@ const RecordScreen = ({ navigation }) => {
           title='편지 작성'
           buttonLabel='다음'
           onPressButton={handleCommit}
-          onPressBack={() => navigation.goBack()}
+          onPressBack={onPressBack}
           buttonDisabled={false}
           type={disabled}
           backIcon={XIcon}
@@ -260,11 +299,33 @@ const RecordScreen = ({ navigation }) => {
           },
         ]}
       />
+
+      {isDialogVisible && (
+        <View style={styles.dim}>
+          <Dialog
+            title='작성을 그만둘까요?'
+            description='작성한 내용은 저장되지 않으며\n다시 불러올 수 없습니다.'
+            cancelLabel='계속 작성하기'
+            confirmLabel='그만두기'
+            onCancel={handleCloseDialog}
+            onConfirm={handleConfirmBack}
+          />
+        </View>
+      )}
     </View>
   )
 }
 
 const styles = StyleSheet.create({
+  dim: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+    elevation: 999,
+  },
+
   container: {
     flex: 1,
     paddingVertical: padding.XL,
