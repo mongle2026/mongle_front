@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
+import axios from 'axios';
 
 const DUMMY_POSTS = [
   {
@@ -54,15 +55,25 @@ const DUMMY_POSTS = [
   },
 ];
 
+const API_BASE_URL = 'http://192.168.0.3:3000';
+
 export default function useFeedHome() {
   const [activeTab, setActiveTab] = useState('추천');
-  const [posts, setPosts] = useState(DUMMY_POSTS);
+  // const [posts, setPosts] = useState(DUMMY_POSTS);
+  const [posts, setPosts] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [toastVisible, setToastVisible] = useState(false);
   const toastTimerRef = useRef(null);
 
-  const fetchFeed = useCallback(() => {
-    setPosts(DUMMY_POSTS);
+  const fetchFeed = useCallback(async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/feed`);
+
+      setPosts(response.data);
+    } catch (error) {
+      console.log('피드 조회 실패:', error);
+    } finally {
+    }
   }, []);
 
   const onTabPress = useCallback((tab) => {

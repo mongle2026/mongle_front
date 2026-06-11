@@ -11,6 +11,7 @@ import { padding, radius } from '../../../shared/styles/token';
 import UseSelectRecipient from './hook/UseSelectRecipient';
 import Empty from '../../../shared/components/Empty';
 
+const API_BASE_URL = 'http://192.168.0.3:3000';
 
 export default function SelectRecipient({ visible, onClose }) {
   const [searchFieldHeight, setSearchFieldHeight] = useState(0);
@@ -57,10 +58,14 @@ export default function SelectRecipient({ visible, onClose }) {
               {displayUserList.map(item => (
                 <ListRow
                   key={item.id}
-                  title={item.username}
+                  title={item.userCode}
                   subtitle={item.nickname}
                   img={item.img}
-                  imageSource={item.imageSource}
+                  imageSource={
+                    item.hasProfileImage && item.profileImageUrl
+                      ? `${API_BASE_URL}${item.profileImageUrl}`
+                      : null
+                  }
                   caption
                   selected={selectedRecipientId === item.id}
                   onPress={() => handleSelectRecipient(item.id)}

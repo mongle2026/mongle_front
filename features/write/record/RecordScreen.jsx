@@ -88,7 +88,7 @@ const RecordScreen = ({ navigation }) => {
     recordForm.resetForm();
     navigation.reset({
       index: 0,
-      routes: [{ name: 'Home' }],
+      routes: [{ name: 'FeedHome' }],
     });
   };
 

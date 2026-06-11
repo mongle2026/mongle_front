@@ -22,6 +22,7 @@ const NAV_ITEMS = [
   { type: 'icon', Icon: IcLetter, isActive: false },
   { type: 'profile', profileSource: PROFILE_SOURCE, isActive: false },
 ];
+const API_BASE_URL = 'http://192.168.0.3:3000';
 
 export default function FeedHomeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
@@ -86,13 +87,14 @@ export default function FeedHomeScreen({ navigation }) {
       <Post
         type={item.files?.length > 0 ? 'img' : 'auto'}
         currentView={index === currentIndex}
-        musicTitle={item.music?.title}
-        musicArtist={item.music?.artist}
-        musicCover={item.music?.coverUrl ? { uri: item.music.coverUrl } : undefined}
+        musicTitle={item.music?.musicTitle}
+        musicArtist={item.music?.musicArtist}
+        musicCover={item.music?.musicArtwork ? item.music.musicArtwork : undefined}
         content={item.record?.text ?? ''}
-        images={item.files?.filter(f => f.mimeType?.startsWith('image/')).map(f => ({ uri: f.url })) ?? []}
+        images={item.files?.filter(f => f.mimeType?.startsWith('image/')).map(f => ({ uri: `${API_BASE_URL}${f.url}` })) ?? []}
         name={item.user?.nickname ?? ''}
         date={item.record?.date ?? ''}
+        profileSource={item.user.hasProfileImage && item.user.profileImageUrl ? { uri: `${API_BASE_URL}${item.user.profileImageUrl}` } : null }
         isBookmarked={item.isBookmarked ?? false}
         isLiked={item.isLiked ?? false}
         onPressBookmark={() => toggleBookmark(item.feedId)}

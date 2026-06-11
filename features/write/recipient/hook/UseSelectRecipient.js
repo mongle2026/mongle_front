@@ -5,25 +5,25 @@ import axios from 'axios';
 const MOCK_RECIPIENTS = [
   {
     id: '1',
-    username: 'name(나)',
+    userCode: 'name(나)',
     nickname: '@memeow',
     img: 'profile',
   },
   {
     id: '2',
-    username: '코코',
+    userCode: '코코',
     nickname: '@cocokim',
     img: 'profile',
   },
   {
     id: '3',
-    username: '코카콜라',
+    userCode: '코카콜라',
     nickname: '@cocacolamasida',
     img: 'profile',
   },
   {
     id: '4',
-    username: '코코아',
+    userCode: '코코아',
     nickname: '@cocoajoa',
     img: 'profile',
   },
@@ -98,7 +98,7 @@ export default function useSelectRecipient(onClose) {
 
     return MOCK_RECIPIENTS.filter(recipient => {
       return (
-        recipient.username.includes(trimmedKeyword) ||
+        recipient.userCode.includes(trimmedKeyword) ||
         recipient.nickname.includes(trimmedKeyword)
       );
     });
