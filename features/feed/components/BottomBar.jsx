@@ -27,7 +27,7 @@ export default function BottomBar({
     <View style={[styles.container, { paddingBottom: padding.M + insets.bottom }]}>
       {/* 프로필 + 팔로우 */}
       <View style={styles.left}>
-        <Profile name={name} id={id} imageSource={profileSource} type="horizontal" />
+        <Profile name={name} id={id} imageSource={profileSource} type="id" />
         <ButtonText
           label={isFollowing ? '팔로잉' : '팔로우'}
           type={isFollowing ? 'neutral' : 'brand'}

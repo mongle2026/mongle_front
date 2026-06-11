@@ -6,23 +6,23 @@ import { typo } from '../styles/typo';
 
 const DEFAULT_PROFILE_IMAGE = require('../../assets/write/profile_img.png');
 
-// type: 'vertical' | 'horizontal' | 'empty'
-// vertical   — 이미지 + 텍스트 column (이름/tailText 위, @id 아래)
-// horizontal — 이미지 + 텍스트 row   (이름/tailText 와 @id 나란히)
-// empty      — 수신인 선택 chip만
-// imageOnly  — 이미지만 (편지 커버 등에서 사용)
+// type: 'name' | 'id' | 'empty'
+// name      — 이미지 + 이름/tailText 행
+// id        — 이미지 + @id
+// empty     — 수신인 선택 chip만
+// imageOnly — 이미지만 (편지 커버 등에서 사용)
 export default function Profile({
   name = 'nickname',
   id,
   tailText,
   imageSource,
   imageOnly = false,
-  type = 'vertical',
+  type = 'name',
   onPress,
   style,
 }) {
   const isEmpty = type === 'empty';
-  const isHorizontal = type === 'horizontal';
+  const isHorizontal = type === 'id';
   const currentImageSource = imageSource || DEFAULT_PROFILE_IMAGE;
 
   if (imageOnly) {
@@ -52,17 +52,16 @@ export default function Profile({
             style={styles.profileImage}
             resizeMode="cover"
           />
-          <View style={[styles.textContainer, isHorizontal && styles.textContainerHorizontal]}>
+          {isHorizontal ? (
+            <Text style={styles.idText} numberOfLines={1}>@{id}</Text>
+          ) : (
             <View style={styles.nameRow}>
               <Text style={styles.name} numberOfLines={1}>{name}</Text>
               {tailText && (
                 <Text style={styles.name} numberOfLines={1}>{tailText}</Text>
               )}
             </View>
-            {id && (
-              <Text style={styles.idText} numberOfLines={1}>@{id}</Text>
-            )}
-          </View>
+          )}
         </>
       )}
     </Pressable>
@@ -97,17 +96,6 @@ const styles = StyleSheet.create({
     height: 34,
     borderRadius: radius.XS,
   },
-  textContainer: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    gap: gap.XS,
-  },
-  textContainerHorizontal: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: gap.S,
-  },
   nameRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -117,7 +105,7 @@ const styles = StyleSheet.create({
     color: colors.fgLayerNeutral,
   },
   idText: {
-    ...typo.captionSmall,
+    ...typo.labelSmall,
     color: colors.fgNeutralWeak,
   },
 });
