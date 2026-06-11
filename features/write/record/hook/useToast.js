@@ -22,7 +22,7 @@ export function useToast() {
     ({
       message,
       type = 'warning',
-      duration = 2000,
+      duration = 3000,
     }) => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);

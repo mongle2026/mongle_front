@@ -9,7 +9,7 @@ import { typo } from '../styles/typo';
 export default function Empty({ title, body, icon: Icon = SearchIcon }) {
   return (
     <View style={styles.container}>
-      <Icon width={40} height={40} />
+      <Icon width={40} height={40} color={colors.fgLayerNeutralWeak} />
       <View style={styles.texts}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.body}>{body}</Text>
