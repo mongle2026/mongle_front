@@ -1,4 +1,5 @@
-import { Pressable, Text, StyleSheet } from 'react-native';
+import { useRef } from 'react';
+import { Animated, Pressable, Text, StyleSheet } from 'react-native';
 import { colors } from '../styles/color';
 import { padding, radius } from '../styles/token';
 import { typo } from '../styles/typo';
@@ -11,17 +12,40 @@ export default function Button({
   style,
 }) {
   const buttonColor = disabled ? 'disabled' : color;
+  const scale = useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = () => {
+    Animated.spring(scale, {
+      toValue: 0.96,
+      useNativeDriver: true,
+      speed: 50,
+      bounciness: 0,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scale, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 30,
+      bounciness: 6,
+    }).start();
+  };
 
   return (
-    <Pressable
-      onPress={onPress}
-      disabled={disabled}
-      style={[styles.button, styles[buttonColor], style]}
-    >
-      <Text style={[styles.text, styles[`${buttonColor}Text`]]}>
-        {label}
-      </Text>
-    </Pressable>
+    <Animated.View style={[{ transform: [{ scale }] }, style]}>
+      <Pressable
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        disabled={disabled}
+        style={[styles.button, styles[buttonColor]]}
+      >
+        <Text style={[styles.text, styles[`${buttonColor}Text`]]}>
+          {label}
+        </Text>
+      </Pressable>
+    </Animated.View>
   );
 }
 

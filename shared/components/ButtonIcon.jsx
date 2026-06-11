@@ -1,4 +1,6 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { Animated, Pressable, StyleSheet } from 'react-native';
+
+import { useRef } from 'react';
 
 import { colors } from '../styles/color';
 import { padding, radius } from '../styles/token';
@@ -26,9 +28,31 @@ export default function ButtonIcon({
   iconColor = colors.fgNeutral,
   style,
 }) {
+  const scale = useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = () => {
+    Animated.spring(scale, {
+      toValue: 0.85,
+      useNativeDriver: true,
+      speed: 50,
+      bounciness: 0,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scale, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 30,
+      bounciness: 6,
+    }).start();
+  };
+
   return (
     <Pressable
       onPress={onPress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
       disabled={disabled}
       style={[
         styles.button,
@@ -41,11 +65,13 @@ export default function ButtonIcon({
         style,
       ]}
     >
-      <Icon
-        width={ICON_SIZE[size]}
-        height={ICON_SIZE[size]}
-        color={disabled ? colors.fgDisabled : iconColor}
-      />
+      <Animated.View style={{ transform: [{ scale }] }}>
+        <Icon
+          width={ICON_SIZE[size]}
+          height={ICON_SIZE[size]}
+          color={disabled ? colors.fgDisabled : iconColor}
+        />
+      </Animated.View>
     </Pressable>
   );
 }

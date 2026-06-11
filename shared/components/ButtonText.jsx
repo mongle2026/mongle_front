@@ -1,4 +1,5 @@
-import { Pressable, Text, StyleSheet, Platform } from 'react-native';
+import { useRef } from 'react';
+import { Animated, Pressable, Text, StyleSheet, Platform } from 'react-native';
 
 import { colors } from '../styles/color';
 import { spacing, padding } from '../styles/token';
@@ -12,16 +13,39 @@ export default function ButtonText({
   style,
 }) {
   const textType = disabled ? 'disabled' : type;
+  const scale = useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = () => {
+    Animated.spring(scale, {
+      toValue: 0.92,
+      useNativeDriver: true,
+      speed: 50,
+      bounciness: 0,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scale, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 30,
+      bounciness: 6,
+    }).start();
+  };
 
   return (
     <Pressable
       onPress={onPress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
       disabled={disabled}
       style={[styles.button, style]}
     >
-      <Text style={[styles.text, styles[textType]]} numberOfLines={1}>
-        {label}
-      </Text>
+      <Animated.View style={{ transform: [{ scale }] }}>
+        <Text style={[styles.text, styles[textType]]} numberOfLines={1}>
+          {label}
+        </Text>
+      </Animated.View>
     </Pressable>
   );
 }

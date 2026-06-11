@@ -1,4 +1,5 @@
-import { Image, Pressable, Text, View, StyleSheet } from 'react-native';
+import { useRef } from 'react';
+import { Animated, Image, Pressable, Text, View, StyleSheet } from 'react-native';
 
 import { colors } from '../../../shared/styles/color';
 import { padding, gap, radius } from '../../../shared/styles/token';
@@ -11,38 +12,55 @@ export default function ListRow({
   img = 'profile',
   caption = false,
   selected = false,
+  selectedColor = colors.bgLayerSurface,
   onPress,
   style,
 }) {
   const hasCaption = caption && subtitle;
+  const scale = useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = () => {
+    Animated.spring(scale, { toValue: 0.97, useNativeDriver: true, speed: 50, bounciness: 0 }).start();
+  };
+  const handlePressOut = () => {
+    Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 30, bounciness: 6 }).start();
+  };
 
   return (
     <View style={[styles.wrapper, style]}>
-      <Pressable
-        onPress={onPress}
-        style={[styles.row, selected ? styles.selected : styles.default]}
-      >
-        <Image
-          source={{ uri: imageSource }}
-          style={[
-            styles.image,
-            img === 'profile' ? styles.profileImage : styles.musicImage,
+      <Animated.View style={{ transform: [{ scale }] }}>
+        <Pressable
+          onPress={onPress}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+          style={({ pressed }) => [
+            styles.row,
+            (selected || pressed) ? { backgroundColor: selectedColor } : styles.default,
+            pressed && { borderRadius: radius.M },
           ]}
-          resizeMode="cover"
-        />
+        >
+          <Image
+            source={{ uri: imageSource }}
+            style={[
+              styles.image,
+              img === 'profile' ? styles.profileImage : styles.musicImage,
+            ]}
+            resizeMode="cover"
+          />
 
-        <View style={styles.textContainer}>
-          <Text style={styles.title} numberOfLines={1}>
-            {title}
-          </Text>
-
-          {hasCaption && (
-            <Text style={styles.subtitle} numberOfLines={1}>
-              {subtitle}
+          <View style={styles.textContainer}>
+            <Text style={styles.title} numberOfLines={1}>
+              {title}
             </Text>
-          )}
-        </View>
-      </Pressable>
+
+            {hasCaption && (
+              <Text style={styles.subtitle} numberOfLines={1}>
+                {subtitle}
+              </Text>
+            )}
+          </View>
+        </Pressable>
+      </Animated.View>
     </View>
   );
 }
