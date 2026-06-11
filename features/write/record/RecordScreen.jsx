@@ -44,8 +44,8 @@ const BOTTOM_BAR_HEIGHT = 40;
 
 const RecordScreen = ({ navigation }) => {
   const recordForm = useRecordFormStore();
-  // const recordType = useRecordFormStore(state => state.recordType);
-  const recordType = "LETTER";
+  const recordType = useRecordFormStore(state => state.recordType);
+  // const recordType = "LETTER";
   // 나
   const userId = '1';
 
@@ -116,6 +116,7 @@ const RecordScreen = ({ navigation }) => {
         message: '수신인을 지정해 주세요.',
         type: 'warning',
         duration: 2000,
+        color: colors.fgCritical,
       });
       return;
     }
@@ -125,6 +126,7 @@ const RecordScreen = ({ navigation }) => {
         message: '음악을 선택해 주세요.',
         type: 'warning',
         duration: 2000,
+        color: colors.fgCritical,
       });
       return;
     }
@@ -134,6 +136,7 @@ const RecordScreen = ({ navigation }) => {
         message: '메시지를 작성하거나 사진을 첨부해 주세요.',
         type: 'warning',
         duration: 2000,
+        color: colors.fgCritical,
       });
       return;
     };
@@ -180,7 +183,7 @@ const RecordScreen = ({ navigation }) => {
 
       navigation.reset({
         index: 0,
-        routes: [{ name: 'Main' }],
+        routes: [{ name: 'FeedHome' }],
       });
 
     } else if (recordType === "LETTER") {
@@ -280,12 +283,7 @@ const RecordScreen = ({ navigation }) => {
           visible={toast.visible}
           message={toast.message}
           type={toast.type}
-        // style={[
-        //   styles.toast,
-        //   {
-        //     bottom: bottomValue,
-        //   },
-        // ]}
+          color={toast.color}
         />
       </View>
 

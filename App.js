@@ -113,10 +113,7 @@ export default function App() {
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="FeedHome" component={FeedHomeScreen} />
           <Stack.Screen name="Test" component={TestScreen} />
-          <Stack.Screen name="FeedDetail" component={FeedDetailScreen} />
-          <Stack.Screen name="SelectRecipientScreen" component={SelectRecipientScreen} />
-          <Stack.Screen name="SelectMusic" component={SelectMusic} />
-          <Stack.Screen name="Record" component={RecordScreen} />
+          {/* <Stack.Screen name="FeedDetail" component={FeedDetailScreen} /> */}
           <Stack.Screen
             name="Record"
             component={RecordScreen}

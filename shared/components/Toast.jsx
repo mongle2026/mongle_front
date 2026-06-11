@@ -21,6 +21,7 @@ export default function Toast({
   onPressAction,
   visible = true,
   style,
+  color = colors.fgPositive,
 }) {
   const Icon = TOAST_ICON[type];
   const opacity = useRef(new Animated.Value(0)).current;
@@ -65,7 +66,7 @@ export default function Toast({
         pointerEvents={visible ? 'auto' : 'none'}
         style={styles.container}
       >
-        <Icon width={20} height={20} color={colors.fgPositive} />
+        <Icon width={20} height={20} color={color} />
 
         <Text style={styles.message} numberOfLines={2}>
           {message}

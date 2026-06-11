@@ -1,12 +1,14 @@
 // hooks/useToast.js
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { colors } from '../../../../shared/styles/color';
 
 export function useToast() {
   const [toast, setToast] = useState({
     visible: false,
     message: '',
     type: 'warning',
+    color: colors.fgPositive,
   });
 
   const timerRef = useRef(null);
@@ -23,6 +25,7 @@ export function useToast() {
       message,
       type = 'warning',
       duration = 2000,
+      color = colors.fgPositive,
     }) => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
@@ -32,6 +35,7 @@ export function useToast() {
         visible: true,
         message,
         type,
+        color,
       });
 
       timerRef.current = setTimeout(() => {

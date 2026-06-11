@@ -160,9 +160,10 @@ export default function LetterCoverSelect({ navigation }) {
 
   const recordForm = useRecordFormStore();
   const receiver = useRecordFormStore(state => state.receiver.id);
+  const nickname = useRecordFormStore(state => state.receiver.nickname);
+  const recordType = useRecordFormStore(state => state.recordType);
   // 임시 하드코딩
   const userId = '1';
-  const recordType = "LETTER";
 
   const handleCommit = async () => {
     try {
@@ -206,16 +207,8 @@ export default function LetterCoverSelect({ navigation }) {
       console.log('요청 성공:', response.data);
       navigation.navigate('SendAnimation', {
         toMe: false,
+        receiver: nickname,
       });
-
-
-      // recordForm.resetForm();
-
-      // navigation.reset({
-      //   index: 0,
-      //   routes: [{ name: 'Main' }],
-      // });
-
     } catch (error) {
       console.log('handleCommit 전체 에러:', error);
 

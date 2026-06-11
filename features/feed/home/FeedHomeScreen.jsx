@@ -13,6 +13,7 @@ import IcHome from '../../../assets/icons/ic_home.svg';
 import IcLetter from '../../../assets/icons/ic_letter.svg';
 
 import useFeedHome from './hook/useFeedHome';
+import { useRecordFormStore } from '../../write/record/store/useRecordFormStore';
 
 const PROFILE_SOURCE = require('../../../assets/write/profile_img.png');
 
@@ -24,6 +25,7 @@ const NAV_ITEMS = [
 
 export default function FeedHomeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
+  const setRecordType = useRecordFormStore(state => state.setRecordType);
   const { height: screenHeight } = useWindowDimensions();
   const {
     activeTab,
@@ -66,33 +68,43 @@ export default function FeedHomeScreen({ navigation }) {
     fetchFeed();
   }, []);
 
+  const onPressFeed = () => {
+    setRecordType('FEED');
+    navigation.navigate('Record');
+  };
+
+  const onPressLetter = () => {
+    setRecordType('LETTER');
+    navigation.navigate('Record');
+  };
+
   const renderItem = ({ item, index }) => (
     <View onLayout={({ nativeEvent }) => {
       itemHeightsRef.current[index] = nativeEvent.layout.height;
       recomputeOffsets();
     }}>
-    <Post
-      type={item.files?.length > 0 ? 'img' : 'auto'}
-      currentView={index === currentIndex}
-      musicTitle={item.music?.title}
-      musicArtist={item.music?.artist}
-      musicCover={item.music?.coverUrl ? { uri: item.music.coverUrl } : undefined}
-      content={item.record?.text ?? ''}
-      images={item.files?.filter(f => f.mimeType?.startsWith('image/')).map(f => ({ uri: f.url })) ?? []}
-      name={item.user?.nickname ?? ''}
-      date={item.record?.date ?? ''}
-      isBookmarked={item.isBookmarked ?? false}
-      isLiked={item.isLiked ?? false}
-      onPressBookmark={() => toggleBookmark(item.feedId)}
-      onPressLike={() => toggleLike(item.feedId)}
-      onPressBody={() => {
-        if (index !== currentIndex) {
-          flatListRef.current?.scrollToOffset({ offset: snapOffsets[index] ?? 0, animated: true });
-        } else {
-          navigation.navigate('FeedDetail', { feedId: item.feedId });
-        }
-      }}
-    />
+      <Post
+        type={item.files?.length > 0 ? 'img' : 'auto'}
+        currentView={index === currentIndex}
+        musicTitle={item.music?.title}
+        musicArtist={item.music?.artist}
+        musicCover={item.music?.coverUrl ? { uri: item.music.coverUrl } : undefined}
+        content={item.record?.text ?? ''}
+        images={item.files?.filter(f => f.mimeType?.startsWith('image/')).map(f => ({ uri: f.url })) ?? []}
+        name={item.user?.nickname ?? ''}
+        date={item.record?.date ?? ''}
+        isBookmarked={item.isBookmarked ?? false}
+        isLiked={item.isLiked ?? false}
+        onPressBookmark={() => toggleBookmark(item.feedId)}
+        onPressLike={() => toggleLike(item.feedId)}
+        onPressBody={() => {
+          if (index !== currentIndex) {
+            flatListRef.current?.scrollToOffset({ offset: snapOffsets[index] ?? 0, animated: true });
+          } else {
+            navigation.navigate('FeedDetail', { feedId: item.feedId });
+          }
+        }}
+      />
     </View>
   );
 
@@ -123,8 +135,8 @@ export default function FeedHomeScreen({ navigation }) {
       <View style={[styles.bottomBar, { paddingBottom: insets.bottom + padding.XXL }]}>
         <BottomNavigation items={NAV_ITEMS} />
         <FAB
-          onPressFeed={() => navigation.navigate('Record')}
-          onPressLetter={() => navigation.navigate('SelectRecipientScreen')}
+          onPressFeed={onPressFeed}
+          onPressLetter={onPressLetter}
         />
       </View>
 

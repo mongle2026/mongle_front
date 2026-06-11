@@ -26,7 +26,7 @@ const SelectDateScreen = ({ navigation }) => {
   const recordForm = useRecordFormStore();
   const [dateOffsetLabel, setDateOffsetLabel] = useState('1');
   const userId = '1';
-  const recordType = "LETTER";
+  const recordType = useRecordFormStore(state => state.recordType);
   const { patternId, colorId, stampId } = useLetterCoverStore();
 
 
@@ -81,14 +81,6 @@ const SelectDateScreen = ({ navigation }) => {
         deliveryLabel: captionDate,
         toMe: true,
       });
-
-      // recordForm.resetForm();
-
-      // navigation.reset({
-      //   index: 0,
-      //   routes: [{ name: 'Main' }],
-      // });
-
     } catch (error) {
       console.log('handleCommit 전체 에러:', error);
 

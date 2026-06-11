@@ -13,6 +13,7 @@ import { PATTERNS, useLetterCoverStore } from '../letter/data/letterCoverData';
 import { colors, shadow } from '../../../shared/styles/color';
 import { padding } from '../../../shared/styles/token';
 import { useFloatingBottomOffset } from '../record/hook/useFloatingBottomOffset';
+import { useRecordFormStore } from '../record/store/useRecordFormStore';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -32,8 +33,9 @@ const FINAL_SCALE = 48 / ENVELOPE_WIDTH;
 const FINAL_TRANSLATE_Y = SCREEN_HEIGHT * 0.38;
 
 export default function SendAnimationScreen({ navigation, route }) {
-  const { deliveryLabel = '일주일 뒤', toMe = false } = route?.params ?? {};
+  const { deliveryLabel = '일주일 뒤', toMe = false, receiver = null } = route?.params ?? {};
   const { patternId, colorId } = useLetterCoverStore();
+  const recordForm = useRecordFormStore();
 
   const selectedColor = PATTERNS.find(p => p.id === patternId)?.colors.find(c => c.id === colorId);
   const FrontSvg = selectedColor?.frontImg?.default ?? selectedColor?.frontImg;
@@ -42,13 +44,22 @@ export default function SendAnimationScreen({ navigation, route }) {
   const [toastVisible, setToastVisible] = useState(false);
   const bottomValue = useFloatingBottomOffset();
 
-  const showToast = () => {
-    if (toMe === true) {
-      setToastVisible(true);
-    } else {
-      setToastVisible(false);
-    }
-    setTimeout(() => setToastVisible(false), 2000);
+  // const showToast = () => {
+  //   setToastVisible(true);
+  //   setTimeout(() => setToastVisible(false), 2000);
+  // };
+
+  const showToastAndGoHome = () => {
+    setToastVisible(true);
+
+    setTimeout(() => {
+      recordForm.resetForm();
+
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'FeedHome' }],
+      });
+    }, 2000);
   };
 
   const screenOpacity = useSharedValue(0);
@@ -63,8 +74,7 @@ export default function SendAnimationScreen({ navigation, route }) {
         envelopeScale.value = withTiming(FINAL_SCALE, { duration: FLY_OUT_DURATION });
         envelopeOpacity.value = withTiming(0, { duration: FLY_OUT_DURATION });
         envelopeTranslateY.value = withTiming(FINAL_TRANSLATE_Y, { duration: FLY_OUT_DURATION }, () => {
-          runOnJS(showToast)();
-          // TODO: navigation.replace('NextScreen');
+          runOnJS(showToastAndGoHome)();
         });
       });
     });
@@ -101,12 +111,22 @@ export default function SendAnimationScreen({ navigation, route }) {
           },
         ]}
       >
-        <Toast
-          type="success"
-          message={`편지가 ${deliveryLabel} 0시의 나에게 전송됐어요.`}
-          visible={toastVisible}
-          style={styles.toast}
-        />
+        {toMe === true ? (
+          <Toast
+            type="success"
+            message={`편지가 ${deliveryLabel} 0시의 나에게 전송됐어요.`}
+            visible={toastVisible}
+            style={styles.toast}
+          />
+        ) : (
+          <Toast
+            type="success"
+            message={`편지가 ${receiver}에게 전송됐어요.`}
+            visible={toastVisible}
+            style={styles.toast}
+          />
+        )}
+
       </View>
 
 
