@@ -1,4 +1,5 @@
-import { View, StyleSheet } from 'react-native';
+import { useEffect, useState } from 'react';
+import { View, StyleSheet, Keyboard, Platform } from 'react-native';
 
 import ButtonIcon from '../../../shared/components/ButtonIcon';
 import { colors } from '../../../shared/styles/color';
@@ -10,9 +11,19 @@ export default function BottomBar({
   onPressImage,
   disabledImage = false,
 }) {
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    if (Platform.OS !== 'ios') return;
+    const show = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
+    const hide = Keyboard.addListener('keyboardDidHide', () => setKeyboardVisible(false));
+    return () => { show.remove(); hide.remove(); };
+  }, []);
+
+  const paddingBottom = Platform.OS === 'ios' && !keyboardVisible ? padding.M : 0;
+
   return (
-    // <Animated.View style={[styles.container, bottomBarStyle]}>
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingBottom }]}>
       <ButtonIcon
         Icon={ImageIcon}
         iconColor={disabledImage ? colors.fgDisabled : undefined}
@@ -22,14 +33,12 @@ export default function BottomBar({
         onPress={onPressImage}
       />
     </View>
-    // </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: 40,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
