@@ -57,6 +57,7 @@ export default function SelectMusic({ visible, onClose, searchPlaceholder = '기
                 title={item.musicTitle}
                 subtitle={item.musicArtist}
                 imageSource={item.musicArtwork}
+                img="music"
                 caption
                 selected={selectedMusicId === item.externalId}
                 onPress={() => handleSelectMusic(item.externalId)}
