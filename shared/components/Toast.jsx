@@ -59,7 +59,7 @@ export default function Toast({
   return (
     <Animated.View style={[styles.wrapper, { opacity, transform: [{ translateY }] }, style]}>
       <View style={styles.container}>
-        <Icon width={20} height={20} />
+        <Icon width={20} height={20} color={colors.fgPositive} />
 
         <Text style={styles.message} numberOfLines={2}>
           {message}

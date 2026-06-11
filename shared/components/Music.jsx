@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     gap: gap.XS,
   },
   title: {
-    ...typo.titleXSmall,
+    ...typo.titleMedium,
     color: colors.fgLayerNeutral,
     alignSelf: 'stretch',
     textAlign: 'left',
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   },
   artist: {
     ...typo.captionSmall,
-    color: colors.fgLayerNeutralWeak,
+    color: colors.fgPlaceholder,
     alignSelf: 'stretch',
     textAlign: 'left',
   },

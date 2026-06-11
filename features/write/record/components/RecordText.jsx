@@ -8,7 +8,7 @@ import {
 import { typo } from '../../../../shared/styles/typo';
 import { padding } from '../../../../shared/styles/token';
 
-const INPUT_TYPO = typo.bodySmall;
+const INPUT_TYPO = typo.bodyMedium;
 
 const NOTE_LINE_HEIGHT = 33;
 const MIN_LINES = 15;
