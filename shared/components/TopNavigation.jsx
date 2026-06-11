@@ -22,6 +22,11 @@ const TITLE_THEME = {
   light: { color: colors.fgLayerNeutral },
 };
 
+const ICON_COLOR_THEME = {
+  dark: colors.fgNeutral,
+  light: colors.fgLayerNeutral,
+};
+
 export default function TopNavigation({
   title = 'Title',
   buttonLabel = '버튼',
@@ -45,6 +50,7 @@ export default function TopNavigation({
               Icon={BackIcon}
               size="L"
               variant="none"
+              iconColor={ICON_COLOR_THEME[theme]}
               onPress={onPressBack}
             />
           )}

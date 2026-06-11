@@ -10,7 +10,6 @@ import { colors, palette } from '../styles/color';
 import { gap, padding, radius } from '../styles/token';
 import { typo } from '../styles/typo';
 
-const WAVE_WIDTH = 327;
 const WAVE_HEIGHT = 29;
 const ICON_SIZE = 32;
 const DURATION = 30;
@@ -25,6 +24,7 @@ export default function MusicPlay({
   onPressPlay,
 }) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [waveContainerWidth, setWaveContainerWidth] = useState(0);
   const soundRef = useRef(null);
   const intervalRef = useRef(null);
   const elapsedRef = useRef(0);
@@ -32,7 +32,7 @@ export default function MusicPlay({
 
   const waveWidth = progressAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, WAVE_WIDTH],
+    outputRange: [0, waveContainerWidth],
   });
 
   // 오디오 초기화
@@ -137,11 +137,16 @@ export default function MusicPlay({
         </View>
 
         {/* 파형 */}
-        <View style={styles.waveContainer}>
-          <WaveBack width={WAVE_WIDTH} height={WAVE_HEIGHT} style={StyleSheet.absoluteFill} />
-          <Animated.View style={{ width: waveWidth, height: WAVE_HEIGHT, overflow: 'hidden' }}>
-            <WaveFront width={WAVE_WIDTH} height={WAVE_HEIGHT} />
-          </Animated.View>
+        <View style={styles.waveOuter}>
+          <View
+            style={styles.waveContainer}
+            onLayout={(e) => setWaveContainerWidth(e.nativeEvent.layout.width)}
+          >
+            <WaveBack width={waveContainerWidth} height={WAVE_HEIGHT} style={StyleSheet.absoluteFill} />
+            <Animated.View style={{ width: waveWidth, height: WAVE_HEIGHT, overflow: 'hidden' }}>
+              <WaveFront width={waveContainerWidth} height={WAVE_HEIGHT} />
+            </Animated.View>
+          </View>
         </View>
       </View>
     </View>
@@ -180,7 +185,7 @@ const styles = StyleSheet.create({
     gap: gap.XS,
   },
   title: {
-    ...typo.titleXSmall,
+    ...typo.titleMedium,
     color: colors.fgLayerNeutral,
     textAlign: 'left',
   },
@@ -196,8 +201,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  waveOuter: {
+    alignSelf: 'stretch',
+    paddingHorizontal: padding.M,
+  },
   waveContainer: {
-    width: WAVE_WIDTH,
     height: WAVE_HEIGHT,
   },
 });
