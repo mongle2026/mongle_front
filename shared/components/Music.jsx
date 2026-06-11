@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     gap: gap.XS,
   },
   title: {
-    ...typo.titleXSmall,
+    ...typo.titleMedium,
     color: colors.fgLayerNeutral,
     alignSelf: 'stretch',
     textAlign: 'left',
