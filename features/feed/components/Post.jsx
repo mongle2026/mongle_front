@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
   lineText: {
     alignSelf: 'stretch',
     textAlign: 'justify',
-    ...typo.bodySmall,
+    ...typo.bodyMedium,
     color: colors.fgLayerNeutral,
   },
   underline: {
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
   },
   moreText: {
     fontFamily: 'Pretendard-Regular',
-    ...typo.bodySmall,
+    ...typo.bodyMedium,
     color: colors.fgPlaceholder,
   },
 
