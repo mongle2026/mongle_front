@@ -1,5 +1,6 @@
 import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -19,8 +20,10 @@ import SelectDateScreen from './features/write/selectdate/SelectDateScreen.jsx';
 import SendAnimationScreen from './features/write/send/SendAnimationScreen.jsx';
 import SelectRecipientScreen from './features/write/recipient/SelectRecipientScreen.jsx';
 import SelectMusic from './features/write/music/SelectMusic.jsx';
+import LetterScreen from './features/letter/LetterScreen.jsx';
 
 const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
 
 const PROFILE_SOURCE = require('./assets/write/profile_img.png');
 const COVER_SOURCE = require('./assets/write/cover_img.png');
@@ -100,6 +103,21 @@ function TestScreen({ navigation }) {
   );
 }
 
+function TabNavigator() {
+  return (
+    <Tab.Navigator
+      tabBar={() => null}
+      screenOptions={{
+        headerShown: false,
+        animation: 'none',
+      }}
+    >
+      <Tab.Screen name="FeedHome" component={FeedHomeScreen} />
+      <Tab.Screen name="Letter" component={LetterScreen} />
+    </Tab.Navigator>
+  );
+}
+
 export default function App() {
   const [fontsLoaded] = useFonts({
     'Pretendard-Regular': require('./assets/fonts/Pretendard-Regular.ttf'),
@@ -114,27 +132,15 @@ export default function App() {
       <NavigationContainer theme={{ ...DarkTheme, colors: { ...DarkTheme.colors, background: colors.bgDefault } }}>
         <StatusBar style="light" />
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="FeedHome" component={FeedHomeScreen} />
+          <Stack.Screen name="Main" component={TabNavigator} options={{ animation: 'none' }} />
           <Stack.Screen name="Test" component={TestScreen} />
           <Stack.Screen name="FeedDetail" component={FeedDetailScreen} />
           <Stack.Screen name="SelectRecipientScreen" component={SelectRecipientScreen} />
           <Stack.Screen name="SelectMusic" component={SelectMusic} />
           <Stack.Screen name="Record" component={RecordScreen} />
-
-          <Stack.Screen
-            name="LetterCoverSelect"
-            component={LetterCoverSelect}
-          />
-          
-          <Stack.Screen
-            name="SelectDate"
-            component={SelectDateScreen}
-          />
-
-          <Stack.Screen
-            name="SendAnimation"
-            component={SendAnimationScreen}
-          />
+          <Stack.Screen name="LetterCoverSelect" component={LetterCoverSelect} />
+          <Stack.Screen name="SelectDate" component={SelectDateScreen} />
+          <Stack.Screen name="SendAnimation" component={SendAnimationScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

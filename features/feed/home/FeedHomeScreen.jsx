@@ -16,13 +16,12 @@ import useFeedHome from './hook/useFeedHome';
 
 const PROFILE_SOURCE = require('../../../assets/write/profile_img.png');
 
-const NAV_ITEMS = [
-  { type: 'icon', Icon: IcHome, isActive: true },
-  { type: 'icon', Icon: IcLetter, isActive: false },
-  { type: 'profile', profileSource: PROFILE_SOURCE, isActive: false },
-];
-
 export default function FeedHomeScreen({ navigation }) {
+  const NAV_ITEMS = [
+    { type: 'icon', Icon: IcHome, isActive: true },
+    { type: 'icon', Icon: IcLetter, isActive: false, onPress: () => navigation.navigate('Main', { screen: 'Letter' }) },
+    { type: 'profile', profileSource: PROFILE_SOURCE, isActive: false },
+  ];
   const insets = useSafeAreaInsets();
   const { height: screenHeight } = useWindowDimensions();
   const {

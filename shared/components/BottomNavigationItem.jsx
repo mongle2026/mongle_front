@@ -14,7 +14,7 @@ export default function BottomNavigationItem({
 }) {
   return (
     <Pressable onPress={onPress} style={styles.wrapper}>
-      <View style={[styles.pill, isActive && styles.pillActive]}>
+      <View style={styles.pill}>
         {type === 'icon' ? (
           Icon && (
             <Icon
@@ -47,9 +47,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  pillActive: {
-    backgroundColor: colors.bgDefault,
-  },
+
   profile: {
     width: PROFILE_SIZE,
     height: PROFILE_SIZE,
