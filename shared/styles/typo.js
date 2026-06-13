@@ -23,5 +23,6 @@ export const typo = {
   bodyMedium:       { ...base, fontFamily: fontFamily.Regular,  fontSize: 15, lineHeight: 22.5, letterSpacing: -0.15 },
   bodyMediumStrong: { ...base, fontFamily: fontFamily.SemiBold, fontSize: 15, lineHeight: 22.5, letterSpacing: 0     },
   bodyLarge:        { ...base, fontFamily: fontFamily.Regular,  fontSize: 16, lineHeight: 24,   letterSpacing: -0.16 },
-  captionSmall:     { ...base, fontFamily: fontFamily.Medium, fontSize: 12, lineHeight: 16.2, letterSpacing: 0     },
+  captionSmall:     { ...base, fontFamily: fontFamily.Medium,   fontSize: 12, lineHeight: 16.2, letterSpacing: 0     },
+  captionMedium:    { ...base, fontFamily: fontFamily.Medium,   fontSize: 13, lineHeight: 17.55,letterSpacing: 0     },
 };
