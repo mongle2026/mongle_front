@@ -1,6 +1,7 @@
 import { Image, Text, View, StyleSheet, Pressable } from 'react-native';
 
 import PlayFillIcon from '../../assets/icons/ic_play_fill.svg';
+import PauseFillIcon from '../../assets/icons/ic_pause_fill.svg';
 import { colors } from '../styles/color';
 import { padding, gap, radius } from '../styles/token';
 import { typo } from '../styles/typo';
@@ -13,6 +14,7 @@ export default function Music({
   artist = '가수명',
   imageSource,
   button = false,
+  isPlaying = false,
   empty = false,
   onPress,
   onPressButton,
@@ -47,7 +49,7 @@ export default function Music({
 
         {button && !empty && (
           <ButtonIcon
-            Icon={PlayFillIcon}
+            Icon={isPlaying ? PauseFillIcon : PlayFillIcon}
             size="XL"
             variant="none"
             iconColor={colors.fgLayerNeutral}

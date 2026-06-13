@@ -1,17 +1,14 @@
 import { useRef, useEffect, useState } from 'react';
-import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
 import { Audio } from 'expo-av';
 
 import WaveBack from '../../assets/shared/graphic_wave_back.svg';
 import WaveFront from '../../assets/shared/graphic_wave_front.svg';
-import PlayFillIcon from '../../assets/icons/ic_play_fill.svg';
-import PauseFillIcon from '../../assets/icons/ic_pause_fill.svg';
-import { colors, palette } from '../styles/color';
-import { gap, padding, radius } from '../styles/token';
-import { typo } from '../styles/typo';
+import { colors } from '../styles/color';
+import { padding, radius } from '../styles/token';
+import Music from './Music';
 
 const WAVE_HEIGHT = 29;
-const ICON_SIZE = 32;
 const DURATION = 30;
 
 const DEFAULT_COVER = require('../../assets/write/cover_img.png');
@@ -122,19 +119,14 @@ export default function MusicPlay({
     <View style={styles.outer}>
       <View style={styles.card}>
         {/* 음악 정보 */}
-        <View style={styles.row}>
-          <Image source={coverSource} style={styles.cover} resizeMode="cover" />
-          <View style={styles.texts}>
-            <Text style={styles.title} numberOfLines={1}>{title}</Text>
-            <Text style={styles.artist} numberOfLines={1}>{artist}</Text>
-          </View>
-          <Pressable style={styles.playButton} onPress={handlePress}>
-            {isPlaying
-              ? <PauseFillIcon width={ICON_SIZE} height={ICON_SIZE} color={colors.fgLayerNeutral} />
-              : <PlayFillIcon  width={ICON_SIZE} height={ICON_SIZE} color={colors.fgLayerNeutral} />
-            }
-          </Pressable>
-        </View>
+        <Music
+          title={title}
+          artist={artist}
+          imageSource={coverSource}
+          button
+          isPlaying={isPlaying}
+          onPressButton={handlePress}
+        />
 
         {/* 파형 */}
         <View style={styles.waveOuter}>
@@ -157,7 +149,8 @@ const styles = StyleSheet.create({
   outer: {
     width: '100%',
     paddingHorizontal: padding.XL,
-    paddingVertical: padding.M,
+    paddingTop: padding.S,
+    paddingBottom: padding.M,
   },
   card: {
     borderRadius: radius.XL,
@@ -165,41 +158,6 @@ const styles = StyleSheet.create({
     paddingBottom: padding.M,
     backgroundColor: colors.bgLayerWeak,
     alignItems: 'center',
-    gap: gap.XS,
-  },
-  row: {
-    alignSelf: 'stretch',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: padding.M,
-    paddingVertical: padding.S,
-    gap: gap.L,
-  },
-  cover: {
-    width: 56,
-    height: 56,
-    borderRadius: radius.XS,
-  },
-  texts: {
-    flex: 1,
-    gap: gap.XS,
-  },
-  title: {
-    ...typo.titleMedium,
-    color: colors.fgLayerNeutral,
-    textAlign: 'left',
-  },
-  artist: {
-    ...typo.captionSmall,
-    color: colors.fgLayerNeutralWeak,
-    textAlign: 'left',
-  },
-  playButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   waveOuter: {
     alignSelf: 'stretch',
