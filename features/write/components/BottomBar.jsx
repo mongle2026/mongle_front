@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { View, StyleSheet, Keyboard, Platform } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ButtonIcon from '../../../shared/components/ButtonIcon';
 import { colors } from '../../../shared/styles/color';
@@ -11,16 +11,8 @@ export default function BottomBar({
   onPressImage,
   disabledImage = false,
 }) {
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
-
-  useEffect(() => {
-    if (Platform.OS !== 'ios') return;
-    const show = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
-    const hide = Keyboard.addListener('keyboardDidHide', () => setKeyboardVisible(false));
-    return () => { show.remove(); hide.remove(); };
-  }, []);
-
-  const paddingBottom = Platform.OS === 'ios' && !keyboardVisible ? padding.M : 0;
+  const insets = useSafeAreaInsets();
+  const paddingBottom = padding.M + insets.bottom;
 
   return (
     <View style={[styles.container, { paddingBottom }]}>
