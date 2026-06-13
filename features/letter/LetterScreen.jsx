@@ -4,7 +4,7 @@ import IcHamburger from '../../assets/icons/ic_hamburger.svg';
 import IcStamp from '../../assets/icons/ic_stamp.svg';
 import IcHome from '../../assets/icons/ic_home.svg';
 import IcLetter from '../../assets/icons/ic_letter.svg';
-import { PATTERNS, STAMPS } from '../write/letter/data/letterCoverData';
+import { STAMPS, TEMPLATES, resolvePatternColor } from '../write/letter/data/letterCoverData';
 
 import TopNavigation from '../../shared/components/TopNavigation';
 import LetterListRow from './components/LetterListRow';
@@ -20,11 +20,12 @@ import { gap, padding } from '../../shared/styles/token';
 
 const PROFILE_SOURCE = require('../../assets/write/profile_img.png');
 
-const NEW_LETTERS = [
-  { id: 1, frontImg: PATTERNS[0].colors[0].frontImg, stampImage: STAMPS[0].image },
-  { id: 2, frontImg: PATTERNS[2].colors[1].frontImg, stampImage: STAMPS[4].image },
-  { id: 3, frontImg: PATTERNS[4].colors[4].frontImg, stampImage: STAMPS[9].image },
-];
+const NEW_LETTERS = TEMPLATES.slice(0, 3).map((t, i) => {
+  const resolved = resolvePatternColor(t.patternColorId);
+  const color = resolved?.color;
+  const stamp = STAMPS.find(s => s.id === t.stampId);
+  return { id: i + 1, frontImg: color?.frontImg, flapImg: color?.flapImg, stamp };
+});
 
 const SAMPLE_GROUPS = [
   { date: '25/11', letters: [{ id: 1 }] },
@@ -35,9 +36,9 @@ const SAMPLE_GROUPS = [
 ];
 
 const STROKE_TABS = [
-  { key: 'all',      label: '전체 편지' },
+  { key: 'all',      label: '전체' },
   { key: 'received', label: '받은 편지' },
-  { key: 'tome',     label: '나에게 편지' },
+  { key: 'tome',     label: '나에게' },
   { key: 'sent',     label: '보낸 편지' },
 ];
 
@@ -59,25 +60,21 @@ export default function LetterScreen({ navigation }) {
     <View style={styles.screen}>
       <TopNavigation usage="depth1" />
 
-      <StrokeTabBar tabs={STROKE_TABS} defaultKey="all" />
-
-      <View style={styles.filterRow}>
-        <Filter label="최신순" />
-        <TapButton tabs={TAP_TABS} defaultKey="list" />
-      </View>
-
-      <NewLetterRow letters={NEW_LETTERS} />
-
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={[
-          styles.listContent,
-          { paddingBottom: insets.bottom + 48 + gap.XL + padding.XXL },
-        ]}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 48 + gap.XL + padding.XXL }}
       >
-        {SAMPLE_GROUPS.map((group) => (
-          <LetterListRow key={group.date} date={group.date} letters={group.letters} />
-        ))}
+        <StrokeTabBar tabs={STROKE_TABS} defaultKey="all" />
+        <View style={styles.filterRow}>
+          <Filter label="최신순" />
+          <TapButton tabs={TAP_TABS} defaultKey="list" />
+        </View>
+        <NewLetterRow letters={NEW_LETTERS} />
+        <View style={styles.listContent}>
+          {SAMPLE_GROUPS.map((group) => (
+            <LetterListRow key={group.date} date={group.date} letters={group.letters} />
+          ))}
+        </View>
       </ScrollView>
 
       <View style={[styles.bottomArea, { bottom: insets.bottom + padding.XXL }]}>
@@ -106,7 +103,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContent: {
-    padding: padding.XL,
     gap: gap.XL,
   },
   bottomArea: {

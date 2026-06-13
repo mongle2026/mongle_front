@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.bgSurface,
   },
   label: {
-    ...typo.labelSmall,
+    ...typo.labelMedium,
   },
   activeLabel: {
     color: colors.fgNeutral,

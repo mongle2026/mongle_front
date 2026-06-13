@@ -1,4 +1,6 @@
 import { View, Image, Pressable, StyleSheet, Dimensions } from 'react-native';
+import { colors } from '../styles/color';
+import Badge from './Badge';
 import Animated from 'react-native-reanimated';
 
 import Profile from './Profile';
@@ -15,6 +17,7 @@ const FLAP_LEFT = (ENVELOPE_WIDTH - FLAP_RENDER_WIDTH) / 2;
 const ENV_MARGIN_H = ENVELOPE_WIDTH * (15.8 / 342.6);
 const ENV_MARGIN_V = ENVELOPE_WIDTH * (13.92 / 342.6);
 
+
 export default function EnvelopePreview({
   FrontSvg,
   FlapSvg,
@@ -24,6 +27,7 @@ export default function EnvelopePreview({
   backAnimStyle,
   onPress,
   profileStyle,
+  isNew,
 }) {
   return (
     <Pressable onPress={onPress} style={styles.envelopeContainer}>
@@ -46,6 +50,7 @@ export default function EnvelopePreview({
         )}
         <Profile imageOnly style={[styles.profileOverlay, profileStyle]} />
       </Animated.View>
+      {isNew && <Badge style={styles.badge} />}
     </Pressable>
   );
 }
@@ -80,10 +85,18 @@ const styles = StyleSheet.create({
     width: 72,
     height: 106,
   },
+  badge: {
+    position: 'absolute',
+    top: 28,
+    right: 28,
+    zIndex: 10,
+  },
   profileOverlay: {
     position: 'absolute',
     bottom: ENV_MARGIN_V + padding.M,
     right: ENV_MARGIN_H + padding.M,
     width: 50,
+    height: 50,
+    borderRadius: 25,
   },
 });
