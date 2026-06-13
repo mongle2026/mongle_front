@@ -6,44 +6,73 @@ import ButtonText from './ButtonText';
 
 import ChevronIcon from '../../assets/icons/ic_chevron.svg';
 import XIcon from '../../assets/icons/ic_x.svg';
+import IcNotification from '../../assets/icons/ic_notification.svg';
+import LogoTemp from '../../assets/logo/logo_temp.svg';
 
 import { colors } from '../styles/color';
 import { padding } from '../styles/token';
 import { typo } from '../styles/typo';
 
-// theme='light' 를 명시할 때만 light 배경/텍스트 색상 적용, 기본은 dark
 const CONTAINER_THEME = {
-  dark: { backgroundColor: colors.bgDefault },
+  dark:  { backgroundColor: colors.bgDefault },
   light: { backgroundColor: colors.bgLayerDefault },
 };
 
 const TITLE_THEME = {
-  dark: { color: colors.fgNeutral },
+  dark:  { color: colors.fgNeutral },
   light: { color: colors.fgLayerNeutral },
 };
 
 const ICON_COLOR_THEME = {
-  dark: colors.fgNeutral,
+  dark:  colors.fgNeutral,
   light: colors.fgLayerNeutral,
 };
 
+const ICON_COLOR_DEPTH2_THEME = {
+  dark:  colors.fgLayerNeutralWeak,
+  light: colors.fgLayerNeutral,
+};
+
+// usage="depth1" : 로고 + 알림 아이콘 (메인 탭 화면)
+// usage="depth2" : 뒤로가기 + 타이틀 + 텍스트 버튼 (서브 화면, 기본값)
 export default function TopNavigation({
   title = 'Title',
   buttonLabel = '버튼',
   onPressBack,
   onPressButton,
+  onPressNotification,
   showBackButton = true,
   showTextButton = true,
   buttonDisabled = false,
   backIcon: BackIcon = ChevronIcon,
   theme = 'dark',
+  usage = 'depth2',
   type = 'brand',
   style,
 }) {
+  if (usage === 'depth1') {
+    return (
+      <View style={[styles.container, CONTAINER_THEME[theme], style]}>
+        <SafeArea />
+        <View style={styles.depth1Navigation}>
+          <View style={styles.logoArea}>
+            <LogoTemp width={77} height={24} />
+          </View>
+          <ButtonIcon
+            Icon={IcNotification}
+            size="L"
+            variant="none"
+            iconColor={ICON_COLOR_THEME[theme]}
+            onPress={onPressNotification}
+          />
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={[styles.container, CONTAINER_THEME[theme], style]}>
       <SafeArea />
-
       <View style={styles.navigation}>
         <View style={styles.leftSide}>
           {showBackButton && (
@@ -51,7 +80,7 @@ export default function TopNavigation({
               Icon={BackIcon}
               size="L"
               variant="none"
-              iconColor={ICON_COLOR_THEME[theme]}
+              iconColor={ICON_COLOR_DEPTH2_THEME[theme]}
               onPress={onPressBack}
             />
           )}
@@ -89,6 +118,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: padding.M,
+  },
+  depth1Navigation: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingLeft: padding.XL,
+    paddingRight: padding.M,
+    paddingVertical: padding.M,
+  },
+  logoArea: {
+    width: 100,
+    justifyContent: 'center',
   },
   leftSide: {
     minWidth: SIDE_MIN_WIDTH,
