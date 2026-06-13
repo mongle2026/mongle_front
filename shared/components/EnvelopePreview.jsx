@@ -26,11 +26,12 @@ export default function EnvelopePreview({
   frontAnimStyle,
   backAnimStyle,
   onPress,
+  onLongPress,
   profileStyle,
   isNew,
 }) {
   return (
-    <Pressable onPress={onPress} style={styles.envelopeContainer}>
+    <Pressable onPress={onPress} onLongPress={onLongPress} style={styles.envelopeContainer}>
       {/* 앞면 */}
       <Animated.View style={[styles.envelopeFace, frontAnimStyle]}>
         {FrontSvg && <FrontSvg width={ENVELOPE_WIDTH} height={ENVELOPE_HEIGHT} />}
@@ -40,6 +41,7 @@ export default function EnvelopePreview({
           </View>
         )}
         <Profile imageOnly style={[styles.profileOverlay, profileStyle]} />
+        {isNew && <Badge style={styles.badge} />}
       </Animated.View>
 
       {/* 뒷면 */}
@@ -49,8 +51,8 @@ export default function EnvelopePreview({
           <Image source={selectedStamp.image} style={styles.stamp} />
         )}
         <Profile imageOnly style={[styles.profileOverlay, profileStyle]} />
+        {isNew && <Badge style={styles.badge} />}
       </Animated.View>
-      {isNew && <Badge style={styles.badge} />}
     </Pressable>
   );
 }

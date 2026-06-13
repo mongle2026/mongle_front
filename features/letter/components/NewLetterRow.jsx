@@ -1,4 +1,10 @@
 import { View, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  interpolate,
+} from 'react-native-reanimated';
 import EnvelopePreview from '../../../shared/components/EnvelopePreview';
 import { gap, padding } from '../../../shared/styles/token';
 
@@ -12,6 +18,45 @@ const ENV_HEIGHT = ENV_WIDTH * (253.33 / 342.6);
 const SCALE = CARD_WIDTH / ENV_WIDTH;
 const SIDE_PADDING = (SCREEN_WIDTH - CARD_WIDTH) / 2;
 const ITEM_WIDTH = CARD_WIDTH + gap.XS;
+
+function FlippableEnvelope({ letter, rotate }) {
+  const flipProgress = useSharedValue(0);
+
+  const handleLongPress = () => {
+    flipProgress.value = withTiming(flipProgress.value === 0 ? 1 : 0, { duration: 500 });
+  };
+
+  const frontAnimStyle = useAnimatedStyle(() => {
+    const spin = interpolate(flipProgress.value, [0, 1], [0, 180]);
+    return { transform: [{ perspective: 800 }, { rotateY: `${spin}deg` }] };
+  });
+
+  const backAnimStyle = useAnimatedStyle(() => {
+    const spin = interpolate(flipProgress.value, [0, 1], [180, 360]);
+    return { transform: [{ perspective: 800 }, { rotateY: `${spin}deg` }] };
+  });
+
+  const FrontSvg = letter.frontImg?.default ?? letter.frontImg;
+  const FlapSvg = letter.flapImg?.default ?? letter.flapImg;
+  const BackSvg = FrontSvg;
+
+  return (
+    <View style={styles.card}>
+      <View style={[styles.scaleContainer, { transform: [...styles.scaleContainer.transform, { rotate }] }]}>
+        <EnvelopePreview
+          FrontSvg={FrontSvg}
+          FlapSvg={FlapSvg}
+          BackSvg={BackSvg}
+          selectedStamp={letter.stamp}
+          frontAnimStyle={frontAnimStyle}
+          backAnimStyle={backAnimStyle}
+          onLongPress={handleLongPress}
+          isNew
+        />
+      </View>
+    </View>
+  );
+}
 
 export default function NewLetterRow({ letters = [] }) {
   if (letters.length === 0) return null;
@@ -28,24 +73,8 @@ export default function NewLetterRow({ letters = [] }) {
       decelerationRate="fast"
     >
       {letters.map((letter) => {
-        const FrontSvg = letter.frontImg?.default ?? letter.frontImg;
-        const FlapSvg = letter.flapImg?.default ?? letter.flapImg;
-        const BackSvg = FrontSvg;
         const rotate = (Math.random() * 8 - 4).toFixed(2) + 'deg';
-
-        return (
-          <View key={letter.id} style={styles.card}>
-            <View style={[styles.scaleContainer, { transform: [...styles.scaleContainer.transform, { rotate }] }]}>
-              <EnvelopePreview
-                FrontSvg={FrontSvg}
-                FlapSvg={FlapSvg}
-                BackSvg={BackSvg}
-                selectedStamp={letter.stamp}
-                isNew
-              />
-            </View>
-          </View>
-        );
+        return <FlippableEnvelope key={letter.id} letter={letter} rotate={rotate} />;
       })}
     </ScrollView>
   );
