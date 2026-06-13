@@ -3,8 +3,8 @@
 
 // Android는 fontWeight로 굵기 구분이 안 돼서 fontFamily로 직접 지정
 const fontFamily = {
-  Regular:  'Pretendard-Regular',
-  Medium:   'Pretendard-Medium',
+  Regular: 'Pretendard-Regular',
+  Medium: 'Pretendard-Medium',
   SemiBold: 'Pretendard-SemiBold',
 };
 
