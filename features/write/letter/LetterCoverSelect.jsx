@@ -1,7 +1,7 @@
 // 유경 생성
 
-import { View, ScrollView, StyleSheet, Dimensions, Pressable, Image } from 'react-native';
-import Animated, {
+import { View, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import {
   interpolate,
   useAnimatedStyle,
   useSharedValue,
@@ -11,7 +11,7 @@ import axios from 'axios';
 
 import TopNavigation from '../../../shared/components/TopNavigation';
 import TabBar from '../../../shared/components/TabBar';
-import Profile from '../../../shared/components/Profile';
+import EnvelopePreview from '../../../shared/components/EnvelopePreview';
 import Templete from './components/Templete';
 import PatternItem from '../components/PatternItem';
 import ColorItem from '../components/ColorItem';
@@ -20,7 +20,7 @@ import StampItem from '../components/StampItem';
 import UseLetterCoverSelect, { TABS } from './hook/UseLetterCoverSelect';
 import { PATTERNS, STAMPS, TEMPLATES, resolvePatternColor, useLetterCoverStore } from './data/letterCoverData';
 
-import { colors, shadow } from '../../../shared/styles/color';
+import { colors } from '../../../shared/styles/color';
 import { gap, padding, radius } from '../../../shared/styles/token';
 import { useRecordFormStore } from '../record/store/useRecordFormStore';
 import { createRecordFormData } from '../utils/createRecordFormData ';
@@ -33,17 +33,6 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const ITEM_3COL = (SCREEN_WIDTH - padding.XL * 2 - gap.M * 2) / 3;
 
 const TAB_COLUMNS = { template: 2, pattern: 3, color: 3, stamp: 3 };
-
-// 봉투 미리보기 사이즈 (front SVG viewBox: 342.6 × 253.33)
-const ENVELOPE_WIDTH = SCREEN_WIDTH - padding.XL * 2;
-const ENVELOPE_HEIGHT = ENVELOPE_WIDTH * (253.33 / 342.6);
-// flap SVG viewBox: 325.17 × 173.2 — front와 동일한 픽셀-퍼-유닛 스케일로 렌더링
-const FLAP_RENDER_WIDTH = ENVELOPE_WIDTH * (325.17 / 342.6);
-const FLAP_RENDER_HEIGHT = FLAP_RENDER_WIDTH * (173.2 / 325.17);
-const FLAP_LEFT = (ENVELOPE_WIDTH - FLAP_RENDER_WIDTH) / 2;
-// back SVG clipPath 기준 봉투 shape 여백 (~15.8 가로, ~13.92 세로 SVG units)
-const ENV_MARGIN_H = ENVELOPE_WIDTH * (15.8 / 342.6);
-const ENV_MARGIN_V = ENVELOPE_WIDTH * (13.92 / 342.6);
 
 export default function LetterCoverSelect({ navigation }) {
   const {
@@ -243,36 +232,15 @@ export default function LetterCoverSelect({ navigation }) {
 
       {/* 봉투 미리보기 */}
       <View style={styles.sectionLetter}>
-        <Pressable
+        <EnvelopePreview
+          FrontSvg={FrontSvg}
+          FlapSvg={FlapSvg}
+          BackSvg={BackSvg}
+          selectedStamp={selectedStamp}
+          frontAnimStyle={frontAnimStyle}
+          backAnimStyle={backAnimStyle}
           onPress={handleFlip}
-          style={styles.envelopeContainer}
-        >
-          {/* 앞면 */}
-          <Animated.View style={[styles.envelopeFace, frontAnimStyle]}>
-            {FrontSvg && <FrontSvg width={ENVELOPE_WIDTH} height={ENVELOPE_HEIGHT} />}
-            {FlapSvg && (
-              <View style={[styles.flapWrapper, { height: FLAP_RENDER_HEIGHT }]}>
-                <FlapSvg width={FLAP_RENDER_WIDTH} height={FLAP_RENDER_HEIGHT} />
-              </View>
-            )}
-            <Profile
-              imageOnly
-              style={styles.profileOverlay}
-            />
-          </Animated.View>
-
-          {/* 뒷면 */}
-          <Animated.View style={[styles.envelopeFace, styles.envelopeFaceBack, backAnimStyle]}>
-            {BackSvg && <BackSvg width={ENVELOPE_WIDTH} height={ENVELOPE_HEIGHT} />}
-            {selectedStamp && (
-              <Image source={selectedStamp.image} style={styles.stamp} />
-            )}
-            <Profile
-              imageOnly
-              style={styles.profileOverlay}
-            />
-          </Animated.View>
-        </Pressable>
+        />
       </View>
 
       {/* 탭바 */}
@@ -313,41 +281,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: padding.M,
     paddingBottom: padding.XL,
-  },
-  envelopeContainer: {
-    width: ENVELOPE_WIDTH,
-    height: ENVELOPE_HEIGHT,
-  },
-  envelopeFace: {
-    position: 'absolute',
-    width: ENVELOPE_WIDTH,
-    height: ENVELOPE_HEIGHT,
-    backfaceVisibility: 'hidden',
-    zIndex: 1,
-  },
-  envelopeFaceBack: {
-    zIndex: 2,
-  },
-  flapWrapper: {
-    position: 'absolute',
-    top: padding.M,
-    left: FLAP_LEFT,
-    width: FLAP_RENDER_WIDTH,
-    transform: [{ rotate: '-0.25deg' }, { translateY: -1.4 }],
-    ...shadow.middleDown,
-  },
-  stamp: {
-    position: 'absolute',
-    top: ENV_MARGIN_V + padding.XL,
-    left: ENV_MARGIN_H + padding.XL,
-    width: 72,
-    height: 106,
-  },
-  profileOverlay: {
-    position: 'absolute',
-    bottom: ENV_MARGIN_V + padding.M,
-    right: ENV_MARGIN_H + padding.M,
-    width: 50,
   },
 
   // 그리드 공통
