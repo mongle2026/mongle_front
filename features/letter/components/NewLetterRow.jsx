@@ -1,4 +1,5 @@
 import { View, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import { useMemo } from 'react';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -19,7 +20,8 @@ const SCALE = CARD_WIDTH / ENV_WIDTH;
 const SIDE_PADDING = (SCREEN_WIDTH - CARD_WIDTH) / 2;
 const ITEM_WIDTH = CARD_WIDTH + gap.XS;
 
-function FlippableEnvelope({ letter, rotate }) {
+function FlippableEnvelope({ letter }) {
+  const rotate = useMemo(() => (Math.random() * 8 - 4).toFixed(2) + 'deg', []);
   const flipProgress = useSharedValue(0);
 
   const handleLongPress = () => {
@@ -73,8 +75,7 @@ export default function NewLetterRow({ letters = [] }) {
       decelerationRate="fast"
     >
       {letters.map((letter) => {
-        const rotate = (Math.random() * 8 - 4).toFixed(2) + 'deg';
-        return <FlippableEnvelope key={letter.id} letter={letter} rotate={rotate} />;
+        return <FlippableEnvelope key={letter.id} letter={letter} />;
       })}
     </ScrollView>
   );
