@@ -1,39 +1,24 @@
 import { ScrollView, View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import IcHamburger from '../../assets/icons/ic_hamburger.svg';
-import IcStamp from '../../assets/icons/ic_stamp.svg';
-import IcHome from '../../assets/icons/ic_home.svg';
-import IcLetter from '../../assets/icons/ic_letter.svg';
-import { STAMPS, TEMPLATES, resolvePatternColor } from '../write/letter/data/letterCoverData';
+import IcHamburger from '../../../assets/icons/ic_hamburger.svg';
+import IcStamp from '../../../assets/icons/ic_stamp.svg';
+import IcHome from '../../../assets/icons/ic_home.svg';
+import IcLetter from '../../../assets/icons/ic_letter.svg';
 
-import TopNavigation from '../../shared/components/TopNavigation';
+import TopNavigation from '../../../shared/components/TopNavigation';
 import LetterListRow from './components/LetterListRow';
 import NewLetterRow from './components/NewLetterRow';
-import StrokeTabBar from '../../shared/components/StrokeTabBar';
-import Filter from '../../shared/components/Filter';
-import TapButton from '../../shared/components/TapButton';
-import BottomNavigation from '../../shared/components/BottomNavigation';
-import FAB from '../../shared/components/FAB';
+import StrokeTabBar from '../../../shared/components/StrokeTabBar';
+import Filter from '../../../shared/components/Filter';
+import TapButton from '../../../shared/components/TapButton';
+import BottomNavigation from '../../../shared/components/BottomNavigation';
+import FAB from '../../../shared/components/FAB';
 
-import { colors } from '../../shared/styles/color';
-import { gap, padding } from '../../shared/styles/token';
+import { colors } from '../../../shared/styles/color';
+import { gap, padding } from '../../../shared/styles/token';
+import { NEW_LETTERS, SAMPLE_GROUPS } from './data/letterHomeDummy';
 
-const PROFILE_SOURCE = require('../../assets/write/profile_img.png');
-
-const NEW_LETTERS = TEMPLATES.slice(0, 3).map((t, i) => {
-  const resolved = resolvePatternColor(t.patternColorId);
-  const color = resolved?.color;
-  const stamp = STAMPS.find(s => s.id === t.stampId);
-  return { id: i + 1, frontImg: color?.frontImg, flapImg: color?.flapImg, stamp };
-});
-
-const SAMPLE_GROUPS = [
-  { date: '25/11', letters: [{ id: 1 }] },
-  { date: '25/10', letters: [{ id: 1 }, { id: 2 }] },
-  { date: '25/09', letters: [{ id: 1 }, { id: 2 }, { id: 3 }] },
-  { date: '25/08', letters: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }, { id: 6 }] },
-  { date: '25/05', letters: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }] },
-];
+const PROFILE_SOURCE = require('../../../assets/write/profile_img.png');
 
 const STROKE_TABS = [
   { key: 'all',      label: '전체' },
@@ -47,7 +32,7 @@ const TAP_TABS = [
   { key: 'stamp', icon: <IcStamp /> },
 ];
 
-export default function LetterScreen({ navigation }) {
+export default function LetterHomeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
 
   const NAV_ITEMS = [

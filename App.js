@@ -20,7 +20,7 @@ import SelectDateScreen from './features/write/selectdate/SelectDateScreen.jsx';
 import SendAnimationScreen from './features/write/send/SendAnimationScreen.jsx';
 import SelectRecipientScreen from './features/write/recipient/SelectRecipientScreen.jsx';
 import SelectMusic from './features/write/music/SelectMusic.jsx';
-import LetterScreen from './features/letter/LetterScreen.jsx';
+import LetterHomeScreen from './features/letter/home/LetterHomeScreen.jsx';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -113,7 +113,7 @@ function TabNavigator() {
       }}
     >
       <Tab.Screen name="FeedHome" component={FeedHomeScreen} />
-      <Tab.Screen name="Letter" component={LetterScreen} />
+      <Tab.Screen name="Letter" component={LetterHomeScreen} />
     </Tab.Navigator>
   );
 }
@@ -132,8 +132,8 @@ export default function App() {
       <NavigationContainer theme={{ ...DarkTheme, colors: { ...DarkTheme.colors, background: colors.bgDefault } }}>
         <StatusBar style="light" />
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="LetterCoverSelect" component={LetterCoverSelect} />
           <Stack.Screen name="Main" component={TabNavigator} options={{ animation: 'none' }} />
+          <Stack.Screen name="LetterCoverSelect" component={LetterCoverSelect} />
           <Stack.Screen name="Test" component={TestScreen} />
           <Stack.Screen name="FeedDetail" component={FeedDetailScreen} />
           <Stack.Screen name="SelectRecipientScreen" component={SelectRecipientScreen} />

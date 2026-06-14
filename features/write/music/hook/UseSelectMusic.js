@@ -2,19 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { useRecordFormStore } from '../../record/store/useRecordFormStore';
 
-const MOCK_MUSIC_LIST = [
-  { externalId: '1', musicTitle: 'Warm On A Cold Night', musicArtist: 'Honne', musicArtwork: null },
-  { externalId: '2', musicTitle: 'Day 1', musicArtist: 'Honne', musicArtwork: null },
-  { externalId: '3', musicTitle: 'Location Unknown', musicArtist: 'Honne', musicArtwork: null },
-  { externalId: '4', musicTitle: 'Someone That Loves You', musicArtist: 'Honne', musicArtwork: null },
-  { externalId: '5', musicTitle: 'No Song Without You', musicArtist: 'Honne', musicArtwork: null },
-  { externalId: '6', musicTitle: 'Free Love', musicArtist: 'Honne', musicArtwork: null },
-  { externalId: '7', musicTitle: 'Me & You', musicArtist: 'Honne', musicArtwork: null },
-  { externalId: '8', musicTitle: 'Crying Over You', musicArtist: 'Honne', musicArtwork: null },
-  { externalId: '9', musicTitle: 'By Your Side', musicArtist: 'Honne', musicArtwork: null },
-  { externalId: '10', musicTitle: 'Gone Are The Days', musicArtist: 'Honne', musicArtwork: null },
-];
-
 const API_BASE_URL = 'http://192.168.0.3:3000';
 // const API_BASE_URL = 'http://172.19.77.207:3000';
 // const API_BASE_URL = 'http://172.19.19.169:3000';
@@ -89,24 +76,6 @@ export default function UseSelectMusic(_, onClose) {
     };
   }, [keyword]);
 
-  // filteredMusicList는 더미데이터로 테스트가 필요없어질 때 삭제
-  // 혹시 계속 더미데이터로 테스트 할 때 필요할까봐 살려둡니다 
-  // <FlatList data={musicList} ... /> filteredMusicList를 사용할 때는 SelectMusic.jsx가서 musicList를 filteredMusicList로 변경 반드시 필요함! 
-  const filteredMusicList = useMemo(() => {
-    const trimmedKeyword = keyword.trim();
-
-    if (!trimmedKeyword) {
-      return MOCK_MUSIC_LIST;
-    }
-
-    return MOCK_MUSIC_LIST.filter(music => {
-      return (
-        music.musicTitle.includes(trimmedKeyword) ||
-        music.musicArtist.includes(trimmedKeyword)
-      );
-    });
-  }, [keyword]);
-
   const handleChangeKeyword = text => {
     setKeyword(text);
     setSelectedMusicId(null);
@@ -132,7 +101,6 @@ export default function UseSelectMusic(_, onClose) {
 
   return {
     keyword,
-    filteredMusicList,
     musicList,
     popularMusicList,
     selectedMusicId,

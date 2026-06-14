@@ -17,7 +17,6 @@ export default function SelectMusic({ visible, onClose, searchPlaceholder = '기
 
   const {
     keyword,
-    filteredMusicList,
     musicList,
     popularMusicList,
     selectedMusicId,

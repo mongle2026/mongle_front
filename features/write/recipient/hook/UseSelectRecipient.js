@@ -1,33 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useRecordFormStore } from '../../record/store/useRecordFormStore';
 import axios from 'axios';
-
-const MOCK_RECIPIENTS = [
-  {
-    id: '1',
-    username: 'name(나)',
-    nickname: '@memeow',
-    img: 'profile',
-  },
-  {
-    id: '2',
-    username: '코코',
-    nickname: '@cocokim',
-    img: 'profile',
-  },
-  {
-    id: '3',
-    username: '코카콜라',
-    nickname: '@cocacolamasida',
-    img: 'profile',
-  },
-  {
-    id: '4',
-    username: '코코아',
-    nickname: '@cocoajoa',
-    img: 'profile',
-  },
-];
+import { MOCK_RECIPIENTS } from '../data/recipientDummy';
 
 const API_BASE_URL = 'http://192.168.0.3:3000';
 // const API_BASE_URL = 'http://172.19.77.207:3000';

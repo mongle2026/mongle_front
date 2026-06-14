@@ -6,8 +6,8 @@ import Animated, {
   withTiming,
   interpolate,
 } from 'react-native-reanimated';
-import EnvelopePreview from '../../../shared/components/EnvelopePreview';
-import { gap, padding } from '../../../shared/styles/token';
+import EnvelopePreview from '../../../../shared/components/EnvelopePreview';
+import { gap, padding } from '../../../../shared/styles/token';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 

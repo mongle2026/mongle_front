@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { palette, colors } from '../../../shared/styles/color';
-import { gap, padding } from '../../../shared/styles/token';
-import { typo } from '../../../shared/styles/typo';
+import { palette, colors } from '../../../../shared/styles/color';
+import { gap, padding } from '../../../../shared/styles/token';
+import { typo } from '../../../../shared/styles/typo';
 
 const BAR_COLORS = [
   palette.mongle[10],
