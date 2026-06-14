@@ -1,16 +1,12 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Animated } from 'react-native';
+import { useRef, useEffect, useState } from 'react';
 import { colors } from '../styles/color';
 import { padding, radius } from '../styles/token';
 import { typo } from '../styles/typo';
 
-// TabBar 내부 전용 컴포넌트 — 외부 export 없음
 function TabItem({ label, isActive, disabled, onPress }) {
   return (
-    <Pressable
-      onPress={onPress}
-      disabled={disabled}
-      style={[styles.tabItem, isActive && styles.tabItemActive, disabled && styles.tabItemDisabled]}
-    >
+    <Pressable onPress={onPress} disabled={disabled} style={styles.tabItem}>
       <Text
         style={[
           styles.tabLabel,
@@ -36,49 +32,67 @@ function TabItem({ label, isActive, disabled, onPress }) {
 //      activeTab="a"
 //      onTabPress={(key) => setActive(key)}
 //    />
+function TabBarInner({ items, activeIndex }) {
+  const count = items.length;
+  const translateX = useRef(new Animated.Value(activeIndex)).current;
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    Animated.spring(translateX, {
+      toValue: activeIndex,
+      useNativeDriver: true,
+      tension: 60,
+      friction: 10,
+    }).start();
+  }, [activeIndex]);
+
+  const tabWidth = containerWidth / count;
+  const pillTranslate = translateX.interpolate({
+    inputRange: items.map((_, i) => i),
+    outputRange: items.map((_, i) => i * tabWidth),
+  });
+
+  return (
+    <View
+      style={styles.container}
+      onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}
+    >
+      {containerWidth > 0 && (
+        <Animated.View
+          style={[styles.pill, { width: tabWidth, transform: [{ translateX: pillTranslate }] }]}
+        />
+      )}
+      {items.map(({ key, label, disabled, onPress, isActive }) => (
+        <TabItem key={key} label={label} isActive={isActive} disabled={disabled} onPress={onPress} />
+      ))}
+    </View>
+  );
+}
+
 export default function TabBar({ state, descriptors, navigation, tabs, activeTab, onTabPress }) {
-  // 독립 모드: tabs 배열을 직접 받은 경우
+  // 독립 모드
   if (tabs) {
-    return (
-      <View style={styles.container}>
-        {tabs.map(({ key, label, disabled = false }) => (
-          <TabItem
-            key={key}
-            label={label}
-            isActive={activeTab === key}
-            disabled={disabled}
-            onPress={() => {
-              if (activeTab !== key && !disabled) onTabPress?.(key);
-            }}
-          />
-        ))}
-      </View>
-    );
+    const activeIndex = tabs.findIndex(({ key }) => key === activeTab);
+    const items = tabs.map(({ key, label, disabled = false }) => ({
+      key, label, disabled,
+      isActive: key === activeTab,
+      onPress: () => { if (activeTab !== key && !disabled) onTabPress?.(key); },
+    }));
+    return <TabBarInner items={items} activeIndex={Math.max(activeIndex, 0)} />;
   }
 
   // React Navigation 모드
-  return (
-    <View style={styles.container}>
-      {state.routes.map((route, index) => {
-        const { options } = descriptors[route.key];
-        const label = options.tabBarLabel ?? options.title ?? route.name; // 우선순위: tabBarLabel > title > route.name
-        const isActive = state.index === index;
-        const disabled = options.tabBarButton === null; // tabBarButton: null 이면 비활성화
-
-        return (
-          <TabItem
-            key={route.key}
-            label={label}
-            isActive={isActive}
-            disabled={disabled}
-            onPress={() => {
-              if (!isActive && !disabled) navigation.navigate(route.name);
-            }}
-          />
-        );
-      })}
-    </View>
-  );
+  const items = state.routes.map((route, index) => {
+    const { options } = descriptors[route.key];
+    const label = options.tabBarLabel ?? options.title ?? route.name;
+    const isActive = state.index === index;
+    const disabled = options.tabBarButton === null;
+    return {
+      key: route.key, label, isActive, disabled,
+      onPress: () => { if (!isActive && !disabled) navigation.navigate(route.name); },
+    };
+  });
+  return <TabBarInner items={items} activeIndex={state.index} />;
 }
 
 const styles = StyleSheet.create({
@@ -87,21 +101,21 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgDefaultWeak,
     width: '100%',
   },
+  pill: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    backgroundColor: colors.bgSurface,
+    borderRadius: radius.XS,
+  },
   tabItem: {
-    flex: 1, // 탭 개수에 관계없이 균등 분할
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: padding.L,
-    borderRadius: radius.XS,
-  },
-  tabItemActive: {
-    backgroundColor: colors.bgSurface,
-  },
-  tabItemDisabled: {
-    backgroundColor: colors.bgDefaultWeak,
   },
   tabLabel: {
-    ...typo.labelSmall,
+    ...typo.labelMedium,
     color: colors.fgPlaceholder,
   },
   tabLabelActive: {

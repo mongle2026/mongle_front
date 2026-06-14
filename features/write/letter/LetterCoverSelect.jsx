@@ -103,14 +103,12 @@ export default function LetterCoverSelect({ navigation }) {
       case 'template': {
         const resolved = resolvePatternColor(item.patternColorId);
         const PatternSvg = resolved?.color?.frontImg?.default ?? resolved?.color?.frontImg;
-        const colorHex = resolved?.color?.color;
         const stamp = STAMPS.find(s => s.id === item.stampId);
         return (
           <Templete
             key={item.id}
             label={item.label}
             PatternSvg={PatternSvg}
-            color={colorHex}
             stampImage={stamp?.image}
             isSelected={selectedItems.template === item.id}
             onPress={onPress}
@@ -148,7 +146,7 @@ export default function LetterCoverSelect({ navigation }) {
   };
 
   const recordForm = useRecordFormStore();
-  const receiver = useRecordFormStore(state => state.receiver.id);
+  const receiver = useRecordFormStore(state => state.receiver?.id);
   // 임시 하드코딩
   const userId = '1';
   const recordType = "LETTER";
@@ -253,7 +251,7 @@ export default function LetterCoverSelect({ navigation }) {
           activeTab === 'template' ? styles.sectionTemplate : styles.section3Col,
         ]}>
           {rows.map((row, rowIndex) => (
-            <View key={rowIndex} style={styles.row}>
+            <View key={rowIndex} style={[styles.row, activeTab === 'template' && styles.rowSpaceBetween]}>
               {row.map(item => renderItem(item))}
               {Array.from({ length: numColumns - row.length }).map((_, i) => (
                 <View key={`spacer-${i}`} style={styles.rowSpacer} />
@@ -300,6 +298,9 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     gap: gap.M,
+  },
+  rowSpaceBetween: {
+    justifyContent: 'space-between',
   },
 
   // 3열 아이템 공통

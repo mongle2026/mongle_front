@@ -132,13 +132,13 @@ export default function App() {
       <NavigationContainer theme={{ ...DarkTheme, colors: { ...DarkTheme.colors, background: colors.bgDefault } }}>
         <StatusBar style="light" />
         <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="LetterCoverSelect" component={LetterCoverSelect} />
           <Stack.Screen name="Main" component={TabNavigator} options={{ animation: 'none' }} />
           <Stack.Screen name="Test" component={TestScreen} />
           <Stack.Screen name="FeedDetail" component={FeedDetailScreen} />
           <Stack.Screen name="SelectRecipientScreen" component={SelectRecipientScreen} />
           <Stack.Screen name="SelectMusic" component={SelectMusic} />
           <Stack.Screen name="Record" component={RecordScreen} />
-          <Stack.Screen name="LetterCoverSelect" component={LetterCoverSelect} />
           <Stack.Screen name="SelectDate" component={SelectDateScreen} />
           <Stack.Screen name="SendAnimation" component={SendAnimationScreen} />
         </Stack.Navigator>

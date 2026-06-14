@@ -4,7 +4,7 @@ import { gap, padding, radius } from '../../../../shared/styles/token';
 import { typo } from '../../../../shared/styles/typo';
 
 
-export default function Templete({ label, PatternSvg, color, stampImage, isSelected = false, onPress }) {
+export default function Templete({ label, PatternSvg, stampImage, isSelected = false, onPress }) {
   return (
     <Pressable onPress={onPress} style={[styles.container, isSelected ? styles.containerSelected : styles.containerUnselected]}>
       <Text style={styles.label} numberOfLines={1}>{label}</Text>
@@ -13,7 +13,7 @@ export default function Templete({ label, PatternSvg, color, stampImage, isSelec
         <View style={styles.patternBox}>
           {PatternSvg && (
             <View style={styles.patternSvgWrap}>
-              <PatternSvg width={146} height={109} />
+              <PatternSvg width={132} height={132} preserveAspectRatio="xMidYMid slice" />
             </View>
           )}
         </View>
@@ -32,7 +32,7 @@ export default function Templete({ label, PatternSvg, color, stampImage, isSelec
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    alignSelf: 'flex-start',
     flexDirection: 'column',
     gap: gap.M,
     padding: padding.M,
@@ -54,22 +54,20 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgDefaultWeak,
   },
   patternBox: {
-    flex: 1,
+    width: 88,
     height: 88,
     borderRadius: radius.XS,
-    backgroundColor: colors.bgSurface,
     overflow: 'hidden',
   },
   patternSvgWrap: {
     position: 'absolute',
-    left: -29,
-    top: -10,
+    top: -8,
+    left: 0,
   },
   stampBox: {
     width: 59,
     height: 88,
     borderRadius: radius.XS,
-    backgroundColor: colors.bgSurface,
     overflow: 'hidden',
   },
   stampImage: {

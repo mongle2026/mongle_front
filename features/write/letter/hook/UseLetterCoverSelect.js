@@ -1,6 +1,6 @@
 // 유경 생성
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PATTERNS, STAMPS, TEMPLATES, resolvePatternColor, useLetterCoverStore } from '../data/letterCoverData';
 
 export const TABS = [
@@ -10,26 +10,31 @@ export const TABS = [
   { key: 'stamp', label: '우표' },
 ];
 
-// 기본값: 각 배열의 첫 번째 항목
-const DEFAULT_PATTERN = PATTERNS[0];
-const DEFAULT_COLOR = PATTERNS[0].colors[0];
-const DEFAULT_STAMP = STAMPS[0];
+function randomTemplate() {
+  const tmpl = TEMPLATES[Math.floor(Math.random() * TEMPLATES.length)];
+  const resolved = resolvePatternColor(tmpl.patternColorId);
+  return {
+    template: tmpl.id,
+    patternId: resolved.pattern.id,
+    colorId: resolved.color.id,
+    stampId: tmpl.stampId,
+  };
+}
 
 export default function UseLetterCoverSelect() {
   const [activeTab, setActiveTab] = useState('template');
-  const [selectedItems, setSelectedItems] = useState({
-    template: null,
-    patternId: DEFAULT_PATTERN.id,
-    colorId: DEFAULT_COLOR.id,
-    stampId: DEFAULT_STAMP.id,
-  });
+  const [selectedItems, setSelectedItems] = useState(randomTemplate);
   // 현재 선택된 패턴의 컬러 목록
-  const selectedPattern = PATTERNS.find(p => p.id === selectedItems.patternId) ?? DEFAULT_PATTERN;
+  const selectedPattern = PATTERNS.find(p => p.id === selectedItems.patternId) ?? PATTERNS[0];
   const currentColors = selectedPattern.colors;
 
-  // 우편 전역 변수 설정
+  // 초기 랜덤 템플릿을 스토어에 반영
   const setEnvelope = useLetterCoverStore((state) => state.setEnvelope);
+  useEffect(() => {
+    setEnvelope({ patternId: selectedItems.patternId, colorId: selectedItems.colorId, stampId: selectedItems.stampId });
+  }, []);
   const setPattern = useLetterCoverStore((state) => state.setPatternId);
+  // eslint-disable-next-line no-unused-vars
   const setColor = useLetterCoverStore((state) => state.setColorId);
   const setStamp = useLetterCoverStore((state) => state.setStampId);
 
