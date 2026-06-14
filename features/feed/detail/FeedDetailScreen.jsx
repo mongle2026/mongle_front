@@ -1,8 +1,9 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { formatDateDetail } from '../../../shared/utils/formatDate';
+import useFeedActions from '../home/hook/useFeedActions';
 import { Dimensions, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import axios from 'axios';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import TopNavigation from '../../../shared/components/TopNavigation';
 import MusicPlay from '../../../shared/components/MusicPlay';
@@ -52,70 +53,31 @@ function TextLines({ content = '' }) {
 export default function FeedDetailScreen({ navigation, route, ...directProps }) {
   const {
     onPressFollow,
-    onPressBookmark,
   } = { ...directProps, ...(route?.params ?? {}) };
-  const queryClient = useQueryClient();
   // 하드코딩
   const userId = 1;
   const { feedId } = route.params;
-  const [feed, setFeed] = useState();
 
   const [isFollowing, setFollowing] = useState(false);
-  const [isBookmarked, setBookmarked] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const bookmarkCount = 0;
 
-  useEffect(() => {
-    const fetchFeedDetail = async () => {
+  const {
+    data: feed,
+  } = useQuery({
+    queryKey: ['feed', String(feedId), userId],
+    queryFn: async () => {
       const response = await axios.get(`${API_BASE_URL}/feed/${feedId}`, {
-        params: {
-          userId: userId,
-        },
-      });
-      setFeed(response.data);
-    };
-
-    fetchFeedDetail();
-  }, [feedId]);
-
-  const toggleLike = useCallback(async () => {
-    if (!feed?.feedId) return;
-
-    const feedId = feed.feedId;
-    const nextLiked = !feed.isLiked;
-
-    setFeed(prev => ({
-      ...prev,
-      isLiked: nextLiked,
-    }));
-
-    try {
-      if (nextLiked) {
-        await axios.post(`${API_BASE_URL}/feed/${feedId}/like`, null, {
-          params: { userId },
-        });
-      } else {
-        await axios.delete(`${API_BASE_URL}/feed/${feedId}/like`, {
-          params: { userId },
-        });
-      }
-
-      queryClient.invalidateQueries({
-        queryKey: ['feeds', userId],
+        params: { userId },
       });
 
-      queryClient.invalidateQueries({
-        queryKey: ['feed', feedId, userId],
-      });
-    } catch (error) {
-      setFeed(prev => ({
-        ...prev,
-        isLiked: !nextLiked,
-      }));
+      return response.data;
+    },
+  });
 
-      console.log('좋아요 처리 실패:', error);
-    }
-  }, [feed, userId]);
+  const {
+    toggleLike,
+    toggleBookmark,
+  } = useFeedActions({ userId });
 
   if (!feed) {
     return null;
@@ -156,7 +118,7 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
 
         <Carousel images={images} onPressImage={setSelectedImage} />
 
-        <Caption date={feed.record.date ? formatDateDetail(feed.record.date) : ''} bookmarkCount={bookmarkCount} />
+        <Caption date={record.date ? formatDateDetail(record.date) : ''} bookmarkCount={feed.bookmarkCount} />
       </ScrollView>
 
       <Modal visible={!!selectedImage} transparent animationType="fade" statusBarTranslucent>
@@ -176,13 +138,20 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
       <BottomBar
         name={user.nickname}
         id={user.userCode}
-        profileSource={user.hasProfileImage && user.profileImageUrl ? { uri: `${API_BASE_URL}${user.profileImageUrl}` } : null}
+        profileSource={
+          user.hasProfileImage && user.profileImageUrl
+            ? { uri: `${API_BASE_URL}${user.profileImageUrl}` }
+            : null
+        }
         isFollowing={isFollowing}
         isBookmarked={feed.isBookmarked}
         isLiked={feed.isLiked}
-        onPressFollow={() => { setFollowing(f => !f); onPressFollow?.(); }}
-        onPressBookmark={() => { setBookmarked(b => !b); onPressBookmark?.(); }}
-        onPressLike={toggleLike}
+        onPressFollow={() => {
+          setFollowing(f => !f);
+          onPressFollow?.();
+        }}
+        onPressBookmark={() => toggleBookmark(feed)}
+        onPressLike={() => toggleLike(feed)}
       />
     </View>
   );

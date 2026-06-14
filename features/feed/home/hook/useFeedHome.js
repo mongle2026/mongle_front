@@ -148,11 +148,9 @@ export default function useFeedHome() {
   // 하드코딩
   const userId = 1;
 
-  const queryClient = useQueryClient();
-
   const {
     data: posts = [],
-    refetch: fetchFeed,
+    refetch: refetchFeed,
   } = useQuery({
     queryKey: ['feeds', userId],
     queryFn: async () => {
@@ -176,126 +174,14 @@ export default function useFeedHome() {
     toastTimerRef.current = setTimeout(() => setToastVisible(false), 3000);
   }, []);
 
-  const toggleBookmark = useCallback(
-    feedId => {
-      queryClient.setQueryData(['feeds', userId], oldFeeds => {
-        if (!oldFeeds) return oldFeeds;
-
-        const post = oldFeeds.find(p => String(p.feedId) === String(feedId));
-        const adding = !post?.isBookmarked;
-
-        if (adding) showToast();
-
-        return oldFeeds.map(p =>
-          String(p.feedId) === String(feedId)
-            ? { ...p, isBookmarked: adding }
-            : p
-        );
-      });
-    },
-    [queryClient, userId, showToast]
-  );
-
-  const undoLastBookmark = useCallback(() => {
-    setToastVisible(false);
-    clearTimeout(toastTimerRef.current);
-
-    queryClient.setQueryData(['feeds', userId], oldFeeds => {
-      if (!oldFeeds) return oldFeeds;
-
-      const lastBookmarked = [...oldFeeds].reverse().find(p => p.isBookmarked);
-      if (!lastBookmarked) return oldFeeds;
-
-      return oldFeeds.map(p =>
-        String(p.feedId) === String(lastBookmarked.feedId)
-          ? { ...p, isBookmarked: false }
-          : p
-      );
-    });
-  }, [queryClient, userId]);
-
-  const likeMutation = useMutation({
-    mutationFn: async ({ feedId, nextLiked }) => {
-      if (nextLiked) {
-        return axios.post(`${API_BASE_URL}/feed/${feedId}/like`, null, {
-          params: { userId },
-        });
-      }
-
-      return axios.delete(`${API_BASE_URL}/feed/${feedId}/like`, {
-        params: { userId },
-      });
-    },
-
-    onMutate: async ({ feedId, nextLiked }) => {
-
-      await queryClient.cancelQueries({
-        queryKey: ['feeds', userId],
-      });
-
-      const previousFeeds = queryClient.getQueryData(['feeds', userId]);
-
-      queryClient.setQueryData(['feeds', userId], oldFeeds => {
-        if (!oldFeeds) return oldFeeds;
-
-        const updated = oldFeeds.map(post =>
-          String(post.feedId) === String(feedId)
-            ? {
-              ...post,
-              isLiked: nextLiked,
-            }
-            : post
-        );
-
-        return updated;
-      });
-
-      return { previousFeeds };
-    },
-
-    onError: (error, variables, context) => {
-      if (context?.previousFeeds) {
-        queryClient.setQueryData(['feeds', userId], context.previousFeeds);
-      }
-
-      console.log('좋아요 실패:', error);
-    },
-
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['feeds', userId],
-      });
-    },
-  });
-
-  const toggleLike = useCallback(
-    feedId => {
-      const currentFeeds = queryClient.getQueryData(['feeds', userId]) ?? posts;
-
-      const targetPost = currentFeeds.find(
-        post => String(post.feedId) === String(feedId)
-      );
-
-      if (!targetPost) return;
-
-      likeMutation.mutate({
-        feedId,
-        nextLiked: !targetPost.isLiked,
-      });
-    },
-    [queryClient, posts, likeMutation]
-  );
-
   return {
     activeTab,
     posts,
     currentIndex,
     setCurrentIndex,
     toastVisible,
-    fetchFeed,
+    refetchFeed,
     onTabPress,
-    toggleBookmark,
-    toggleLike,
-    undoLastBookmark,
+    showToast,
   };
 }

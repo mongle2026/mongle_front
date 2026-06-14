@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { FlatList, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { useAudioPlayer } from 'expo-audio';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -14,6 +15,7 @@ import IcHome from '../../../assets/icons/ic_home.svg';
 import IcLetter from '../../../assets/icons/ic_letter.svg';
 
 import useFeedHome from './hook/useFeedHome';
+import useFeedActions from './hook/useFeedActions';
 import { useRecordFormStore } from '../../write/record/store/useRecordFormStore';
 
 const PROFILE_SOURCE = require('../../../assets/write/profile_img.png');
@@ -26,6 +28,7 @@ const NAV_ITEMS = [
 const API_BASE_URL = 'http://192.168.0.3:3000';
 
 export default function FeedHomeScreen({ navigation, route }) {
+  const userId = 1;
   const insets = useSafeAreaInsets();
   const setRecordType = useRecordFormStore(state => state.setRecordType);
   const { height: screenHeight } = useWindowDimensions();
@@ -39,12 +42,19 @@ export default function FeedHomeScreen({ navigation, route }) {
     currentIndex,
     setCurrentIndex,
     toastVisible,
-    fetchFeed,
+    refetchFeed,
     onTabPress,
-    toggleBookmark,
-    toggleLike,
-    undoLastBookmark,
+    showToast,
   } = useFeedHome();
+
+  const {
+    toggleLike,
+    toggleBookmark,
+    bookmarkMutation,
+  } = useFeedActions({
+    userId,
+    onBookmarkAdded: showToast,
+  });
 
   const [snapOffsets, setSnapOffsets] = useState([]);
   const itemHeightsRef = useRef({});
@@ -69,6 +79,12 @@ export default function FeedHomeScreen({ navigation, route }) {
       setCurrentIndex(viewableItems[0].index);
     }
   }).current;
+
+  useFocusEffect(
+    useCallback(() => {
+      refetchFeed();
+    }, [refetchFeed])
+  );
 
   const onPressFeed = () => {
     setRecordType('FEED');
@@ -150,12 +166,15 @@ export default function FeedHomeScreen({ navigation, route }) {
         profileSource={item.user.hasProfileImage && item.user.profileImageUrl ? { uri: `${API_BASE_URL}${item.user.profileImageUrl}` } : null}
         isBookmarked={item.isBookmarked ?? false}
         isLiked={item.isLiked ?? false}
-        onPressBookmark={() => toggleBookmark(item.feedId)}
-        onPressLike={() => toggleLike(item.feedId)}
+        onPressBookmark={() => toggleBookmark(item)}
+        onPressLike={() => toggleLike(item)}
         onPressMusic={() => onPressMusic(item)}
         onPressBody={() => {
           if (index !== currentIndex) {
-            flatListRef.current?.scrollToOffset({ offset: snapOffsets[index] ?? 0, animated: true });
+            flatListRef.current?.scrollToOffset({
+              offset: snapOffsets[index] ?? 0,
+              animated: true,
+            });
           } else {
             navigation.navigate('FeedDetail', {
               feedId: item.feedId,
@@ -203,7 +222,7 @@ export default function FeedHomeScreen({ navigation, route }) {
         message="기록을 북마크에 추가했습니다."
         type="success"
         actionLabel="이동하기"
-        onPressAction={undoLastBookmark}
+        // onPressAction={undoLastBookmark}
         visible={toastVisible}
       />
     </View>
