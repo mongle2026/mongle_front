@@ -60,6 +60,11 @@ const RecordScreen = ({ navigation }) => {
   const [disabled, setDisabled] = useState('disabled');
   const [isDialogVisible, setIsDialogVisible] = useState(false);
 
+  const isFormEmpty =
+    recordForm.music === null &&
+    recordForm.text === '' &&
+    recordForm.files.length === 0 &&
+    (recordType !== 'LETTER' || recordForm.receiver === null);
 
   useEffect(() => {
     if (recordType === 'LETTER') {
@@ -76,6 +81,12 @@ const RecordScreen = ({ navigation }) => {
 
   const onPressBack = () => {
     Keyboard.dismiss();
+
+    if (isFormEmpty) {
+      navigation.goBack();
+      return;
+    }
+
     setIsDialogVisible(true);
   };
 
@@ -99,7 +110,8 @@ const RecordScreen = ({ navigation }) => {
         return true;
       }
 
-      return false;
+      onPressBack();
+      return true;
     };
 
     const backHandler = BackHandler.addEventListener(
@@ -108,7 +120,7 @@ const RecordScreen = ({ navigation }) => {
     );
 
     return () => backHandler.remove();
-  }, [isDialogVisible]);
+  }, [isDialogVisible, isFormEmpty]);
 
   const handleCommit = async () => {
     if (recordType === 'LETTER' && recordForm.receiver === null) {
@@ -216,7 +228,7 @@ const RecordScreen = ({ navigation }) => {
           title='피드 작성'
           buttonLabel='게시'
           onPressButton={handleCommit}
-          onPressBack={() => navigation.goBack()}
+          onPressBack={onPressBack}
           buttonDisabled={false}
           type={disabled}
           backIcon={XIcon}

@@ -62,7 +62,6 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
 
   const [isFollowing, setFollowing] = useState(false);
   const [isBookmarked, setBookmarked] = useState(false);
-  const [isLiked, setLiked] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const bookmarkCount = 0;
 
