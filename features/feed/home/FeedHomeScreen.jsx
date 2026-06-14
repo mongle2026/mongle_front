@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { FlatList, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { useAudioPlayer } from 'expo-audio';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { colors } from '../../../shared/styles/color';
@@ -28,6 +29,10 @@ export default function FeedHomeScreen({ navigation, route }) {
   const insets = useSafeAreaInsets();
   const setRecordType = useRecordFormStore(state => state.setRecordType);
   const { height: screenHeight } = useWindowDimensions();
+
+  const player = useAudioPlayer(null);
+  const [playingFeedId, setPlayingFeedId] = useState(null);
+
   const {
     activeTab,
     posts,
@@ -65,10 +70,6 @@ export default function FeedHomeScreen({ navigation, route }) {
     }
   }).current;
 
-  // useEffect(() => {
-  //   fetchFeed();
-  // }, []);
-
   const onPressFeed = () => {
     setRecordType('FEED');
     navigation.navigate('Record');
@@ -78,6 +79,57 @@ export default function FeedHomeScreen({ navigation, route }) {
     setRecordType('LETTER');
     navigation.navigate('Record');
   };
+
+  const safePause = useCallback(() => {
+    try {
+      player.pause();
+    } catch (error) {
+      console.log('audio pause ignored:', error?.message);
+    }
+
+    setPlayingFeedId(null);
+  }, [player]);
+
+  const onPressMusic = useCallback((item) => {
+    const previewUrl = item.music?.previewUrl;
+
+    if (!previewUrl) {
+      return;
+    }
+
+    // 같은 노래 버튼을 다시 누르면 정지
+    if (playingFeedId === item.feedId) {
+      safePause();
+      return;
+    }
+
+    // 다른 노래를 누르면 기존 소스를 교체하고 처음부터 재생
+    player.replace(previewUrl);
+    player.seekTo(0);
+    player.play();
+
+    setPlayingFeedId(item.feedId);
+  }, [player, playingFeedId]);
+
+  useEffect(() => {
+    if (playingFeedId === null) {
+      return;
+    }
+
+    const currentFeedId = posts[currentIndex]?.feedId;
+
+    if (currentFeedId && currentFeedId !== playingFeedId) {
+      safePause();
+    }
+  }, [currentIndex, posts, playingFeedId, player]);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('blur', () => {
+      safePause();
+    });
+
+    return unsubscribe;
+  }, [navigation, safePause]);
 
   const renderItem = ({ item, index }) => (
     <View onLayout={({ nativeEvent }) => {
@@ -100,6 +152,7 @@ export default function FeedHomeScreen({ navigation, route }) {
         isLiked={item.isLiked ?? false}
         onPressBookmark={() => toggleBookmark(item.feedId)}
         onPressLike={() => toggleLike(item.feedId)}
+        onPressMusic={() => onPressMusic(item)}
         onPressBody={() => {
           if (index !== currentIndex) {
             flatListRef.current?.scrollToOffset({ offset: snapOffsets[index] ?? 0, animated: true });

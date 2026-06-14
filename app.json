@@ -32,7 +32,9 @@
       "favicon": "./assets/icons/favicon.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "expo-audio",
+      "expo-asset"
     ],
     "extra": {
       "eas": {
