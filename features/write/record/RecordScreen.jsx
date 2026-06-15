@@ -38,14 +38,16 @@ import XIcon from '../../../assets/icons/ic_x.svg';
 import FoldCorner from '../../../assets/write/graphic_paper.svg';
 
 
-const API_BASE_URL = 'http://192.168.0.3:3000';
+// const API_BASE_URL = 'http://192.168.0.3:3000';
 // const API_BASE_URL = 'http://192.168.0.5:3000';
+const API_BASE_URL = 'http://192.168.0.35:3000';
+
 const BOTTOM_BAR_HEIGHT = 40;
 
 const RecordScreen = ({ navigation }) => {
   const recordForm = useRecordFormStore();
-  // const recordType = useRecordFormStore(state => state.recordType);
-  const recordType = "LETTER";
+  const recordType = useRecordFormStore(state => state.recordType);
+  // const recordType = "LETTER";
   // 나
   const userId = '1';
 
@@ -60,6 +62,11 @@ const RecordScreen = ({ navigation }) => {
   const [disabled, setDisabled] = useState('disabled');
   const [isDialogVisible, setIsDialogVisible] = useState(false);
 
+  const isFormEmpty =
+    recordForm.music === null &&
+    recordForm.text === '' &&
+    recordForm.files.length === 0 &&
+    (recordType !== 'LETTER' || recordForm.receiver === null);
 
   useEffect(() => {
     if (recordType === 'LETTER') {
@@ -76,6 +83,12 @@ const RecordScreen = ({ navigation }) => {
 
   const onPressBack = () => {
     Keyboard.dismiss();
+
+    if (isFormEmpty) {
+      navigation.goBack();
+      return;
+    }
+
     setIsDialogVisible(true);
   };
 
@@ -88,7 +101,7 @@ const RecordScreen = ({ navigation }) => {
     recordForm.resetForm();
     navigation.reset({
       index: 0,
-      routes: [{ name: 'Home' }],
+      routes: [{ name: 'FeedHome' }],
     });
   };
 
@@ -99,7 +112,8 @@ const RecordScreen = ({ navigation }) => {
         return true;
       }
 
-      return false;
+      onPressBack();
+      return true;
     };
 
     const backHandler = BackHandler.addEventListener(
@@ -108,7 +122,7 @@ const RecordScreen = ({ navigation }) => {
     );
 
     return () => backHandler.remove();
-  }, [isDialogVisible]);
+  }, [isDialogVisible, isFormEmpty]);
 
   const handleCommit = async () => {
     if (recordType === 'LETTER' && recordForm.receiver === null) {
@@ -116,6 +130,7 @@ const RecordScreen = ({ navigation }) => {
         message: '수신인을 지정해 주세요.',
         type: 'warning',
         duration: 2000,
+        color: colors.fgCritical,
       });
       return;
     }
@@ -125,6 +140,7 @@ const RecordScreen = ({ navigation }) => {
         message: '음악을 선택해 주세요.',
         type: 'warning',
         duration: 2000,
+        color: colors.fgCritical,
       });
       return;
     }
@@ -134,6 +150,7 @@ const RecordScreen = ({ navigation }) => {
         message: '메시지를 작성하거나 사진을 첨부해 주세요.',
         type: 'warning',
         duration: 2000,
+        color: colors.fgCritical,
       });
       return;
     };
@@ -180,7 +197,7 @@ const RecordScreen = ({ navigation }) => {
 
       navigation.reset({
         index: 0,
-        routes: [{ name: 'Main' }],
+        routes: [{ name: 'FeedHome' }],
       });
 
     } else if (recordType === "LETTER") {
@@ -213,7 +230,7 @@ const RecordScreen = ({ navigation }) => {
           title='피드 작성'
           buttonLabel='게시'
           onPressButton={handleCommit}
-          onPressBack={() => navigation.goBack()}
+          onPressBack={onPressBack}
           buttonDisabled={false}
           type={disabled}
           backIcon={XIcon}
@@ -281,12 +298,7 @@ const RecordScreen = ({ navigation }) => {
           visible={toast.visible}
           message={toast.message}
           type={toast.type}
-        // style={[
-        //   styles.toast,
-        //   {
-        //     bottom: bottomValue,
-        //   },
-        // ]}
+          color={toast.color}
         />
       </View>
 

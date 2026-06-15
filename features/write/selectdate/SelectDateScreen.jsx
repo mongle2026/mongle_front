@@ -13,7 +13,8 @@ import { useLetterCoverStore } from '../letter/data/letterCoverData';
 import getDiffDaysFromToday from './hook/getDiffDaysFromToday ';
 import { getCaptionDateLabel } from './utils/getCaptionDateLabel';
 
-const API_BASE_URL = 'http://192.168.0.3:3000';
+// const API_BASE_URL = 'http://192.168.0.3:3000';
+const API_BASE_URL = 'http://192.168.0.35:3000';
 
 const SelectDateScreen = ({ navigation }) => {
   const [visible, setVisible] = React.useState(false);
@@ -26,7 +27,7 @@ const SelectDateScreen = ({ navigation }) => {
   const recordForm = useRecordFormStore();
   const [dateOffsetLabel, setDateOffsetLabel] = useState('1');
   const userId = '1';
-  const recordType = "LETTER";
+  const recordType = useRecordFormStore(state => state.recordType);
   const { patternId, colorId, stampId } = useLetterCoverStore();
 
 
@@ -81,14 +82,6 @@ const SelectDateScreen = ({ navigation }) => {
         deliveryLabel: captionDate,
         toMe: true,
       });
-
-      // recordForm.resetForm();
-
-      // navigation.reset({
-      //   index: 0,
-      //   routes: [{ name: 'Main' }],
-      // });
-
     } catch (error) {
       console.log('handleCommit 전체 에러:', error);
 

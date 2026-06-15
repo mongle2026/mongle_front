@@ -22,6 +22,7 @@ const RecordImage = ({
       message: '사진을 삭제했습니다.',
       type: 'success',
       duration: 2000,
+      color: colors.fgPositive,
     });
   };
 

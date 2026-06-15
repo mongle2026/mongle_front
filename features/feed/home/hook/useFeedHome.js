@@ -1,16 +1,34 @@
 import { useState, useCallback, useRef } from 'react';
 import { DUMMY_POSTS } from '../data/feedDummy';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+
+// const API_BASE_URL = 'http://192.168.0.3:3000';
+const API_BASE_URL = 'http://192.168.0.35:3000';
 
 export default function useFeedHome() {
   const [activeTab, setActiveTab] = useState('추천');
-  const [posts, setPosts] = useState(DUMMY_POSTS);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [toastVisible, setToastVisible] = useState(false);
   const toastTimerRef = useRef(null);
+  // 하드코딩
+  const userId = 1;
 
-  const fetchFeed = useCallback(() => {
-    setPosts(DUMMY_POSTS);
-  }, []);
+  const {
+    data: posts = [],
+    refetch: refetchFeed,
+  } = useQuery({
+    queryKey: ['feeds', userId],
+    queryFn: async () => {
+      const response = await axios.get(`${API_BASE_URL}/feed`, {
+        params: {
+          userId,
+        },
+      });
+
+      return response.data;
+    },
+  });
 
   const onTabPress = useCallback((tab) => {
     setActiveTab(tab);
@@ -22,41 +40,14 @@ export default function useFeedHome() {
     toastTimerRef.current = setTimeout(() => setToastVisible(false), 3000);
   }, []);
 
-  const toggleBookmark = useCallback((feedId) => {
-    setPosts(prev => {
-      const post = prev.find(p => p.feedId === feedId);
-      const adding = !post?.isBookmarked;
-      if (adding) showToast();
-      return prev.map(p => p.feedId === feedId ? { ...p, isBookmarked: adding } : p);
-    });
-  }, [showToast]);
-
-  const undoLastBookmark = useCallback(() => {
-    setToastVisible(false);
-    clearTimeout(toastTimerRef.current);
-    setPosts(prev => {
-      const lastBookmarked = [...prev].reverse().find(p => p.isBookmarked);
-      if (!lastBookmarked) return prev;
-      return prev.map(p => p.feedId === lastBookmarked.feedId ? { ...p, isBookmarked: false } : p);
-    });
-  }, []);
-
-  const toggleLike = useCallback((feedId) => {
-    setPosts(prev => prev.map(p =>
-      p.feedId === feedId ? { ...p, isLiked: !p.isLiked } : p
-    ));
-  }, []);
-
   return {
     activeTab,
     posts,
     currentIndex,
     setCurrentIndex,
     toastVisible,
-    fetchFeed,
+    refetchFeed,
     onTabPress,
-    toggleBookmark,
-    toggleLike,
-    undoLastBookmark,
+    showToast,
   };
 }

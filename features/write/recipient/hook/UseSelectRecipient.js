@@ -3,10 +3,12 @@ import { useRecordFormStore } from '../../record/store/useRecordFormStore';
 import axios from 'axios';
 import { MOCK_RECIPIENTS } from '../data/recipientDummy';
 
-const API_BASE_URL = 'http://192.168.0.3:3000';
+// const API_BASE_URL = 'http://192.168.0.3:3000';
 // const API_BASE_URL = 'http://172.19.77.207:3000';
 // const API_BASE_URL = 'http://172.19.19.169:3000';
 // const API_BASE_URL = 'http://192.168.0.5:3000';
+const API_BASE_URL = 'http://192.168.0.35:3000';
+
 
 
 
@@ -14,8 +16,6 @@ export default function useSelectRecipient(onClose) {
   const [keyword, setKeyword] = useState('');
   const [selectedRecipientId, setSelectedRecipientId] = useState(null);
 
-  // setRecordType은 지금 메인 없어서 임의로 넣은거임 메인에서 선택하는거 나오면 바로 삭제 
-  const setRecordType = useRecordFormStore((state) => state.setRecordType);
   const setReceiver = useRecordFormStore((state) => state.setReceiver);
   const [userList, setUserList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -74,7 +74,7 @@ export default function useSelectRecipient(onClose) {
 
     return MOCK_RECIPIENTS.filter(recipient => {
       return (
-        recipient.username.includes(trimmedKeyword) ||
+        recipient.userCode.includes(trimmedKeyword) ||
         recipient.nickname.includes(trimmedKeyword)
       );
     });
@@ -118,8 +118,6 @@ export default function useSelectRecipient(onClose) {
     if (!selectedRecipient) return;
 
     setReceiver(selectedRecipient);
-    setRecordType("LETTER");
-
     onClose?.();
   };
 

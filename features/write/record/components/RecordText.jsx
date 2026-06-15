@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { typo } from '../../../../shared/styles/typo';
 import { padding } from '../../../../shared/styles/token';
+import { colors } from '../../../../shared/styles/color';
 
 const INPUT_TYPO = typo.bodyMedium;
 
@@ -34,6 +35,7 @@ const RecordText = ({
         message: '2,000자 이내로 내용을 줄여주세요.',
         type: 'warning',
         duration: 2000,
+        color: colors.fgCritical,
       });
 
       recordForm.setText(text.slice(0, MAX_TEXT_LENGTH));

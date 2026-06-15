@@ -6,6 +6,7 @@ import { useFonts } from 'expo-font';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useState } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { colors } from './shared/styles/color';
 import RecordScreen from './features/write/record/RecordScreen.jsx';
@@ -44,61 +45,61 @@ function TestScreen({ navigation }) {
 
   return (
     <View style={{ flex: 1 }}>
-    <ScrollView
-      style={{ flex: 1, backgroundColor: colors.bgLayerDefault }}
-      contentContainerStyle={{ paddingBottom: 40 }}
-    >
-      <TopNavigation activeTab={activeTab} onTabPress={setActiveTab} />
-
-      {/* FeedDetail 테스트 버튼 */}
-      <Pressable
-        onPress={() => navigation.navigate('FeedDetail', {
-          musicTitle: '음악 선택',
-          musicArtist: 'Honne',
-          musicCover: COVER_SOURCE,
-          content: CONTENT,
-          images: POST_IMAGES,
-          name: '코코',
-          date: '26.06.01 10:35',
-          bookmarkCount: 5,
-        })}
-        style={{ margin: 16, padding: 12, backgroundColor: colors.fgBrand, borderRadius: 8, alignItems: 'center' }}
+      <ScrollView
+        style={{ flex: 1, backgroundColor: colors.bgLayerDefault }}
+        contentContainerStyle={{ paddingBottom: 40 }}
       >
-        <Text style={{ color: '#fff', fontFamily: 'Pretendard-SemiBold', fontSize: 14 }}>FeedDetail 테스트</Text>
-      </Pressable>
+        <TopNavigation activeTab={activeTab} onTabPress={setActiveTab} />
 
-      {/* Caption */}
-      <Caption date="26.06.01 10:35" bookmarkCount={5} />
+        {/* FeedDetail 테스트 버튼 */}
+        <Pressable
+          onPress={() => navigation.navigate('FeedDetail', {
+            musicTitle: '음악 선택',
+            musicArtist: 'Honne',
+            musicCover: COVER_SOURCE,
+            content: CONTENT,
+            images: POST_IMAGES,
+            name: '코코',
+            date: '26.06.01 10:35',
+            bookmarkCount: 5,
+          })}
+          style={{ margin: 16, padding: 12, backgroundColor: colors.fgBrand, borderRadius: 8, alignItems: 'center' }}
+        >
+          <Text style={{ color: '#fff', fontFamily: 'Pretendard-SemiBold', fontSize: 14 }}>FeedDetail 테스트</Text>
+        </Pressable>
 
-      {/* textOnly */}
-      <Post
-        type="textOnly"
-        currentView
-        content={CONTENT}
-        name="코코"
-        date="26.05.03"
-        profileSource={PROFILE_SOURCE}
-        isBookmarked={bookmarked1} onPressBookmark={() => setBookmarked1(b => !b)}
-        isLiked={liked1} onPressLike={() => setLiked1(l => !l)}
-      />
+        {/* Caption */}
+        <Caption date="26.06.01 10:35" bookmarkCount={5} />
 
-      {/* img */}
-      <Post
-        type="img"
-        currentView
-        content={CONTENT}
-        images={POST_IMAGES}
-        name="코코"
-        date="26.05.03"
-        profileSource={PROFILE_SOURCE}
-        isBookmarked={bookmarked2} onPressBookmark={() => setBookmarked2(b => !b)}
-        isLiked={liked2} onPressLike={() => setLiked2(l => !l)}
-      />
+        {/* textOnly */}
+        <Post
+          type="textOnly"
+          currentView
+          content={CONTENT}
+          name="코코"
+          date="26.05.03"
+          profileSource={PROFILE_SOURCE}
+          isBookmarked={bookmarked1} onPressBookmark={() => setBookmarked1(b => !b)}
+          isLiked={liked1} onPressLike={() => setLiked1(l => !l)}
+        />
 
-    </ScrollView>
-    <View style={{ position: 'absolute', bottom: 32, left: 0, right: 0, alignItems: 'center' }}>
-      <FAB />
-    </View>
+        {/* img */}
+        <Post
+          type="img"
+          currentView
+          content={CONTENT}
+          images={POST_IMAGES}
+          name="코코"
+          date="26.05.03"
+          profileSource={PROFILE_SOURCE}
+          isBookmarked={bookmarked2} onPressBookmark={() => setBookmarked2(b => !b)}
+          isLiked={liked2} onPressLike={() => setLiked2(l => !l)}
+        />
+
+      </ScrollView>
+      <View style={{ position: 'absolute', bottom: 32, left: 0, right: 0, alignItems: 'center' }}>
+        <FAB />
+      </View>
     </View>
   );
 }
@@ -117,6 +118,7 @@ function TabNavigator() {
     </Tab.Navigator>
   );
 }
+const queryClient = new QueryClient();
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -128,21 +130,24 @@ export default function App() {
   if (!fontsLoaded) return null;
 
   return (
-    <SafeAreaProvider>
-      <NavigationContainer theme={{ ...DarkTheme, colors: { ...DarkTheme.colors, background: colors.bgDefault } }}>
-        <StatusBar style="light" />
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Main" component={TabNavigator} options={{ animation: 'none' }} />
-          <Stack.Screen name="LetterCoverSelect" component={LetterCoverSelect} />
-          <Stack.Screen name="Test" component={TestScreen} />
-          <Stack.Screen name="FeedDetail" component={FeedDetailScreen} />
-          <Stack.Screen name="SelectRecipientScreen" component={SelectRecipientScreen} />
-          <Stack.Screen name="SelectMusic" component={SelectMusic} />
-          <Stack.Screen name="Record" component={RecordScreen} />
-          <Stack.Screen name="SelectDate" component={SelectDateScreen} />
-          <Stack.Screen name="SendAnimation" component={SendAnimationScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </SafeAreaProvider>
+    <QueryClientProvider client={queryClient}>
+      <SafeAreaProvider>
+        <NavigationContainer theme={{ ...DarkTheme, colors: { ...DarkTheme.colors, background: colors.bgDefault } }}>
+          <StatusBar style="light" />
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Main" component={TabNavigator} options={{ animation: 'none' }} />
+            <Stack.Screen name="FeedHome" component={FeedHomeScreen} />
+            <Stack.Screen name="LetterCoverSelect" component={LetterCoverSelect} />
+            <Stack.Screen name="Test" component={TestScreen} />
+            <Stack.Screen name="FeedDetail" component={FeedDetailScreen} />
+            <Stack.Screen name="SelectRecipientScreen" component={SelectRecipientScreen} />
+            <Stack.Screen name="SelectMusic" component={SelectMusic} />
+            <Stack.Screen name="Record" component={RecordScreen} />
+            <Stack.Screen name="SelectDate" component={SelectDateScreen} />
+            <Stack.Screen name="SendAnimation" component={SendAnimationScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </QueryClientProvider>
   );
 }

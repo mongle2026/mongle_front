@@ -25,7 +25,8 @@ import { gap, padding, radius } from '../../../shared/styles/token';
 import { useRecordFormStore } from '../record/store/useRecordFormStore';
 import { createRecordFormData } from '../utils/createRecordFormData ';
 
-const API_BASE_URL = 'http://192.168.0.3:3000';
+// const API_BASE_URL = 'http://192.168.0.3:3000';
+const API_BASE_URL = 'http://192.168.0.35:3000';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -146,10 +147,11 @@ export default function LetterCoverSelect({ navigation }) {
   };
 
   const recordForm = useRecordFormStore();
-  const receiver = useRecordFormStore(state => state.receiver?.id);
+  const receiver = useRecordFormStore(state => state.receiver.id);
+  const nickname = useRecordFormStore(state => state.receiver.nickname);
+  const recordType = useRecordFormStore(state => state.recordType);
   // 임시 하드코딩
   const userId = '1';
-  const recordType = "LETTER";
 
   const handleCommit = async () => {
     try {
@@ -193,16 +195,8 @@ export default function LetterCoverSelect({ navigation }) {
       console.log('요청 성공:', response.data);
       navigation.navigate('SendAnimation', {
         toMe: false,
+        receiver: nickname,
       });
-
-
-      // recordForm.resetForm();
-
-      // navigation.reset({
-      //   index: 0,
-      //   routes: [{ name: 'Main' }],
-      // });
-
     } catch (error) {
       console.log('handleCommit 전체 에러:', error);
 
