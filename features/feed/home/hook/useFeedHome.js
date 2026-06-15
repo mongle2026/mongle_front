@@ -138,7 +138,8 @@ const DUMMY_POSTS = [
   },
 ];
 
-const API_BASE_URL = 'http://192.168.0.3:3000';
+// const API_BASE_URL = 'http://192.168.0.3:3000';
+const API_BASE_URL = 'http://192.168.0.35:3000';
 
 export default function useFeedHome() {
   const [activeTab, setActiveTab] = useState('추천');
