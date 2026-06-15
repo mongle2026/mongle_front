@@ -10,8 +10,6 @@ import { MOCK_RECIPIENTS } from '../data/recipientDummy';
 const API_BASE_URL = 'http://192.168.0.35:3000';
 
 
-
-
 export default function useSelectRecipient(onClose) {
   const [keyword, setKeyword] = useState('');
   const [selectedRecipientId, setSelectedRecipientId] = useState(null);
@@ -69,10 +67,10 @@ export default function useSelectRecipient(onClose) {
     const trimmedKeyword = keyword.trim();
 
     if (!trimmedKeyword) {
-      return MOCK_RECIPIENTS;
+      return [];
     }
 
-    return MOCK_RECIPIENTS.filter(recipient => {
+    return userList.filter(recipient => {
       return (
         recipient.userCode.includes(trimmedKeyword) ||
         recipient.nickname.includes(trimmedKeyword)

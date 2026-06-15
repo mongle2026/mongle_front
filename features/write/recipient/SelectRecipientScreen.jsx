@@ -59,8 +59,8 @@ export default function SelectRecipient({ visible, onClose }) {
               {displayUserList.map(item => (
                 <ListRow
                   key={item.id}
-                  title={item.userCode}
-                  subtitle={item.nickname}
+                  title={item.nickname}
+                  subtitle={item.userCode}
                   img={item.img}
                   imageSource={
                     item.hasProfileImage && item.profileImageUrl
