@@ -12,7 +12,7 @@ export default function BottomBar({
   disabledImage = false,
 }) {
   const insets = useSafeAreaInsets();
-  const paddingBottom = padding.M + insets.bottom;
+  const paddingBottom = padding.M;
 
   return (
     <View style={[styles.container, { paddingBottom }]}>
