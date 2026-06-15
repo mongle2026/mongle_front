@@ -124,6 +124,7 @@ export default function MusicPlay({
           artist={artist}
           imageSource={coverSource}
           button
+          audioUri={audioUri}
           isPlaying={isPlaying}
           onPressButton={handlePress}
         />

@@ -107,8 +107,8 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
         <MusicPlay
           title={music?.musicTitle}
           artist={music?.musicArtist}
-          imageSource={music?.musicArtwork ? feed.music.musicArtwork : undefined}
-          audioUri={music.previewUrl}
+          imageSource={music?.musicArtwork ? music?.musicArtwork : undefined}
+          audioUri={music?.previewUrl}
         />
 
         {!!record?.text && (

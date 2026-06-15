@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Image, Text, View, StyleSheet, Pressable } from 'react-native';
-import { useAudioPlayer } from 'expo-audio';
+import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 
 import PlayFillIcon from '../../assets/icons/ic_play_fill.svg';
 import PauseFillIcon from '../../assets/icons/ic_pause_fill.svg';
@@ -19,15 +19,29 @@ export default function Music({
   musicId,
   activeMusicId,
   onChangeActiveMusic,
+  isPlaying: externalIsPlaying,
+  onPressButton,
   button = false,
   empty = false,
   onPress,
   style,
 }) {
   const player = useAudioPlayer(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const status = useAudioPlayerStatus(player);
+
+  const wasActiveMusicRef = useRef(false);
+  const loadedAudioUriRef = useRef(null);
+  const isFinishedRef = useRef(false);
+
+  const [internalIsPlaying, setInternalIsPlaying] = useState(false);
+
+  const hasExternalControl = typeof externalIsPlaying === 'boolean';
+  const currentIsPlaying = hasExternalControl ? externalIsPlaying : internalIsPlaying;
 
   const isActiveMusic = activeMusicId === musicId;
+  const shouldShowPauseIcon = hasExternalControl
+    ? currentIsPlaying
+    : isActiveMusic && currentIsPlaying;
 
   const currentImageSource = typeof imageSource === 'string'
     ? { uri: imageSource }
@@ -40,7 +54,19 @@ export default function Music({
       console.log('audio pause ignored:', error?.message);
     }
 
-    setIsPlaying(false);
+    setInternalIsPlaying(false);
+  }, [player]);
+
+  const resetMusic = useCallback(() => {
+    try {
+      player.pause();
+      player.seekTo(0);
+    } catch (error) {
+      console.log('audio reset ignored:', error?.message);
+    }
+
+    setInternalIsPlaying(false);
+    isFinishedRef.current = false;
   }, [player]);
 
   const playMusic = useCallback(() => {
@@ -49,44 +75,104 @@ export default function Music({
     }
 
     try {
-      player.replace(audioUri);
-      player.seekTo(0);
+      const isNewAudio = loadedAudioUriRef.current !== audioUri;
+
+      if (isNewAudio) {
+        player.replace({ uri: audioUri });
+        loadedAudioUriRef.current = audioUri;
+        isFinishedRef.current = false;
+      }
+
+      if (isFinishedRef.current) {
+        player.seekTo(0);
+        isFinishedRef.current = false;
+      }
+
       player.play();
 
-      setIsPlaying(true);
+      setInternalIsPlaying(true);
       onChangeActiveMusic?.(musicId);
     } catch (error) {
       console.log('audio play failed:', error?.message);
-      setIsPlaying(false);
+      setInternalIsPlaying(false);
     }
   }, [audioUri, musicId, onChangeActiveMusic, player]);
 
   const onPressMusicButton = useCallback(() => {
+    if (onPressButton) {
+      onPressButton();
+      return;
+    }
+
     if (!audioUri) {
       return;
     }
 
-    if (isActiveMusic && isPlaying) {
+    if (isActiveMusic && currentIsPlaying) {
       pauseMusic();
-      onChangeActiveMusic?.(null);
       return;
     }
 
     playMusic();
   }, [
+    onPressButton,
     audioUri,
     isActiveMusic,
-    isPlaying,
+    currentIsPlaying,
     pauseMusic,
     playMusic,
-    onChangeActiveMusic,
   ]);
 
   useEffect(() => {
-    if (!isActiveMusic && isPlaying) {
+    if (hasExternalControl) {
+      return;
+    }
+
+    if (!isActiveMusic && internalIsPlaying) {
       pauseMusic();
     }
-  }, [isActiveMusic, isPlaying, pauseMusic]);
+  }, [
+    hasExternalControl,
+    isActiveMusic,
+    internalIsPlaying,
+    pauseMusic,
+  ]);
+
+  useEffect(() => {
+    if (hasExternalControl) {
+      return;
+    }
+
+    if (isActiveMusic) {
+      wasActiveMusicRef.current = true;
+      return;
+    }
+
+    if (wasActiveMusicRef.current) {
+      resetMusic();
+      wasActiveMusicRef.current = false;
+    }
+  }, [
+    hasExternalControl,
+    isActiveMusic,
+    resetMusic,
+  ]);
+
+  useEffect(() => {
+    if (hasExternalControl) {
+      return;
+    }
+
+    if (status.didJustFinish) {
+      setInternalIsPlaying(false);
+      isFinishedRef.current = true;
+      onChangeActiveMusic?.(null);
+    }
+  }, [
+    hasExternalControl,
+    status.didJustFinish,
+    onChangeActiveMusic,
+  ]);
 
   return (
     <View style={[styles.wrapper, style]}>
@@ -113,7 +199,7 @@ export default function Music({
 
         {button && !empty && (
           <ButtonIcon
-            Icon={isActiveMusic && isPlaying ? PauseFillIcon : PlayFillIcon}
+            Icon={shouldShowPauseIcon ? PauseFillIcon : PlayFillIcon}
             size="XL"
             variant="none"
             iconColor={colors.fgLayerNeutral}
