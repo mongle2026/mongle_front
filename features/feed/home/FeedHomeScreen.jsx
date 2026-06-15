@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { FlatList, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { useAudioPlayer } from 'expo-audio';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { colors } from '../../../shared/styles/color';
@@ -25,7 +24,6 @@ const API_BASE_URL = 'http://192.168.0.35:3000';
 
 
 export default function FeedHomeScreen({ navigation, route }) {
-
   const NAV_ITEMS = [
     { type: 'icon', Icon: IcHome, isActive: true },
     { type: 'icon', Icon: IcLetter, isActive: false, onPress: () => navigation.navigate('Main', { screen: 'Letter' }) },
@@ -37,8 +35,7 @@ export default function FeedHomeScreen({ navigation, route }) {
   const setRecordType = useRecordFormStore(state => state.setRecordType);
   const { height: screenHeight } = useWindowDimensions();
 
-  const player = useAudioPlayer(null);
-  const [playingFeedId, setPlayingFeedId] = useState(null);
+  const [activeMusicFeedId, setActiveMusicFeedId] = useState(null);
 
   const {
     activeTab,
@@ -100,56 +97,25 @@ export default function FeedHomeScreen({ navigation, route }) {
     navigation.navigate('Record');
   };
 
-  const safePause = useCallback(() => {
-    try {
-      player.pause();
-    } catch (error) {
-      console.log('audio pause ignored:', error?.message);
-    }
-
-    setPlayingFeedId(null);
-  }, [player]);
-
-  const onPressMusic = useCallback((item) => {
-    const previewUrl = item.music?.previewUrl;
-
-    if (!previewUrl) {
-      return;
-    }
-
-    // 같은 노래 버튼을 다시 누르면 정지
-    if (playingFeedId === item.feedId) {
-      safePause();
-      return;
-    }
-
-    // 다른 노래를 누르면 기존 소스를 교체하고 처음부터 재생
-    player.replace(previewUrl);
-    player.seekTo(0);
-    player.play();
-
-    setPlayingFeedId(item.feedId);
-  }, [player, playingFeedId]);
-
   useEffect(() => {
-    if (playingFeedId === null) {
+    if (activeMusicFeedId === null) {
       return;
     }
 
     const currentFeedId = posts[currentIndex]?.feedId;
 
-    if (currentFeedId && currentFeedId !== playingFeedId) {
-      safePause();
+    if (currentFeedId && currentFeedId !== activeMusicFeedId) {
+      setActiveMusicFeedId(null);
     }
-  }, [currentIndex, posts, playingFeedId, player]);
+  }, [currentIndex, posts, activeMusicFeedId]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {
-      safePause();
+      setActiveMusicFeedId(null);
     });
 
     return unsubscribe;
-  }, [navigation, safePause]);
+  }, [navigation]);
 
   const renderItem = ({ item, index }) => (
     <View onLayout={({ nativeEvent }) => {
@@ -162,6 +128,10 @@ export default function FeedHomeScreen({ navigation, route }) {
         musicTitle={item.music?.musicTitle}
         musicArtist={item.music?.musicArtist}
         musicCover={item.music?.musicArtwork ? item.music.musicArtwork : undefined}
+        musicAudioUri={item.music?.previewUrl}
+        musicId={item.feedId}
+        activeMusicId={activeMusicFeedId}
+        onChangeActiveMusic={setActiveMusicFeedId}
         content={item.record?.text ?? ''}
         images={item.files?.filter(f => f.mimeType?.startsWith('image/')).map(f => ({ uri: `${API_BASE_URL}${f.url}` })) ?? []}
         name={item.user?.nickname ?? ''}
@@ -172,7 +142,6 @@ export default function FeedHomeScreen({ navigation, route }) {
         isLiked={item.isLiked ?? false}
         onPressBookmark={() => toggleBookmark(item)}
         onPressLike={() => toggleLike(item)}
-        onPressMusic={() => onPressMusic(item)}
         onPressBody={() => {
           if (index !== currentIndex) {
             flatListRef.current?.scrollToOffset({

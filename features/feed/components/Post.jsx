@@ -71,6 +71,10 @@ export default function Post({
   musicTitle,
   musicArtist,
   musicCover,
+  musicAudioUri,
+  musicId,
+  activeMusicId,
+  onChangeActiveMusic,
   content = '',
   images = [],
   name = '수신인 선택',
@@ -81,7 +85,6 @@ export default function Post({
   isLiked = false,
   onPressBookmark,
   onPressLike,
-  onPressMusic,
   onPressBody,
 }) {
   // type: 'textFull' | 'img'
@@ -120,7 +123,10 @@ export default function Post({
           artist={musicArtist}
           imageSource={musicCover}
           button
-          onPressButton={onPressMusic}
+          audioUri={musicAudioUri}
+          musicId={musicId}
+          activeMusicId={activeMusicId}
+          onChangeActiveMusic={onChangeActiveMusic}
         />
       </View>
 

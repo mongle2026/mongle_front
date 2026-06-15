@@ -1,4 +1,6 @@
+import { useCallback, useEffect, useState } from 'react';
 import { Image, Text, View, StyleSheet, Pressable } from 'react-native';
+import { useAudioPlayer } from 'expo-audio';
 
 import PlayFillIcon from '../../assets/icons/ic_play_fill.svg';
 import PauseFillIcon from '../../assets/icons/ic_pause_fill.svg';
@@ -13,16 +15,78 @@ export default function Music({
   title,
   artist = '가수명',
   imageSource,
+  audioUri,
+  musicId,
+  activeMusicId,
+  onChangeActiveMusic,
   button = false,
-  isPlaying = false,
   empty = false,
   onPress,
-  onPressButton,
   style,
 }) {
+  const player = useAudioPlayer(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const isActiveMusic = activeMusicId === musicId;
+
   const currentImageSource = typeof imageSource === 'string'
     ? { uri: imageSource }
     : imageSource ?? DEFAULT_COVER_IMAGE;
+
+  const pauseMusic = useCallback(() => {
+    try {
+      player.pause();
+    } catch (error) {
+      console.log('audio pause ignored:', error?.message);
+    }
+
+    setIsPlaying(false);
+  }, [player]);
+
+  const playMusic = useCallback(() => {
+    if (!audioUri) {
+      return;
+    }
+
+    try {
+      player.replace(audioUri);
+      player.seekTo(0);
+      player.play();
+
+      setIsPlaying(true);
+      onChangeActiveMusic?.(musicId);
+    } catch (error) {
+      console.log('audio play failed:', error?.message);
+      setIsPlaying(false);
+    }
+  }, [audioUri, musicId, onChangeActiveMusic, player]);
+
+  const onPressMusicButton = useCallback(() => {
+    if (!audioUri) {
+      return;
+    }
+
+    if (isActiveMusic && isPlaying) {
+      pauseMusic();
+      onChangeActiveMusic?.(null);
+      return;
+    }
+
+    playMusic();
+  }, [
+    audioUri,
+    isActiveMusic,
+    isPlaying,
+    pauseMusic,
+    playMusic,
+    onChangeActiveMusic,
+  ]);
+
+  useEffect(() => {
+    if (!isActiveMusic && isPlaying) {
+      pauseMusic();
+    }
+  }, [isActiveMusic, isPlaying, pauseMusic]);
 
   return (
     <View style={[styles.wrapper, style]}>
@@ -49,11 +113,11 @@ export default function Music({
 
         {button && !empty && (
           <ButtonIcon
-            Icon={isPlaying ? PauseFillIcon : PlayFillIcon}
+            Icon={isActiveMusic && isPlaying ? PauseFillIcon : PlayFillIcon}
             size="XL"
             variant="none"
             iconColor={colors.fgLayerNeutral}
-            onPress={onPressButton}
+            onPress={onPressMusicButton}
           />
         )}
       </Pressable>
