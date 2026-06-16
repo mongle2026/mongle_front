@@ -19,8 +19,8 @@ import { useRecordFormStore } from '../../write/record/store/useRecordFormStore'
 
 const PROFILE_SOURCE = require('../../../assets/write/profile_img.png');
 
-// const API_BASE_URL = 'http://192.168.0.3:3000';
-const API_BASE_URL = 'http://192.168.0.35:3000';
+const API_BASE_URL = 'http://192.168.0.3:3000';
+// const API_BASE_URL = 'http://192.168.0.35:3000';
 
 
 export default function FeedHomeScreen({ navigation, route }) {

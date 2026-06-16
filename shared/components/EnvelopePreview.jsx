@@ -29,6 +29,7 @@ export default function EnvelopePreview({
   onLongPress,
   profileStyle,
   isNew,
+  imageSource = null,
 }) {
   return (
     <Pressable onPress={onPress} onLongPress={onLongPress} style={styles.envelopeContainer}>
@@ -40,7 +41,11 @@ export default function EnvelopePreview({
             <FlapSvg width={FLAP_RENDER_WIDTH} height={FLAP_RENDER_HEIGHT} />
           </View>
         )}
-        <Profile imageOnly style={[styles.profileOverlay, profileStyle]} />
+        <Profile
+          imageOnly
+          imageSource={imageSource}
+          style={[styles.profileOverlay, profileStyle]}
+        />
         {isNew && <Badge style={styles.badge} />}
       </Animated.View>
 
@@ -50,7 +55,11 @@ export default function EnvelopePreview({
         {selectedStamp && (
           <Image source={selectedStamp.image} style={styles.stamp} />
         )}
-        <Profile imageOnly style={[styles.profileOverlay, profileStyle]} />
+        <Profile
+          imageOnly
+          imageSource={imageSource}
+          style={[styles.profileOverlay, profileStyle]}
+        />
         {isNew && <Badge style={styles.badge} />}
       </Animated.View>
     </Pressable>

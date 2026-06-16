@@ -32,6 +32,8 @@ const FLY_OUT_DURATION = 600;
 const FINAL_SCALE = 48 / ENVELOPE_WIDTH;
 const FINAL_TRANSLATE_Y = SCREEN_HEIGHT * 0.38;
 
+const API_BASE_URL = 'http://192.168.0.3:3000';
+
 export default function SendAnimationScreen({ navigation, route }) {
   const { deliveryLabel = '일주일 뒤', toMe = false, receiver = null } = route?.params ?? {};
   const { patternId, colorId } = useLetterCoverStore();
@@ -100,7 +102,15 @@ export default function SendAnimationScreen({ navigation, route }) {
             <FlapSvg width={FLAP_RENDER_WIDTH} height={FLAP_RENDER_HEIGHT} />
           </View>
         )}
-        <Profile imageOnly style={styles.profileOverlay} />
+        <Profile
+          imageOnly
+          imageSource={ 
+            recordForm.receiver.hasProfileImage && recordForm.receiver.profileImageUrl 
+            ? `${API_BASE_URL}${recordForm.receiver.profileImageUrl}` 
+            : null 
+          }
+          style={styles.profileOverlay}
+        />
       </Animated.View>
 
       <View

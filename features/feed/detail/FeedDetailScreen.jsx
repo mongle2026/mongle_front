@@ -16,7 +16,7 @@ import { typo } from '../../../shared/styles/typo';
 import { gap, padding } from '../../../shared/styles/token';
 
 // const API_BASE_URL = 'http://192.168.0.35:3000';
-const API_BASE_URL = 'http://192.168.0.35:3000';
+const API_BASE_URL = 'http://192.168.0.3:3000';
 
 function TextLines({ content = '' }) {
   const [lines, setLines] = useState([]);

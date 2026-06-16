@@ -25,8 +25,8 @@ import { gap, padding, radius } from '../../../shared/styles/token';
 import { useRecordFormStore } from '../record/store/useRecordFormStore';
 import { createRecordFormData } from '../utils/createRecordFormData ';
 
-// const API_BASE_URL = 'http://192.168.0.3:3000';
-const API_BASE_URL = 'http://192.168.0.35:3000';
+const API_BASE_URL = 'http://192.168.0.3:3000';
+// const API_BASE_URL = 'http://192.168.0.35:3000';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -232,6 +232,11 @@ export default function LetterCoverSelect({ navigation }) {
           frontAnimStyle={frontAnimStyle}
           backAnimStyle={backAnimStyle}
           onPress={handleFlip}
+          imageSource={ 
+            recordForm.receiver.hasProfileImage && recordForm.receiver.profileImageUrl 
+            ? `${API_BASE_URL}${recordForm.receiver.profileImageUrl}` 
+            : null 
+          }
         />
       </View>
 

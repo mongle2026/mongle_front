@@ -38,9 +38,9 @@ import XIcon from '../../../assets/icons/ic_x.svg';
 import FoldCorner from '../../../assets/write/graphic_paper.svg';
 
 
-// const API_BASE_URL = 'http://192.168.0.3:3000';
+const API_BASE_URL = 'http://192.168.0.3:3000';
 // const API_BASE_URL = 'http://192.168.0.5:3000';
-const API_BASE_URL = 'http://192.168.0.35:3000';
+// const API_BASE_URL = 'http://192.168.0.35:3000';
 
 const BOTTOM_BAR_HEIGHT = 40;
 
@@ -252,11 +252,16 @@ const RecordScreen = ({ navigation }) => {
           <FoldCorner
             style={styles.fold}
           />
+
           {recordType === "LETTER" && (
             recordForm.receiver
               ? <Profile
                 name={recordForm.receiver.nickname}
-                imageSource={recordForm.receiver.image}
+                imageSource={
+                  recordForm.receiver.hasProfileImage && recordForm.receiver.profileImageUrl
+                    ? `${API_BASE_URL}${recordForm.receiver.profileImageUrl}`
+                    : null
+                }
                 tailText="에게"
                 onPress={() => setRecipientOpen(true)}
               />

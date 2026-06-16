@@ -23,7 +23,11 @@ export default function Profile({
 }) {
   const isEmpty = type === 'empty';
   const isHorizontal = type === 'id';
-  const currentImageSource = imageSource || DEFAULT_PROFILE_IMAGE;
+  const currentImageSource = imageSource
+    ? typeof imageSource === 'string'
+      ? { uri: imageSource }
+      : imageSource
+    : DEFAULT_PROFILE_IMAGE;
 
   if (imageOnly) {
     return (
