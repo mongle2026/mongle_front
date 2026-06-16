@@ -10,6 +10,7 @@ import { padding, radius } from '../../../shared/styles/token';
 
 import UseSelectRecipient from './hook/UseSelectRecipient';
 import Empty from '../../../shared/components/Empty';
+import { useFloatingBottomOffset } from '../record/hook/useFloatingBottomOffset';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
@@ -26,6 +27,8 @@ export default function SelectRecipient({ visible, onClose }) {
     handleFocusSearch,
     handleSelectRecipient,
   } = UseSelectRecipient(onClose);
+
+  const bottomValue = useFloatingBottomOffset();
 
   const displayUserList = !keyword.trim()
     ? filteredRecipients
@@ -54,7 +57,13 @@ export default function SelectRecipient({ visible, onClose }) {
               body='닉네임이나 아이디를 다시 확인해 보세요.'
             />
           ) : (
-            <View style={styles.listContainer}>
+            <View
+              style={[styles.listContainer,
+              {
+                paddingBottom: bottomValue,
+              },
+              ]}
+            >
               {displayUserList.map(item => (
                 <ListRow
                   key={item.id}

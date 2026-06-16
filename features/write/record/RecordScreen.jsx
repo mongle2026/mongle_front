@@ -237,55 +237,55 @@ const RecordScreen = ({ navigation }) => {
       <View
         style={styles.container}
       >
-        <ScrollView
-          style={styles.section}
-          contentContainerStyle={[
-            styles.sectionContent,
-            {
-              paddingBottom: bottomValue + BOTTOM_BAR_HEIGHT,
-            },
-          ]}
-        >
+        <View style={styles.sectionWrapper}>
           <FoldCorner
             style={styles.fold}
           />
+          <ScrollView
+            style={styles.section}
+            contentContainerStyle={[
+              styles.sectionContent,
+              {
+                paddingBottom: bottomValue + BOTTOM_BAR_HEIGHT,
+              },
+            ]}
+          >
+            {recordType === "LETTER" && (
+              recordForm.receiver
+                ? <Profile
+                  name={recordForm.receiver.nickname}
+                  imageSource={
+                    recordForm.receiver.hasProfileImage && recordForm.receiver.profileImageUrl
+                      ? `${API_BASE_URL}${recordForm.receiver.profileImageUrl}`
+                      : null
+                  }
+                  tailText="에게"
+                  onPress={() => setRecipientOpen(true)}
+                />
+                : <Profile type="empty" onPress={() => setRecipientOpen(true)} />
+            )}
 
-          {recordType === "LETTER" && (
-            recordForm.receiver
-              ? <Profile
-                name={recordForm.receiver.nickname}
-                imageSource={
-                  recordForm.receiver.hasProfileImage && recordForm.receiver.profileImageUrl
-                    ? `${API_BASE_URL}${recordForm.receiver.profileImageUrl}`
-                    : null
-                }
-                tailText="에게"
-                onPress={() => setRecipientOpen(true)}
-              />
-              : <Profile type="empty" onPress={() => setRecipientOpen(true)} />
-          )}
+            <Music
+              title={recordForm.music?.musicTitle}
+              artist={recordForm.music?.musicArtist}
+              imageSource={recordForm.music?.musicArtwork}
+              empty={!recordForm.music}
+              onPress={() => setMusicOpen(true)}
+            />
 
-          <Music
-            title={recordForm.music?.musicTitle}
-            artist={recordForm.music?.musicArtist}
-            imageSource={recordForm.music?.musicArtwork}
-            empty={!recordForm.music}
-            onPress={() => setMusicOpen(true)}
-          />
+            <RecordText
+              recordForm={recordForm}
+              onShowToast={showToast}
+              recordType={recordType}
+            />
 
-          <RecordText
-            recordForm={recordForm}
-            onShowToast={showToast}
-            recordType={recordType}
-          />
-
-          <RecordImage
-            recordForm={recordForm}
-            onPressAdd={pickImages}
-            onShowToast={showToast}
-          />
-        </ScrollView>
-
+            <RecordImage
+              recordForm={recordForm}
+              onPressAdd={pickImages}
+              onShowToast={showToast}
+            />
+          </ScrollView>
+        </View>
       </View>
       <View
         pointerEvents="box-none"

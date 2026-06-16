@@ -10,10 +10,12 @@ import { colors } from '../../../shared/styles/color';
 import { padding, radius } from '../../../shared/styles/token';
 
 import UseSelectMusic from './hook/UseSelectMusic';
+import { useFloatingBottomOffset } from '../record/hook/useFloatingBottomOffset';
 
 export default function SelectMusic({ visible, onClose, searchPlaceholder = '기록할 음악을 검색해 주세요.' }) {
   const [searchFieldHeight, setSearchFieldHeight] = useState(0);
   const [scrolled, setScrolled] = useState(false);
+  const bottomValue = useFloatingBottomOffset();
 
   const {
     keyword,
@@ -49,7 +51,13 @@ export default function SelectMusic({ visible, onClose, searchPlaceholder = '기
           {!keyword.trim() && (
             <ListHeader title="Apple Music 인기곡 10곡" />
           )}
-          <View style={styles.listContainer}>
+          <View style={[
+            styles.listContainer,
+            {
+              paddingBottom: bottomValue,
+            },
+          ]}
+          >
             {displayMusicList.map(item => (
               <ListRow
                 key={item.externalId}
