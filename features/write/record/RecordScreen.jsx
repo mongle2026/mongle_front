@@ -37,10 +37,7 @@ import { colors } from '../../../shared/styles/color';
 import XIcon from '../../../assets/icons/ic_x.svg';
 import FoldCorner from '../../../assets/write/graphic_paper.svg';
 
-
-const API_BASE_URL = 'http://192.168.0.3:3000';
-// const API_BASE_URL = 'http://192.168.0.5:3000';
-// const API_BASE_URL = 'http://192.168.0.35:3000';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 const BOTTOM_BAR_HEIGHT = 40;
 

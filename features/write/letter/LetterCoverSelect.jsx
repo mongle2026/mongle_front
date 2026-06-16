@@ -25,8 +25,7 @@ import { gap, padding, radius } from '../../../shared/styles/token';
 import { useRecordFormStore } from '../record/store/useRecordFormStore';
 import { createRecordFormData } from '../utils/createRecordFormData ';
 
-const API_BASE_URL = 'http://192.168.0.3:3000';
-// const API_BASE_URL = 'http://192.168.0.35:3000';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 

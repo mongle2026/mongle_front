@@ -15,8 +15,7 @@ import { colors } from '../../../shared/styles/color';
 import { typo } from '../../../shared/styles/typo';
 import { gap, padding } from '../../../shared/styles/token';
 
-// const API_BASE_URL = 'http://192.168.0.35:3000';
-const API_BASE_URL = 'http://192.168.0.3:3000';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 function TextLines({ content = '' }) {
   const [lines, setLines] = useState([]);
