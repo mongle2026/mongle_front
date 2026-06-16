@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { ScrollView, View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import IcHamburger from '../../../assets/icons/ic_hamburger.svg';
@@ -13,6 +14,7 @@ import Filter from '../../../shared/components/Filter';
 import TapButton from '../../../shared/components/TapButton';
 import BottomNavigation from '../../../shared/components/BottomNavigation';
 import FAB from '../../../shared/components/FAB';
+import LetterDetailModal from '../detail/LetterDetailScreen';
 
 import { colors } from '../../../shared/styles/color';
 import { gap, padding } from '../../../shared/styles/token';
@@ -34,6 +36,7 @@ const TAP_TABS = [
 
 export default function LetterHomeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
+  const [selectedLetter, setSelectedLetter] = useState(null);
 
   const NAV_ITEMS = [
     { type: 'icon', Icon: IcHome, isActive: false, onPress: () => navigation.navigate('Main', { screen: 'FeedHome' }) },
@@ -54,10 +57,10 @@ export default function LetterHomeScreen({ navigation }) {
           <Filter label="최신순" />
           <TapButton tabs={TAP_TABS} defaultKey="list" />
         </View>
-        <NewLetterRow letters={NEW_LETTERS} />
+        <NewLetterRow letters={NEW_LETTERS} onPresLetter={setSelectedLetter} />
         <View style={styles.listContent}>
           {SAMPLE_GROUPS.map((group) => (
-            <LetterListRow key={group.date} date={group.date} letters={group.letters} />
+            <LetterListRow key={group.date} date={group.date} letters={group.letters} onPressLetter={setSelectedLetter} />
           ))}
         </View>
       </ScrollView>
@@ -66,6 +69,12 @@ export default function LetterHomeScreen({ navigation }) {
         <BottomNavigation items={NAV_ITEMS} />
         <FAB />
       </View>
+
+      <LetterDetailModal
+        visible={selectedLetter !== null}
+        onClose={() => setSelectedLetter(null)}
+        {...(selectedLetter ?? {})}
+      />
     </View>
   );
 }

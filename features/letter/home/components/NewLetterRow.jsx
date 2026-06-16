@@ -20,7 +20,7 @@ const SCALE = CARD_WIDTH / ENV_WIDTH;
 const SIDE_PADDING = (SCREEN_WIDTH - CARD_WIDTH) / 2;
 const ITEM_WIDTH = CARD_WIDTH + gap.XS;
 
-function FlippableEnvelope({ letter }) {
+function FlippableEnvelope({ letter, onPress }) {
   const rotate = useMemo(() => (Math.random() * 8 - 4).toFixed(2) + 'deg', []);
   const flipProgress = useSharedValue(0);
 
@@ -52,7 +52,9 @@ function FlippableEnvelope({ letter }) {
           selectedStamp={letter.stamp}
           frontAnimStyle={frontAnimStyle}
           backAnimStyle={backAnimStyle}
+          onPress={onPress}
           onLongPress={handleLongPress}
+          imageSource={letter.senderImage}
           isNew
         />
       </View>
@@ -60,7 +62,7 @@ function FlippableEnvelope({ letter }) {
   );
 }
 
-export default function NewLetterRow({ letters = [] }) {
+export default function NewLetterRow({ letters = [], onPresLetter }) {
   if (letters.length === 0) return null;
 
   const snapOffsets = letters.map((_, i) => i * ITEM_WIDTH);
@@ -74,9 +76,13 @@ export default function NewLetterRow({ letters = [] }) {
       snapToOffsets={snapOffsets}
       decelerationRate="fast"
     >
-      {letters.map((letter) => {
-        return <FlippableEnvelope key={letter.id} letter={letter} />;
-      })}
+      {letters.map((letter) => (
+        <FlippableEnvelope
+          key={letter.id}
+          letter={letter}
+          onPress={() => onPresLetter?.(letter)}
+        />
+      ))}
     </ScrollView>
   );
 }

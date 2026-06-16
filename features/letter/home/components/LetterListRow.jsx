@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { palette, colors } from '../../../../shared/styles/color';
 import { gap, padding } from '../../../../shared/styles/token';
 import { typo } from '../../../../shared/styles/typo';
@@ -14,7 +14,7 @@ const BAR_COLORS = [
 ];
 
 
-export default function LetterListRow({ date, letters = [] }) {
+export default function LetterListRow({ date, letters = [], onPressLetter }) {
   return (
     <View style={styles.row}>
       <View style={styles.dateColumn}>
@@ -23,10 +23,14 @@ export default function LetterListRow({ date, letters = [] }) {
       </View>
       <View style={styles.barColumn}>
         {letters.map((letter, index) => (
-          <View
+          <Pressable
             key={letter.id ?? index}
-            style={[styles.bar, { height: 2 + index, backgroundColor: BAR_COLORS[(letter.id ?? index) % BAR_COLORS.length] }]}
-          />
+            onPress={() => onPressLetter?.(letter)}
+          >
+            <View
+              style={[styles.bar, { height: 2 + index, backgroundColor: BAR_COLORS[(letter.id ?? index) % BAR_COLORS.length] }]}
+            />
+          </Pressable>
         ))}
       </View>
     </View>
