@@ -13,8 +13,7 @@ import { useLetterCoverStore } from '../letter/data/letterCoverData';
 import getDiffDaysFromToday from './hook/getDiffDaysFromToday ';
 import { getCaptionDateLabel } from './utils/getCaptionDateLabel';
 
-const API_BASE_URL = 'http://192.168.0.3:3000';
-// const API_BASE_URL = 'http://192.168.0.35:3000';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 const SelectDateScreen = ({ navigation }) => {
   const [visible, setVisible] = React.useState(false);

@@ -11,8 +11,7 @@ import { padding, radius } from '../../../shared/styles/token';
 import UseSelectRecipient from './hook/UseSelectRecipient';
 import Empty from '../../../shared/components/Empty';
 
-const API_BASE_URL = 'http://192.168.0.3:3000';
-// const API_BASE_URL = 'http://192.168.0.35:3000';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 export default function SelectRecipient({ visible, onClose }) {
   const [searchFieldHeight, setSearchFieldHeight] = useState(0);
