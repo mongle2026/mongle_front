@@ -8,18 +8,19 @@ export default function FlapShadow({ width, height }) {
   return (
     <Svg
       width={width}
-      height={height + 30}
-      viewBox="0 -30 325.17 233.2"
+      height={height}
+      viewBox="0 0 325.17 173.2"
+      overflow="visible"
       style={{ position: 'absolute', top: 0, left: 0 }}
     >
       <Defs>
-        <Filter id="flapShadow" x="-10%" y="-20%" width="120%" height="160%">
-          <FeGaussianBlur stdDeviation="7.5" />
+        <Filter id="flapShadow" x="-15%" y="-20%" width="130%" height="170%">
+          <FeGaussianBlur stdDeviation="12" />
         </Filter>
       </Defs>
       <Path
         d={FLAP_PATH}
-        fill="rgba(0,0,0,0.2)"
+        fill="rgba(0,0,0,0.15)"
         transform="rotate(180, 162.585, 86.6) translate(0, -4)"
         filter="url(#flapShadow)"
       />
