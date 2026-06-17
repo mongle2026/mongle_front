@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Dimensions, StyleSheet } from 'react-native';
+import { View, Dimensions, StyleSheet, Platform } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -8,6 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import Profile from '../../../shared/components/Profile';
+import FlapShadow from '../../../shared/components/FlapShadow';
 import Toast from '../../../shared/components/Toast';
 import { PATTERNS, useLetterCoverStore } from '../letter/data/letterCoverData';
 import { colors, shadow } from '../../../shared/styles/color';
@@ -99,6 +100,9 @@ export default function SendAnimationScreen({ navigation, route }) {
         {FrontSvg && <FrontSvg width={ENVELOPE_WIDTH} height={ENVELOPE_HEIGHT} />}
         {FlapSvg && (
           <View style={[styles.flapWrapper, { height: FLAP_RENDER_HEIGHT }]}>
+            {Platform.OS === 'android' && (
+              <FlapShadow width={FLAP_RENDER_WIDTH} height={FLAP_RENDER_HEIGHT} />
+            )}
             <FlapSvg width={FLAP_RENDER_WIDTH} height={FLAP_RENDER_HEIGHT} />
           </View>
         )}

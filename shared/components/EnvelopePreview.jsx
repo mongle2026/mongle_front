@@ -4,6 +4,7 @@ import Badge from './Badge';
 import Animated from 'react-native-reanimated';
 
 import Profile from './Profile';
+import FlapShadow from './FlapShadow';
 import { shadow } from '../styles/color';
 import { padding } from '../styles/token';
 
@@ -38,6 +39,9 @@ export default function EnvelopePreview({
         {FrontSvg && <FrontSvg width={ENVELOPE_WIDTH} height={ENVELOPE_HEIGHT} />}
         {FlapSvg && (
           <View style={[styles.flapWrapper, { height: FLAP_RENDER_HEIGHT }]}>
+            {Platform.OS === 'android' && (
+              <FlapShadow width={FLAP_RENDER_WIDTH} height={FLAP_RENDER_HEIGHT} />
+            )}
             <FlapSvg width={FLAP_RENDER_WIDTH} height={FLAP_RENDER_HEIGHT} />
           </View>
         )}
