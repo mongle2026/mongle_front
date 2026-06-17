@@ -46,7 +46,12 @@ export default function FabMenuModalScreen({ navigation, route }) {
 
   const goToRecord = (type) => {
     setRecordType(type);
-    navigation.replace('Record');
+
+    navigation.goBack();
+
+    requestAnimationFrame(() => {
+      navigation.navigate('Record');
+    });
   };
 
   const moveToRecord = (type) => {

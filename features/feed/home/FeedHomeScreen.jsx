@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { FlatList, StyleSheet, View, useWindowDimensions } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigationState } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { colors } from '../../../shared/styles/color';
@@ -32,6 +32,7 @@ export default function FeedHomeScreen({ navigation, route }) {
   const { height: screenHeight } = useWindowDimensions();
 
   const [activeMusicFeedId, setActiveMusicFeedId] = useState(null);
+  const ignoreNextBlurRef = useRef(false);
 
   const {
     activeTab,
@@ -84,6 +85,8 @@ export default function FeedHomeScreen({ navigation, route }) {
   );
 
   const onPressFab = (fabPos) => {
+    ignoreNextBlurRef.current = true;
+
     navigation.navigate('FabMenuModal', {
       fabPos,
     });
@@ -103,6 +106,11 @@ export default function FeedHomeScreen({ navigation, route }) {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {
+      if (ignoreNextBlurRef.current) {
+        ignoreNextBlurRef.current = false;
+        return;
+      }
+
       setActiveMusicFeedId(null);
     });
 
