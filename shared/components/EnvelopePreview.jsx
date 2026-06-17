@@ -1,4 +1,4 @@
-import { View, Image, Pressable, StyleSheet, Dimensions } from 'react-native';
+import { View, Image, Pressable, StyleSheet, Dimensions, Platform } from 'react-native';
 import { colors } from '../styles/color';
 import Badge from './Badge';
 import Animated from 'react-native-reanimated';
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     left: FLAP_LEFT,
     width: FLAP_RENDER_WIDTH,
     transform: [{ rotate: '-0.25deg' }, { translateY: -1.4 }],
-    ...shadow.middleDown,
+    ...Platform.select({ ios: shadow.middleDown }),
   },
   stamp: {
     position: 'absolute',
