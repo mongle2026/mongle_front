@@ -348,7 +348,7 @@ const RecordScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   dim: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: colors.bgOverlay,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 999,

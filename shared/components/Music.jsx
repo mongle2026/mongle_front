@@ -128,30 +128,17 @@ export default function Music({
       return;
     }
 
-    if (!isActiveMusic && internalIsPlaying) {
-      pauseMusic();
-    }
-  }, [
-    hasExternalControl,
-    isActiveMusic,
-    internalIsPlaying,
-    pauseMusic,
-  ]);
-
-  useEffect(() => {
-    if (hasExternalControl) {
-      return;
-    }
-
     if (isActiveMusic) {
       wasActiveMusicRef.current = true;
       return;
     }
 
-    if (wasActiveMusicRef.current) {
-      resetMusic();
-      wasActiveMusicRef.current = false;
+    if (!wasActiveMusicRef.current) {
+      return;
     }
+
+    resetMusic();
+    wasActiveMusicRef.current = false;
   }, [
     hasExternalControl,
     isActiveMusic,
