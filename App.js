@@ -7,6 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { SystemBars } from 'react-native-edge-to-edge';
 
 import { colors } from './shared/styles/color';
 import RecordScreen from './features/write/record/RecordScreen.jsx';
@@ -22,6 +23,7 @@ import SendAnimationScreen from './features/write/send/SendAnimationScreen.jsx';
 import SelectRecipientScreen from './features/write/recipient/SelectRecipientScreen.jsx';
 import SelectMusic from './features/write/music/SelectMusic.jsx';
 import LetterHomeScreen from './features/letter/home/LetterHomeScreen.jsx';
+import FabMenuModalScreen from './features/feed/home/FabMenuModalScreen.jsx';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -132,11 +134,24 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
+        <StatusBar style="light" />
+        <SystemBars style="dark" />
         <NavigationContainer theme={{ ...DarkTheme, colors: { ...DarkTheme.colors, background: colors.bgDefault } }}>
-          <StatusBar style="light" />
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Main" component={TabNavigator} options={{ animation: 'none' }} />
             <Stack.Screen name="FeedHome" component={FeedHomeScreen} />
+            <Stack.Screen
+              name="FabMenuModal"
+              component={FabMenuModalScreen}
+              options={{
+                headerShown: false,
+                presentation: 'transparentModal',
+                animation: 'fade',
+                contentStyle: {
+                  backgroundColor: 'transparent',
+                },
+              }}
+            />
             <Stack.Screen name="LetterCoverSelect" component={LetterCoverSelect} />
             <Stack.Screen name="Test" component={TestScreen} />
             <Stack.Screen name="FeedDetail" component={FeedDetailScreen} />

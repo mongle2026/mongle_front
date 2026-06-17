@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { FlatList, StyleSheet, View, useWindowDimensions } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigationState } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { colors } from '../../../shared/styles/color';
@@ -15,7 +15,6 @@ import IcLetter from '../../../assets/icons/ic_letter.svg';
 
 import useFeedHome from './hook/useFeedHome';
 import useFeedActions from './hook/useFeedActions';
-import { useRecordFormStore } from '../../write/record/store/useRecordFormStore';
 
 const PROFILE_SOURCE = require('../../../assets/write/profile_img.png');
 
@@ -30,10 +29,10 @@ export default function FeedHomeScreen({ navigation, route }) {
 
   const userId = 1;
   const insets = useSafeAreaInsets();
-  const setRecordType = useRecordFormStore(state => state.setRecordType);
   const { height: screenHeight } = useWindowDimensions();
 
   const [activeMusicFeedId, setActiveMusicFeedId] = useState(null);
+  const ignoreNextBlurRef = useRef(false);
 
   const {
     activeTab,
@@ -85,14 +84,12 @@ export default function FeedHomeScreen({ navigation, route }) {
     }, [refetchFeed])
   );
 
-  const onPressFeed = () => {
-    setRecordType('FEED');
-    navigation.navigate('Record');
-  };
+  const onPressFab = (fabPos) => {
+    ignoreNextBlurRef.current = true;
 
-  const onPressLetter = () => {
-    setRecordType('LETTER');
-    navigation.navigate('Record');
+    navigation.navigate('FabMenuModal', {
+      fabPos,
+    });
   };
 
   useEffect(() => {
@@ -109,6 +106,11 @@ export default function FeedHomeScreen({ navigation, route }) {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {
+      if (ignoreNextBlurRef.current) {
+        ignoreNextBlurRef.current = false;
+        return;
+      }
+
       setActiveMusicFeedId(null);
     });
 
@@ -182,10 +184,7 @@ export default function FeedHomeScreen({ navigation, route }) {
 
       <View style={[styles.bottomBar, { paddingBottom: insets.bottom + padding.XXL }]}>
         <BottomNavigation items={NAV_ITEMS} />
-        <FAB
-          onPressFeed={onPressFeed}
-          onPressLetter={onPressLetter}
-        />
+        <FAB onPress={onPressFab} />
       </View>
 
       <Toast
