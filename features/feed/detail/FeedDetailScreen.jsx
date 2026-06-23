@@ -118,7 +118,7 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
 
         <Carousel images={images} onPressImage={setSelectedImage} />
 
-        <Caption date={record.date ? formatDateDetail(record.date) : ''} bookmarkCount={feed.bookmarkCount} />
+        <Caption date={feed.createdAt ? formatDateDetail(feed.createdAt) : ''} bookmarkCount={feed.bookmarkCount} />
       </ScrollView>
 
       <Modal visible={!!selectedImage} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setSelectedImage(null)}>

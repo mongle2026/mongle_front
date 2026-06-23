@@ -135,7 +135,7 @@ export default function FeedHomeScreen({ navigation, route }) {
         content={item.record?.text ?? ''}
         images={item.files?.filter(f => f.mimeType?.startsWith('image/')).map(f => ({ uri: `${API_BASE_URL}${f.url}` })) ?? []}
         name={item.user?.nickname ?? ''}
-        date={item.record?.date ?? ''}
+        date={item.createdAt ?? ''}
         id={item.user?.userCode}
         profileSource={item.user.hasProfileImage && item.user.profileImageUrl ? { uri: `${API_BASE_URL}${item.user.profileImageUrl}` } : null}
         isBookmarked={item.isBookmarked ?? false}
