@@ -144,7 +144,7 @@ export default function Post({
               <Img
                 key={i}
                 variant="ImgOnly"
-                imageSource={typeof src === 'string' ? { uri: src } : src}
+                imageSource={src}
               />
             ))}
           </View>
