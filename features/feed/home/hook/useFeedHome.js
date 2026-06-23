@@ -8,7 +8,12 @@ const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 export default function useFeedHome() {
   const [activeTab, setActiveTab] = useState('추천');
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [toastVisible, setToastVisible] = useState(false);
+  const [toast, setToast] = useState({
+    visible: false,
+    type: 'success',
+    message: '',
+    actionLabel: undefined,
+  });
   const toastTimerRef = useRef(null);
   // 하드코딩
   const userId = 1;
@@ -33,10 +38,27 @@ export default function useFeedHome() {
     setActiveTab(tab);
   }, []);
 
-  const showToast = useCallback(() => {
-    setToastVisible(true);
+  const showToast = useCallback(({
+    type = 'success',
+    message = '기록을 북마크에 추가했습니다.',
+    actionLabel,
+    duration = 3000,
+  } = {}) => {
     clearTimeout(toastTimerRef.current);
-    toastTimerRef.current = setTimeout(() => setToastVisible(false), 3000);
+
+    setToast({
+      visible: true,
+      type,
+      message,
+      actionLabel,
+    });
+
+    toastTimerRef.current = setTimeout(() => {
+      setToast(prev => ({
+        ...prev,
+        visible: false,
+      }));
+    }, duration);
   }, []);
 
   return {
@@ -44,7 +66,7 @@ export default function useFeedHome() {
     posts,
     currentIndex,
     setCurrentIndex,
-    toastVisible,
+    toast,
     refetchFeed,
     onTabPress,
     showToast,

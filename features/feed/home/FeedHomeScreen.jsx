@@ -39,7 +39,7 @@ export default function FeedHomeScreen({ navigation, route }) {
     posts,
     currentIndex,
     setCurrentIndex,
-    toastVisible,
+    toast,
     refetchFeed,
     onTabPress,
     showToast,
@@ -51,7 +51,13 @@ export default function FeedHomeScreen({ navigation, route }) {
     bookmarkMutation,
   } = useFeedActions({
     userId,
-    onBookmarkAdded: showToast,
+    onBookmarkAdded: () => {
+      showToast({
+        type: 'success',
+        message: '기록을 북마크에 추가했습니다.',
+        actionLabel: '이동하기',
+      });
+    },
   });
 
   const [snapOffsets, setSnapOffsets] = useState([]);
@@ -116,6 +122,24 @@ export default function FeedHomeScreen({ navigation, route }) {
 
     return unsubscribe;
   }, [navigation]);
+
+  useEffect(() => {
+    const receivedToast = route?.params?.homeToast;
+
+    if (!receivedToast) {
+      return;
+    }
+
+    showToast({
+      type: receivedToast.type,
+      message: receivedToast.message,
+      duration: 3000,
+    });
+
+    navigation.setParams({
+      homeToast: undefined,
+    });
+  }, [route?.params?.homeToast?.id, navigation, showToast]);
 
   const renderItem = ({ item, index }) => (
     <View onLayout={({ nativeEvent }) => {
@@ -189,11 +213,11 @@ export default function FeedHomeScreen({ navigation, route }) {
 
       <Toast
         style={[styles.toast, { bottom: insets.bottom + 44 + padding.XXL }]}
-        message="기록을 북마크에 추가했습니다."
-        type="success"
-        actionLabel="이동하기"
+        message={toast.message}
+        type={toast.type}
+        actionLabel={toast.actionLabel}
         // onPressAction={undoLastBookmark}
-        visible={toastVisible}
+        visible={toast.visible}
       />
     </View>
   );
