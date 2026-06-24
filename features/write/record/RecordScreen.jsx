@@ -52,7 +52,7 @@ const RecordScreen = ({ navigation }) => {
   const [recipientOpen, setRecipientOpen] = useState(false);
   const [musicOpen, setMusicOpen] = useState(false);
 
-  const { toast, showToast } = useToast();
+  const { toast, showToast, pressToastAction } = useToast();
   const bottomValue = useFloatingBottomOffset();
   const insets = useSafeAreaInsets();
 
@@ -301,6 +301,8 @@ const RecordScreen = ({ navigation }) => {
           message={toast.message}
           type={toast.type}
           color={toast.color}
+          actionLabel={toast.actionLabel}
+          onPressAction={pressToastAction}
         />
       </View>
 

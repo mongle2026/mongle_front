@@ -52,6 +52,24 @@ export const useRecordFormStore = create((set) => ({
       files: state.files.filter((file) => file.uri !== uri),
     })),
 
+  restoreFile: (file, index) =>
+    set(state => {
+      const alreadyExists = state.files.some(item => item.uri === file.uri);
+
+      if (alreadyExists) {
+        return state;
+      }
+
+      const nextFiles = [...state.files];
+      const safeIndex = Math.min(Math.max(index, 0), nextFiles.length);
+
+      nextFiles.splice(safeIndex, 0, file);
+
+      return {
+        files: nextFiles,
+      };
+    }),
+
   setVisibility: (visibility) =>
     set({
       visibility,
