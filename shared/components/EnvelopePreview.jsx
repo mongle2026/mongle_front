@@ -1,4 +1,4 @@
-import { View, Image, Pressable, StyleSheet, Dimensions, Platform } from 'react-native';
+import { View, Pressable, StyleSheet, Dimensions, Platform } from 'react-native';
 import { colors } from '../styles/color';
 import Badge from './Badge';
 import Animated from 'react-native-reanimated';
@@ -56,8 +56,10 @@ export default function EnvelopePreview({
       {/* 뒷면 */}
       <Animated.View style={[styles.envelopeFace, styles.envelopeFaceBack, backAnimStyle]}>
         {BackSvg && <BackSvg width={ENVELOPE_WIDTH} height={ENVELOPE_HEIGHT} />}
-        {selectedStamp && (
-          <Image source={selectedStamp.image} style={styles.stamp} />
+        {selectedStamp?.SvgComponent && (
+          <View style={styles.stamp}>
+            <selectedStamp.SvgComponent width="100%" height="100%" />
+          </View>
         )}
         <Profile
           imageOnly

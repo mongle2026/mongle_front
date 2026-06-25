@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { FlatList, StyleSheet, View, useWindowDimensions } from 'react-native';
-import { useFocusEffect, useNavigationState } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { colors } from '../../../shared/styles/color';
@@ -21,13 +21,6 @@ const PROFILE_SOURCE = require('../../../assets/write/profile_img.png');
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 export default function FeedHomeScreen({ navigation, route }) {
-  const NAV_ITEMS = [
-    { type: 'icon', Icon: IcHome, isActive: true },
-    { type: 'icon', Icon: IcLetter, isActive: false, onPress: () => navigation.navigate('Main', { screen: 'Letter' }) },
-    { type: 'profile', profileSource: PROFILE_SOURCE, isActive: false },
-  ];
-
-  const userId = 1;
   const insets = useSafeAreaInsets();
   const { height: screenHeight } = useWindowDimensions();
 
@@ -35,6 +28,7 @@ export default function FeedHomeScreen({ navigation, route }) {
   const ignoreNextBlurRef = useRef(false);
 
   const {
+    userId,
     activeTab,
     posts,
     currentIndex,
@@ -48,7 +42,6 @@ export default function FeedHomeScreen({ navigation, route }) {
   const {
     toggleLike,
     toggleBookmark,
-    bookmarkMutation,
   } = useFeedActions({
     userId,
     onBookmarkAdded: () => {
@@ -63,6 +56,12 @@ export default function FeedHomeScreen({ navigation, route }) {
   const [snapOffsets, setSnapOffsets] = useState([]);
   const itemHeightsRef = useRef({});
   const flatListRef = useRef(null);
+
+  const NAV_ITEMS = useMemo(() => [
+    { type: 'icon', Icon: IcHome, isActive: true },
+    { type: 'icon', Icon: IcLetter, isActive: false, onPress: () => navigation.navigate('Main', { screen: 'Letter' }) },
+    { type: 'profile', profileSource: PROFILE_SOURCE, isActive: false },
+  ], [navigation]);
 
   const recomputeOffsets = useCallback(() => {
     const paddingTop = insets.top + 58 + padding.M;
@@ -90,21 +89,14 @@ export default function FeedHomeScreen({ navigation, route }) {
     }, [refetchFeed])
   );
 
-  const onPressFab = (fabPos) => {
+  const onPressFab = useCallback((fabPos) => {
     ignoreNextBlurRef.current = true;
-
-    navigation.navigate('FabMenuModal', {
-      fabPos,
-    });
-  };
+    navigation.navigate('FabMenuModal', { fabPos });
+  }, [navigation]);
 
   useEffect(() => {
-    if (activeMusicFeedId === null) {
-      return;
-    }
-
+    if (activeMusicFeedId === null) return;
     const currentFeedId = posts[currentIndex]?.feedId;
-
     if (currentFeedId && currentFeedId !== activeMusicFeedId) {
       setActiveMusicFeedId(null);
     }
@@ -116,10 +108,8 @@ export default function FeedHomeScreen({ navigation, route }) {
         ignoreNextBlurRef.current = false;
         return;
       }
-
       setActiveMusicFeedId(null);
     });
-
     return unsubscribe;
   }, [navigation]);
 
@@ -141,46 +131,56 @@ export default function FeedHomeScreen({ navigation, route }) {
     });
   }, [route?.params?.homeToast?.id, navigation, showToast]);
 
-  const renderItem = ({ item, index }) => (
-    <View onLayout={({ nativeEvent }) => {
-      itemHeightsRef.current[index] = nativeEvent.layout.height;
-      recomputeOffsets();
-    }}>
-      <Post
-        type={item.files?.length > 0 ? 'img' : 'textFull'}
-        currentView={index === currentIndex}
-        musicTitle={item.music?.musicTitle}
-        musicArtist={item.music?.musicArtist}
-        musicCover={item.music?.musicArtwork ? item.music.musicArtwork : undefined}
-        musicAudioUri={item.music?.previewUrl}
-        musicId={item.feedId}
-        activeMusicId={activeMusicFeedId}
-        onChangeActiveMusic={setActiveMusicFeedId}
-        content={item.record?.text ?? ''}
-        images={item.files?.filter(f => f.mimeType?.startsWith('image/')).map(f => ({ uri: `${API_BASE_URL}${f.url}` })) ?? []}
-        name={item.user?.nickname ?? ''}
-        date={item.createdAt ?? ''}
-        id={item.user?.userCode}
-        profileSource={item.user.hasProfileImage && item.user.profileImageUrl ? { uri: `${API_BASE_URL}${item.user.profileImageUrl}` } : null}
-        isBookmarked={item.isBookmarked ?? false}
-        isLiked={item.isLiked ?? false}
-        onPressBookmark={() => toggleBookmark(item)}
-        onPressLike={() => toggleLike(item)}
-        onPressBody={() => {
-          if (index !== currentIndex) {
-            flatListRef.current?.scrollToOffset({
-              offset: snapOffsets[index] ?? 0,
-              animated: true,
-            });
-          } else {
-            navigation.navigate('FeedDetail', {
-              feedId: item.feedId,
-            });
+  const renderItem = useCallback(({ item, index }) => {
+    const images = item.files
+      ?.reduce((acc, f) => {
+        if (f.mimeType?.startsWith('image/')) acc.push({ uri: `${API_BASE_URL}${f.url}` });
+        return acc;
+      }, []) ?? [];
+
+    return (
+      <View onLayout={({ nativeEvent }) => {
+        itemHeightsRef.current[index] = nativeEvent.layout.height;
+        recomputeOffsets();
+      }}>
+        <Post
+          type={images.length > 0 ? 'img' : 'textFull'}
+          currentView={index === currentIndex}
+          musicTitle={item.music?.musicTitle}
+          musicArtist={item.music?.musicArtist}
+          musicCover={item.music?.musicArtwork ?? undefined}
+          musicAudioUri={item.music?.previewUrl}
+          musicId={item.feedId}
+          activeMusicId={activeMusicFeedId}
+          onChangeActiveMusic={setActiveMusicFeedId}
+          content={item.record?.text ?? ''}
+          images={images}
+          name={item.user?.nickname ?? ''}
+          date={item.record?.date ?? ''}
+          id={item.user?.userCode}
+          profileSource={
+            item.user.hasProfileImage && item.user.profileImageUrl
+              ? { uri: `${API_BASE_URL}${item.user.profileImageUrl}` }
+              : null
           }
-        }}
-      />
-    </View>
-  );
+          isBookmarked={item.isBookmarked ?? false}
+          isLiked={item.isLiked ?? false}
+          onPressBookmark={() => toggleBookmark(item)}
+          onPressLike={() => toggleLike(item)}
+          onPressBody={() => {
+            if (index !== currentIndex) {
+              flatListRef.current?.scrollToOffset({
+                offset: snapOffsets[index] ?? 0,
+                animated: true,
+              });
+            } else {
+              navigation.navigate('FeedDetail', { feedId: item.feedId });
+            }
+          }}
+        />
+      </View>
+    );
+  }, [currentIndex, activeMusicFeedId, snapOffsets, toggleBookmark, toggleLike, navigation, recomputeOffsets]);
 
   return (
     <View style={styles.screen}>

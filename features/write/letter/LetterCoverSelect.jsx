@@ -109,7 +109,7 @@ export default function LetterCoverSelect({ navigation }) {
             key={item.id}
             label={item.label}
             PatternSvg={PatternSvg}
-            stampImage={stamp?.image}
+            StampSvg={stamp?.SvgComponent}
             isSelected={selectedItems.template === item.id}
             onPress={onPress}
           />
@@ -137,7 +137,7 @@ export default function LetterCoverSelect({ navigation }) {
         return (
           <StampItem
             key={item.id}
-            image={item.image}
+            SvgComponent={item.SvgComponent}
             isSelected={selectedItems.stampId === item.id}
             onPress={onPress}
           />
@@ -231,10 +231,10 @@ export default function LetterCoverSelect({ navigation }) {
           frontAnimStyle={frontAnimStyle}
           backAnimStyle={backAnimStyle}
           onPress={handleFlip}
-          imageSource={ 
-            recordForm.receiver.hasProfileImage && recordForm.receiver.profileImageUrl 
-            ? `${API_BASE_URL}${recordForm.receiver.profileImageUrl}` 
-            : null 
+          imageSource={
+            recordForm.receiver.hasProfileImage && recordForm.receiver.profileImageUrl
+            ? `${API_BASE_URL}${recordForm.receiver.profileImageUrl}`
+            : null
           }
         />
       </View>

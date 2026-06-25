@@ -8,6 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import EnvelopePreview from '../../../../shared/components/EnvelopePreview';
 import { gap, padding } from '../../../../shared/styles/token';
+import { STAMPS, resolvePatternColor } from '../../../write/letter/data/letterCoverData';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -20,6 +21,8 @@ const SCALE = CARD_WIDTH / ENV_WIDTH;
 const SIDE_PADDING = (SCREEN_WIDTH - CARD_WIDTH) / 2;
 const ITEM_WIDTH = CARD_WIDTH + gap.XS;
 
+// TODO(API): letter.senderProfileImageUrl을 받아 프로필 이미지 URL로 사용
+// TODO(API): letter.patternColorId, letter.stampId로 봉투 SVG를 resolve
 function FlippableEnvelope({ letter, onPress }) {
   const rotate = useMemo(() => (Math.random() * 8 - 4).toFixed(2) + 'deg', []);
   const flipProgress = useSharedValue(0);
@@ -38,9 +41,11 @@ function FlippableEnvelope({ letter, onPress }) {
     return { transform: [{ perspective: 800 }, { rotateY: `${spin}deg` }] };
   });
 
-  const FrontSvg = letter.frontImg?.default ?? letter.frontImg;
-  const FlapSvg = letter.flapImg?.default ?? letter.flapImg;
+  const resolved = resolvePatternColor(letter.patternColorId);
+  const FrontSvg = resolved?.color?.frontImg?.default ?? resolved?.color?.frontImg;
+  const FlapSvg = resolved?.color?.flapImg?.default ?? resolved?.color?.flapImg;
   const BackSvg = FrontSvg;
+  const stamp = STAMPS.find(s => s.id === letter.stampId);
 
   return (
     <View style={styles.card}>
@@ -49,12 +54,12 @@ function FlippableEnvelope({ letter, onPress }) {
           FrontSvg={FrontSvg}
           FlapSvg={FlapSvg}
           BackSvg={BackSvg}
-          selectedStamp={letter.stamp}
+          selectedStamp={stamp}
           frontAnimStyle={frontAnimStyle}
           backAnimStyle={backAnimStyle}
           onPress={onPress}
           onLongPress={handleLongPress}
-          imageSource={letter.senderImage}
+          imageSource={letter.senderProfileImageUrl ?? null}
           isNew
         />
       </View>
