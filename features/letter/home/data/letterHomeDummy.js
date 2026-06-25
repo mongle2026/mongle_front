@@ -10,14 +10,11 @@
 import { STAMPS, TEMPLATES, resolvePatternColor } from '../../../write/letter/data/letterCoverData';
 
 const IMG_COVER = require('../../../../assets/write/cover_img.png');
-const IMG_STAMP_1 = require('../../../../assets/letter_cover/stamps/stamp_1.png');
-const IMG_STAMP_2 = require('../../../../assets/letter_cover/stamps/stamp_2.png');
-const IMG_STAMP_3 = require('../../../../assets/letter_cover/stamps/stamp_3.png');
 
 const LETTER_DETAILS = [
   {
     senderName: '코코',
-    senderImage: IMG_STAMP_1,
+    senderImage: null,
     musicTitle: 'Warm on a Cold Night',
     musicArtist: 'HONNE',
     musicCover: IMG_COVER,
@@ -25,7 +22,7 @@ const LETTER_DETAILS = [
   },
   {
     senderName: '민준',
-    senderImage: IMG_STAMP_2,
+    senderImage: null,
     musicTitle: 'Lovefool',
     musicArtist: 'The Cardigans',
     musicCover: IMG_COVER,
@@ -33,7 +30,7 @@ const LETTER_DETAILS = [
   },
   {
     senderName: '서연',
-    senderImage: IMG_STAMP_3,
+    senderImage: null,
     musicTitle: 'Someone Like You',
     musicArtist: 'Adele',
     musicCover: IMG_COVER,

@@ -1,5 +1,27 @@
 import { create } from 'zustand';
 
+import Stamp1 from '../../../../assets/letter_cover/stamps/stamp_1.svg';
+import Stamp2 from '../../../../assets/letter_cover/stamps/stamp_2.svg';
+import Stamp3 from '../../../../assets/letter_cover/stamps/stamp_3.svg';
+import Stamp4 from '../../../../assets/letter_cover/stamps/stamp_4.svg';
+import Stamp5 from '../../../../assets/letter_cover/stamps/stamp_5.svg';
+import Stamp6 from '../../../../assets/letter_cover/stamps/stamp_6.svg';
+import Stamp7 from '../../../../assets/letter_cover/stamps/stamp_7.svg';
+import Stamp8 from '../../../../assets/letter_cover/stamps/stamp_8.svg';
+import Stamp9 from '../../../../assets/letter_cover/stamps/stamp_9.svg';
+import Stamp10 from '../../../../assets/letter_cover/stamps/stamp_10.svg';
+import Stamp11 from '../../../../assets/letter_cover/stamps/stamp_11.svg';
+import Stamp12 from '../../../../assets/letter_cover/stamps/stamp_12.svg';
+import Stamp13 from '../../../../assets/letter_cover/stamps/stamp_13.svg';
+import Stamp14 from '../../../../assets/letter_cover/stamps/stamp_14.svg';
+import Stamp15 from '../../../../assets/letter_cover/stamps/stamp_15.svg';
+import Stamp16 from '../../../../assets/letter_cover/stamps/stamp_16.svg';
+import Stamp17 from '../../../../assets/letter_cover/stamps/stamp_17.svg';
+import Stamp18 from '../../../../assets/letter_cover/stamps/stamp_18.svg';
+import Stamp19 from '../../../../assets/letter_cover/stamps/stamp_19.svg';
+import Stamp20 from '../../../../assets/letter_cover/stamps/stamp_20.svg';
+import Stamp21 from '../../../../assets/letter_cover/stamps/stamp_21.svg';
+
 export const useLetterCoverStore = create((set) => ({
   patternId: 'p1',
   colorId:   'p1_c1',
@@ -94,22 +116,27 @@ export const PATTERNS = [
 ];
 
 export const STAMPS = [
-  { id: 's1',  image: require('../../../../assets/letter_cover/stamps/stamp_1.png') },
-  { id: 's2',  image: require('../../../../assets/letter_cover/stamps/stamp_2.png') },
-  { id: 's3',  image: require('../../../../assets/letter_cover/stamps/stamp_3.png') },
-  { id: 's4',  image: require('../../../../assets/letter_cover/stamps/stamp_4.png') },
-  { id: 's5',  image: require('../../../../assets/letter_cover/stamps/stamp_5.png') },
-  { id: 's6',  image: require('../../../../assets/letter_cover/stamps/stamp_6.png') },
-  { id: 's7',  image: require('../../../../assets/letter_cover/stamps/stamp_7.png') },
-  { id: 's8',  image: require('../../../../assets/letter_cover/stamps/stamp_8.png') },
-  { id: 's9',  image: require('../../../../assets/letter_cover/stamps/stamp_9.png') },
-  { id: 's10', image: require('../../../../assets/letter_cover/stamps/stamp_10.png') },
-  { id: 's11', image: require('../../../../assets/letter_cover/stamps/stamp_11.png') },
-  { id: 's12', image: require('../../../../assets/letter_cover/stamps/stamp_12.png') },
-  { id: 's13', image: require('../../../../assets/letter_cover/stamps/stamp_13.png') },
-  { id: 's14', image: require('../../../../assets/letter_cover/stamps/stamp_14.png') },
-  { id: 's15', image: require('../../../../assets/letter_cover/stamps/stamp_15.png') },
-  { id: 's16', image: require('../../../../assets/letter_cover/stamps/stamp_16.png') },
+  { id: 's1',  SvgComponent: Stamp1 },
+  { id: 's2',  SvgComponent: Stamp2 },
+  { id: 's3',  SvgComponent: Stamp3 },
+  { id: 's4',  SvgComponent: Stamp4 },
+  { id: 's5',  SvgComponent: Stamp5 },
+  { id: 's6',  SvgComponent: Stamp6 },
+  { id: 's7',  SvgComponent: Stamp7 },
+  { id: 's8',  SvgComponent: Stamp8 },
+  { id: 's9',  SvgComponent: Stamp9 },
+  { id: 's10', SvgComponent: Stamp10 },
+  { id: 's11', SvgComponent: Stamp11 },
+  { id: 's12', SvgComponent: Stamp12 },
+  { id: 's13', SvgComponent: Stamp13 },
+  { id: 's14', SvgComponent: Stamp14 },
+  { id: 's15', SvgComponent: Stamp15 },
+  { id: 's16', SvgComponent: Stamp16 },
+  { id: 's17', SvgComponent: Stamp17 },
+  { id: 's18', SvgComponent: Stamp18 },
+  { id: 's19', SvgComponent: Stamp19 },
+  { id: 's20', SvgComponent: Stamp20 },
+  { id: 's21', SvgComponent: Stamp21 },
 ];
 
 // 템플릿 목록 — 기본 패턴/컬러/우표 조합의 프리셋

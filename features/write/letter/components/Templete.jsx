@@ -1,10 +1,10 @@
-import { Pressable, Text, View, Image, StyleSheet } from 'react-native';
+import { Pressable, Text, View, StyleSheet } from 'react-native';
 import { colors } from '../../../../shared/styles/color';
 import { gap, padding, radius } from '../../../../shared/styles/token';
 import { typo } from '../../../../shared/styles/typo';
 
 
-export default function Templete({ label, PatternSvg, stampImage, isSelected = false, onPress }) {
+export default function Templete({ label, PatternSvg, StampSvg, isSelected = false, onPress }) {
   return (
     <Pressable onPress={onPress} style={[styles.container, isSelected ? styles.containerSelected : styles.containerUnselected]}>
       <Text style={styles.label} numberOfLines={1}>{label}</Text>
@@ -20,8 +20,8 @@ export default function Templete({ label, PatternSvg, stampImage, isSelected = f
 
         {/* 우표 */}
         <View style={styles.stampBox}>
-          {stampImage && (
-            <Image source={stampImage} style={styles.stampImage} resizeMode="cover" />
+          {StampSvg && (
+            <StampSvg width="100%" height="100%" />
           )}
         </View>
       </View>
@@ -69,9 +69,5 @@ const styles = StyleSheet.create({
     height: 88,
     borderRadius: radius.XS,
     overflow: 'hidden',
-  },
-  stampImage: {
-    width: '100%',
-    height: '100%',
   },
 });
