@@ -51,7 +51,7 @@ const SelectDateCalendar = ({
   //   selectedDate.dateString.slice(0, 7)
   // );
 
-  const todayDateString = getLocalDateString();
+  // const todayDateString = getLocalDateString();
   // const minSelectableDate = getTomorrowDateString();
 
   // const visibleYear = Number(visibleMonth.split('-')[0]);
@@ -73,17 +73,52 @@ const SelectDateCalendar = ({
   // };
 
 
+  // const handlePressDateButton = value => {
+  //   setDateType(prev => (prev === value ? null : value))
+  //   setIsCalendarOpen(prev => !prev);
+  // };
+
+  // const handleSelectDate = day => {
+  //   if (day.dateString <= todayDateString) return;
+
+  //   setSelectedDate(day);
+  //   setDeliveryAt(`${day.dateString} 00:00:00`);
+  // };
+
+  const todayDateString = getLocalDateString();
+
+  const getOneYearLaterDateString = () => {
+    const date = new Date();
+    date.setFullYear(date.getFullYear() + 1);
+
+    return getLocalDateString(date);
+  };
+
+  const maxDateString = getOneYearLaterDateString();
+
+  const minVisibleMonth = todayDateString.slice(0, 7);
+  const maxVisibleMonth = maxDateString.slice(0, 7);
+
+  const [visibleMonth, setVisibleMonth] = useState(
+    selectedDate?.dateString?.slice(0, 7) || minVisibleMonth
+  );
+
+  const isMinVisibleMonth = visibleMonth <= minVisibleMonth;
+  const isMaxVisibleMonth = visibleMonth >= maxVisibleMonth;
+
   const handlePressDateButton = value => {
-    setDateType(prev => (prev === value ? null : value))
+    setDateType(prev => (prev === value ? null : value));
     setIsCalendarOpen(prev => !prev);
   };
 
   const handleSelectDate = day => {
     if (day.dateString <= todayDateString) return;
+    if (day.dateString > maxDateString) return;
 
     setSelectedDate(day);
     setDeliveryAt(`${day.dateString} 00:00:00`);
   };
+
 
   return (
     <View style={styles.container}>
@@ -162,7 +197,16 @@ const SelectDateCalendar = ({
       {isCalendarOpen && (
         <View style={styles.calendarWrapper}>
           <Calendar
+            current={`${visibleMonth}-01`}
             minDate={todayDateString}
+            maxDate={maxDateString}
+            disableArrowLeft={isMinVisibleMonth}
+            disableArrowRight={isMaxVisibleMonth}
+            enableSwipeMonths={false}
+            onMonthChange={month => {
+              const nextVisibleMonth = `${month.year}-${String(month.month).padStart(2, '0')}`;
+              setVisibleMonth(nextVisibleMonth);
+            }}
             onDayPress={handleSelectDate}
             markedDates={{
               [selectedDate?.dateString]: {
@@ -183,7 +227,6 @@ const SelectDateCalendar = ({
             markingType="custom"
             theme={{
               arrowColor: colors.fgBrand,
-              
             }}
           />
         </View>
