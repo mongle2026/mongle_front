@@ -1,12 +1,12 @@
-import { Pressable, View, Image, StyleSheet } from 'react-native';
+import { Pressable, View, StyleSheet } from 'react-native';
 import { radius } from '../../../shared/styles/token';
 
-export default function StampItem({ image, isSelected = false, onPress }) {
+export default function StampItem({ SvgComponent, isSelected = false, onPress }) {
   return (
     <Pressable onPress={onPress} style={styles.container}>
       <View style={[styles.imageWrapper, isSelected && styles.imageWrapperSelected]}>
-        {image && (
-          <Image source={image} style={styles.image} resizeMode="cover" />
+        {SvgComponent && (
+          <SvgComponent width="100%" height="100%" />
         )}
       </View>
     </Pressable>
