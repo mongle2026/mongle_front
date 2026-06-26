@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   default: {
-    backgroundColor: colors.bgLayerWeak,
+    backgroundColor: 'transparent',
   },
   selected: {
     backgroundColor: colors.bgLayerSurface,

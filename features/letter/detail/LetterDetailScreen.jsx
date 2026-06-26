@@ -15,7 +15,7 @@ import Music from '../../../shared/components/Music';
 import Profile from '../../../shared/components/Profile';
 import Button from '../../../shared/components/Button';
 import { colors } from '../../../shared/styles/color';
-import { gap, padding } from '../../../shared/styles/token';
+import { gap, padding, radius } from '../../../shared/styles/token';
 import { typo } from '../../../shared/styles/typo';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');

@@ -5,6 +5,14 @@ import { MOCK_RECIPIENTS } from '../data/recipientDummy';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
+const DUMMY_RECIPIENTS = [
+  { id: '1', nickname: '코코', userCode: '@cocokim', hasProfileImage: false, profileImageUrl: null },
+  { id: '2', nickname: '코카콜라', userCode: '@cocacola', hasProfileImage: false, profileImageUrl: null },
+  { id: '3', nickname: '민지', userCode: '@minji22', hasProfileImage: false, profileImageUrl: null },
+  { id: '4', nickname: '하늘', userCode: '@haneul99', hasProfileImage: false, profileImageUrl: null },
+  { id: '5', nickname: '별빛', userCode: '@starlight', hasProfileImage: false, profileImageUrl: null },
+];
+
 export default function useSelectRecipient(onClose) {
   const [keyword, setKeyword] = useState('');
   const [selectedRecipientId, setSelectedRecipientId] = useState(null);
@@ -28,16 +36,13 @@ export default function useSelectRecipient(onClose) {
 
     const timer = setTimeout(async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/user/search`, {
-          params: {
-            keyword: trimmedKeyword,
-          },
-          signal: controller.signal,
-        });
-
-        console.log(response.data)
-
-        setUserList(response.data);
+        // TODO: replace with real API
+        // const response = await axios.get(`${API_BASE_URL}/user/search`, { params: { keyword: trimmedKeyword }, signal: controller.signal });
+        // setUserList(response.data);
+        const filtered = DUMMY_RECIPIENTS.filter(r =>
+          r.nickname.includes(trimmedKeyword) || r.userCode.includes(trimmedKeyword)
+        );
+        setUserList(filtered);
       } catch (error) {
         if (error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {
           return;
