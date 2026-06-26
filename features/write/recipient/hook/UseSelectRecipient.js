@@ -36,13 +36,8 @@ export default function useSelectRecipient(onClose) {
 
     const timer = setTimeout(async () => {
       try {
-        // TODO: replace with real API
-        // const response = await axios.get(`${API_BASE_URL}/user/search`, { params: { keyword: trimmedKeyword }, signal: controller.signal });
-        // setUserList(response.data);
-        const filtered = DUMMY_RECIPIENTS.filter(r =>
-          r.nickname.includes(trimmedKeyword) || r.userCode.includes(trimmedKeyword)
-        );
-        setUserList(filtered);
+        const response = await axios.get(`${API_BASE_URL}/user/search`, { params: { keyword: trimmedKeyword }, signal: controller.signal });
+        setUserList(response.data);
       } catch (error) {
         if (error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {
           return;

@@ -14,7 +14,6 @@ import IcHome from '../../../assets/icons/ic_home.svg';
 import IcLetter from '../../../assets/icons/ic_letter.svg';
 
 import useFeedHome from './hook/useFeedHome';
-import useFeedActions from './hook/useFeedActions';
 
 const PROFILE_SOURCE = require('../../../assets/write/profile_img.png');
 
@@ -28,7 +27,6 @@ export default function FeedHomeScreen({ navigation, route }) {
   const ignoreNextBlurRef = useRef(false);
 
   const {
-    userId,
     activeTab,
     posts,
     currentIndex,
@@ -36,16 +34,9 @@ export default function FeedHomeScreen({ navigation, route }) {
     toastVisible,
     refetchFeed,
     onTabPress,
-    showToast,
-  } = useFeedHome();
-
-  const {
     toggleLike,
     toggleBookmark,
-  } = useFeedActions({
-    userId,
-    onBookmarkAdded: showToast,
-  });
+  } = useFeedHome();
 
   const [snapOffsets, setSnapOffsets] = useState([]);
   const itemHeightsRef = useRef({});
@@ -150,7 +141,7 @@ export default function FeedHomeScreen({ navigation, route }) {
                 animated: true,
               });
             } else {
-              navigation.navigate('FeedDetail', { feedId: item.feedId });
+              navigation.navigate('FeedDetail', { feedId: item.feedId, feedData: item });
             }
           }}
         />
