@@ -14,7 +14,6 @@ import IcHome from '../../../assets/icons/ic_home.svg';
 import IcLetter from '../../../assets/icons/ic_letter.svg';
 
 import useFeedHome from './hook/useFeedHome';
-import useFeedActions from './hook/useFeedActions';
 
 const PROFILE_SOURCE = require('../../../assets/write/profile_img.png');
 
@@ -27,7 +26,6 @@ export default function FeedHomeScreen({ navigation, route }) {
     { type: 'profile', profileSource: PROFILE_SOURCE, isActive: false },
   ];
 
-  const userId = 1;
   const insets = useSafeAreaInsets();
   const { height: screenHeight } = useWindowDimensions();
 
@@ -42,17 +40,9 @@ export default function FeedHomeScreen({ navigation, route }) {
     toastVisible,
     refetchFeed,
     onTabPress,
-    showToast,
-  } = useFeedHome();
-
-  const {
     toggleLike,
     toggleBookmark,
-    bookmarkMutation,
-  } = useFeedActions({
-    userId,
-    onBookmarkAdded: showToast,
-  });
+  } = useFeedHome();
 
   const [snapOffsets, setSnapOffsets] = useState([]);
   const itemHeightsRef = useRef({});
@@ -86,19 +76,12 @@ export default function FeedHomeScreen({ navigation, route }) {
 
   const onPressFab = (fabPos) => {
     ignoreNextBlurRef.current = true;
-
-    navigation.navigate('FabMenuModal', {
-      fabPos,
-    });
+    navigation.navigate('FabMenuModal', { fabPos });
   };
 
   useEffect(() => {
-    if (activeMusicFeedId === null) {
-      return;
-    }
-
+    if (activeMusicFeedId === null) return;
     const currentFeedId = posts[currentIndex]?.feedId;
-
     if (currentFeedId && currentFeedId !== activeMusicFeedId) {
       setActiveMusicFeedId(null);
     }
@@ -110,14 +93,12 @@ export default function FeedHomeScreen({ navigation, route }) {
         ignoreNextBlurRef.current = false;
         return;
       }
-
       setActiveMusicFeedId(null);
     });
-
     return unsubscribe;
   }, [navigation]);
 
-  const renderItem = ({ item, index }) => (
+  const renderItem = useCallback(({ item, index }) => (
     <View onLayout={({ nativeEvent }) => {
       itemHeightsRef.current[index] = nativeEvent.layout.height;
       recomputeOffsets();
@@ -149,14 +130,12 @@ export default function FeedHomeScreen({ navigation, route }) {
               animated: true,
             });
           } else {
-            navigation.navigate('FeedDetail', {
-              feedId: item.feedId,
-            });
+            navigation.navigate('FeedDetail', { feedId: item.feedId, feedData: item });
           }
         }}
       />
     </View>
-  );
+  ), [currentIndex, activeMusicFeedId, snapOffsets, toggleBookmark, toggleLike, navigation, recomputeOffsets]);
 
   return (
     <View style={styles.screen}>
@@ -192,7 +171,6 @@ export default function FeedHomeScreen({ navigation, route }) {
         message="기록을 북마크에 추가했습니다."
         type="success"
         actionLabel="이동하기"
-        // onPressAction={undoLastBookmark}
         visible={toastVisible}
       />
     </View>

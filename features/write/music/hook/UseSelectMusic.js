@@ -30,10 +30,8 @@ export default function UseSelectMusic(_, onClose) {
   useEffect(() => {
     const fetchPopularMusics = async () => {
       try {
-        // TODO: replace with real API
-        // const response = await axios.get(`${API_BASE_URL}/music/popular`);
-        // setPopularMusicList(response.data);
-        setPopularMusicList(DUMMY_POPULAR);
+        const response = await axios.get(`${API_BASE_URL}/music/popular`);
+        setPopularMusicList(response.data);
       } catch (error) {
         console.log('인기곡 조회 실패:', error);
         setPopularMusicList([]);
@@ -58,14 +56,8 @@ export default function UseSelectMusic(_, onClose) {
 
     const timer = setTimeout(async () => {
       try {
-        // TODO: replace with real API
-        // const response = await axios.get(`${API_BASE_URL}/music/search`, { params: { keyword: trimmedKeyword }, signal: controller.signal });
-        // setMusicList(response.data);
-        const filtered = DUMMY_POPULAR.filter(m =>
-          m.musicTitle.toLowerCase().includes(trimmedKeyword.toLowerCase()) ||
-          m.musicArtist.toLowerCase().includes(trimmedKeyword.toLowerCase())
-        );
-        setMusicList(filtered);
+        const response = await axios.get(`${API_BASE_URL}/music/search`, { params: { keyword: trimmedKeyword }, signal: controller.signal });
+        setMusicList(response.data);
       } catch (error) {
         if (error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {
           return;
