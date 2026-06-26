@@ -19,20 +19,13 @@ export default function TopNavigationItem({ label = '', isActive = false, onPres
 
 const styles = StyleSheet.create({
   container: {
-    width: 80,
-    paddingTop: padding.M,
     gap: gap.M,
-  },
-  containerActive: {
     alignItems: 'center',
-    justifyContent: 'center',
   },
-  containerInactive: {
-    alignItems: 'flex-start',
-  },
+  containerActive: {},
+  containerInactive: {},
   label: {
-    ...typo.labelMedium,
-    width: '100%',
+    ...typo.titleXLarge,
     textAlign: 'center',
   },
   labelActive: {
