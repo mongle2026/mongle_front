@@ -31,11 +31,13 @@ export default function Profile({
 
   if (imageOnly) {
     return (
-      <Image
-        source={currentImageSource}
-        style={[styles.profileImage, style]}
-        resizeMode="cover"
-      />
+      <View style={[styles.container, style]}>
+        <Image
+          source={currentImageSource}
+          style={styles.profileImage}
+          resizeMode="cover"
+        />
+      </View>
     );
   }
 
