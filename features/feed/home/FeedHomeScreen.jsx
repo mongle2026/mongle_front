@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { FlatList, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { FlatList, StyleSheet, View, useWindowDimensions, RefreshControl } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -25,6 +25,7 @@ export default function FeedHomeScreen({ navigation, route }) {
   const { height: screenHeight } = useWindowDimensions();
 
   const [activeMusicFeedId, setActiveMusicFeedId] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
   const ignoreNextBlurRef = useRef(false);
 
   const {
@@ -93,6 +94,17 @@ export default function FeedHomeScreen({ navigation, route }) {
     ignoreNextBlurRef.current = true;
     navigation.navigate('FabMenuModal', { fabPos });
   }, [navigation]);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    setActiveMusicFeedId(null);
+
+    try {
+      await refetchFeed();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetchFeed]);
 
   useEffect(() => {
     if (activeMusicFeedId === null) return;
@@ -198,6 +210,13 @@ export default function FeedHomeScreen({ navigation, route }) {
         snapToOffsets={snapOffsets}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={viewabilityConfig}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            progressViewOffset={insets.top + 58}
+          />
+        }
       />
 
       <TopNavigation
