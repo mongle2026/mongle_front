@@ -333,7 +333,7 @@ const RecordScreen = ({ navigation }) => {
         <View style={styles.dim}>
           <Dialog
             title='작성을 그만둘까요?'
-            description='작성한 내용은 저장되지 않으며\n다시 불러올 수 없습니다.'
+            description={'작성한 내용은 저장되지 않으며\n다시 불러올 수 없습니다.'}
             cancelLabel='계속 작성하기'
             confirmLabel='그만두기'
             onCancel={handleCloseDialog}
