@@ -1,15 +1,30 @@
-import { useRef, useEffect, useState } from 'react';
+import { useMemo, useRef, useEffect, useState } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import { Audio } from 'expo-av';
 
-import WaveBack from '../../assets/shared/graphic_wave_back.svg';
-import WaveFront from '../../assets/shared/graphic_wave_front.svg';
 import { colors } from '../styles/color';
 import { padding, radius } from '../styles/token';
 import Music from './Music';
 
 const WAVE_HEIGHT = 29;
+const CANDLE_WIDTH = 2;
+const CANDLE_SPACE = 5;
 const DURATION = 30;
+
+function seededRandom(seed) {
+  let s = seed;
+  return () => {
+    s = (s * 1664525 + 1013904223) & 0xffffffff;
+    return (s >>> 0) / 0xffffffff;
+  };
+}
+
+function generateBars(count) {
+  const rand = seededRandom(42);
+  return Array.from({ length: count }, () =>
+    Math.round(3 + rand() * (WAVE_HEIGHT - 3))
+  );
+}
 
 const DEFAULT_COVER = require('../../assets/write/cover_img.png');
 
@@ -21,15 +36,20 @@ export default function MusicPlay({
   onPressPlay,
 }) {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [waveContainerWidth, setWaveContainerWidth] = useState(0);
+  const [containerWidth, setContainerWidth] = useState(0);
   const soundRef = useRef(null);
   const intervalRef = useRef(null);
   const elapsedRef = useRef(0);
   const progressAnim = useRef(new Animated.Value(0)).current;
 
-  const waveWidth = progressAnim.interpolate({
+  const visibleBars = containerWidth > 0
+    ? Math.floor(containerWidth / (CANDLE_WIDTH + CANDLE_SPACE))
+    : 0;
+  const bars = useMemo(() => generateBars(visibleBars), [visibleBars]);
+
+  const filledWidth = progressAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, waveContainerWidth],
+    outputRange: [0, containerWidth],
   });
 
   // 오디오 초기화
@@ -132,13 +152,25 @@ export default function MusicPlay({
         {/* 파형 */}
         <View style={styles.waveOuter}>
           <View
-            style={styles.waveContainer}
-            onLayout={(e) => setWaveContainerWidth(e.nativeEvent.layout.width)}
+            style={styles.waveInner}
+            onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}
           >
-            <WaveBack width={waveContainerWidth} height={WAVE_HEIGHT} style={StyleSheet.absoluteFill} />
-            <Animated.View style={{ width: waveWidth, height: WAVE_HEIGHT, overflow: 'hidden' }}>
-              <WaveFront width={waveContainerWidth} height={WAVE_HEIGHT} />
-            </Animated.View>
+            {visibleBars > 0 && (
+              <>
+                <View style={styles.waveRow}>
+                  {bars.map((h, i) => (
+                    <View key={i} style={[styles.candle, { height: h, backgroundColor: colors.fgNeutralWeak }]} />
+                  ))}
+                </View>
+                <Animated.View style={[StyleSheet.absoluteFill, { width: filledWidth, overflow: 'hidden' }]}>
+                  <View style={[styles.waveRow, { width: containerWidth }]}>
+                    {bars.map((h, i) => (
+                      <View key={i} style={[styles.candle, { height: h, backgroundColor: colors.fgLayerNeutralWeak }]} />
+                    ))}
+                  </View>
+                </Animated.View>
+              </>
+            )}
           </View>
         </View>
       </View>
@@ -162,9 +194,21 @@ const styles = StyleSheet.create({
   },
   waveOuter: {
     alignSelf: 'stretch',
-    paddingHorizontal: padding.M,
+    paddingHorizontal: padding.XL,
+    paddingBottom: padding.M,
   },
-  waveContainer: {
+  waveInner: {
     height: WAVE_HEIGHT,
+    overflow: 'hidden',
+  },
+  waveRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: WAVE_HEIGHT,
+    gap: CANDLE_SPACE,
+  },
+  candle: {
+    width: CANDLE_WIDTH,
+    borderRadius: 2,
   },
 });
