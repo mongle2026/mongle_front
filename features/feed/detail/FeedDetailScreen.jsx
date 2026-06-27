@@ -1,6 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { formatDateDetail } from '../../../shared/utils/formatDate';
-import useFeedActions from '../home/hook/useFeedActions';
 import { Dimensions, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
@@ -61,33 +60,42 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
   const [isFollowing, setFollowing] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
+  const { feedData: initialFeedData } = route?.params ?? {};
+
   const {
-    data: feed,
+    data: apiFeed,
   } = useQuery({
     queryKey: ['feed', String(feedId), userId],
     queryFn: async () => {
       const response = await axios.get(`${API_BASE_URL}/feed/${feedId}`, {
         params: { userId },
       });
-
       return response.data;
     },
+    enabled: !!API_BASE_URL,
   });
 
-  const {
-    toggleLike,
-    toggleBookmark,
-  } = useFeedActions({ userId });
+  const feed = apiFeed ?? initialFeedData;
 
-  if (!feed) {
+  const [localFeed, setLocalFeed] = useState(feed);
+  useEffect(() => { setLocalFeed(feed); }, [feed]);
+
+  const toggleLike = useCallback(() => {
+    setLocalFeed(f => f ? { ...f, isLiked: !f.isLiked } : f);
+  }, []);
+
+  const toggleBookmark = useCallback(() => {
+    setLocalFeed(f => f ? { ...f, isBookmarked: !f.isBookmarked } : f);
+  }, []);
+
+  if (!localFeed) {
     return null;
   }
 
-  const user = feed.user;
-  const record = feed.record;
-  const music = feed.music;
-  const files = feed.files;
-  const images = feed.files?.filter(f => f.mimeType?.startsWith('image/')).map(f => ({ uri: `${API_BASE_URL}${f.url}` })) ?? [];
+  const user = localFeed.user;
+  const record = localFeed.record;
+  const music = localFeed.music;
+  const images = localFeed.files?.filter(f => f.mimeType?.startsWith('image/')).map(f => ({ uri: `${API_BASE_URL}${f.url}` })) ?? [];
 
   return (
     <View style={styles.screen}>
@@ -144,14 +152,14 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
             : null
         }
         isFollowing={isFollowing}
-        isBookmarked={feed.isBookmarked}
-        isLiked={feed.isLiked}
+        isBookmarked={localFeed.isBookmarked}
+        isLiked={localFeed.isLiked}
         onPressFollow={() => {
           setFollowing(f => !f);
           onPressFollow?.();
         }}
-        onPressBookmark={() => toggleBookmark(feed)}
-        onPressLike={() => toggleLike(feed)}
+        onPressBookmark={toggleBookmark}
+        onPressLike={toggleLike}
       />
     </View>
   );

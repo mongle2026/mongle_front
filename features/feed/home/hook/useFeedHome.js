@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
-// TODO(API): GET /feed?userId=:userId
+const USER_ID = 1;
 
 export default function useFeedHome() {
   const [activeTab, setActiveTab] = useState('추천');
@@ -15,23 +15,23 @@ export default function useFeedHome() {
     message: '',
     actionLabel: undefined,
   });
+  const [localOverrides, setLocalOverrides] = useState({});
   const toastTimerRef = useRef(null);
 
-  // TODO(AUTH): 로그인한 사용자 ID로 교체
-  const userId = 1;
-
   const {
-    data: posts = [],
+    data: apiPosts = [],
     refetch: refetchFeed,
   } = useQuery({
-    queryKey: ['feeds', userId],
+    queryKey: ['feeds', USER_ID],
     queryFn: async () => {
       const response = await axios.get(`${API_BASE_URL}/feed`, {
-        params: { userId },
+        params: { userId: USER_ID },
       });
       return response.data;
     },
   });
+
+  const posts = apiPosts.map(p => ({ ...p, ...localOverrides[p.feedId] }));
 
   const onTabPress = useCallback((tab) => {
     setActiveTab(tab);
@@ -60,8 +60,26 @@ export default function useFeedHome() {
     }, duration);
   }, []);
 
+  const toggleLike = useCallback((feed) => {
+    if (!feed?.feedId) return;
+    setLocalOverrides(prev => ({
+      ...prev,
+      [feed.feedId]: { ...prev[feed.feedId], isLiked: !(prev[feed.feedId]?.isLiked ?? feed.isLiked) },
+    }));
+  }, []);
+
+  const toggleBookmark = useCallback((feed) => {
+    if (!feed?.feedId) return;
+    const nextBookmarked = !(localOverrides[feed.feedId]?.isBookmarked ?? feed.isBookmarked);
+    setLocalOverrides(prev => ({
+      ...prev,
+      [feed.feedId]: { ...prev[feed.feedId], isBookmarked: nextBookmarked },
+    }));
+    if (nextBookmarked) showToast();
+  }, [localOverrides, showToast]);
+
   return {
-    userId,
+    userId: USER_ID,
     activeTab,
     posts,
     currentIndex,
@@ -70,5 +88,7 @@ export default function useFeedHome() {
     refetchFeed,
     onTabPress,
     showToast,
+    toggleLike,
+    toggleBookmark,
   };
 }

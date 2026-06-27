@@ -46,7 +46,6 @@ export default function BottomBar({
           variant="none"
           iconColor={isBookmarked ? colors.fgBrand : palette.gray[30]}
           onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             onPressBookmark?.();
           }}
         />
