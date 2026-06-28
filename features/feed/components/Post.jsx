@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Img from '../../write/components/Img';
 
@@ -20,6 +20,11 @@ const AUTO_THRESHOLD = 12;
 function TextLines({ content, maxLines, onPressMore }) {
   const [lines, setLines] = useState([]);
   const [measured, setMeasured] = useState(false);
+
+  useEffect(() => {
+    setLines([]);
+    setMeasured(false);
+  }, [content]);
 
   const onTextLayout = useCallback((e) => {
     if (!measured) {
