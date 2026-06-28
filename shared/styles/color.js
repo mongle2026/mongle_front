@@ -79,6 +79,7 @@ export const colors = {
   fgPlaceholder:     palette.gray[60],
   fgBrand:           palette.mongle[50],
   fgCritical:        palette.red[50],
+  fgCriticalStrong:  palette.red[60],
   fgPositive:        palette.green[50],
   fgDisabled:        palette.gray[80],
   fgNeutralWeak:     palette.gray[40],
