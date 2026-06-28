@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 
 import TopNavigation from '../../../shared/components/TopNavigation';
+import KebabIcon from '../../../assets/icons/ic_kebab.svg';
 import MusicPlay from '../../../shared/components/MusicPlay';
 import Carousel from '../../../shared/components/Carousel';
 import Caption from '../components/Caption';
@@ -103,6 +104,8 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
         title="기록"
         showTextButton={false}
         onPressBack={() => navigation?.goBack()}
+        rightIcon={KebabIcon}
+        rightIconColor={colors.fgNeutralWeak}
         theme="light"
       />
 

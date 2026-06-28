@@ -15,15 +15,14 @@ export default function Caption({ date = '', bookmarkCount = 0 }) {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: padding.XL,
     paddingVertical: padding.M,
-    gap: gap.S,
   },
   text: {
     ...typo.captionSmall,
     color: palette.gray[40],
-    alignSelf: 'stretch',
   },
 });
