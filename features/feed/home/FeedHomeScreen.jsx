@@ -14,10 +14,12 @@ import IcHome from '../../../assets/icons/ic_home.svg';
 import IcLetter from '../../../assets/icons/ic_letter.svg';
 
 import useFeedHome from './hook/useFeedHome';
+import useFeedActions from './hook/useFeedActions';
 
 const PROFILE_SOURCE = require('../../../assets/write/profile_img.png');
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
+const userId = 1;
 
 export default function FeedHomeScreen({ navigation, route }) {
   const insets = useSafeAreaInsets();
@@ -29,12 +31,16 @@ export default function FeedHomeScreen({ navigation, route }) {
 
   const {
     activeTab,
-    posts,
+    posts = [],
     currentIndex,
     setCurrentIndex,
     toast,
+    showToast,
     refetchFeed,
     onTabPress,
+  } = useFeedHome({ userId });
+
+  const {
     toggleLike,
     toggleBookmark,
   } = useFeedActions({
