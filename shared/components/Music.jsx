@@ -4,7 +4,7 @@ import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 
 import PlayFillIcon from '../../assets/icons/ic_play_fill.svg';
 import PauseFillIcon from '../../assets/icons/ic_pause_fill.svg';
-import { colors } from '../styles/color';
+import { colors, palette } from '../styles/color';
 import { padding, gap, radius } from '../styles/token';
 import { typo } from '../styles/typo';
 import ButtonIcon from './ButtonIcon';
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   },
   artist: {
     ...typo.captionSmall,
-    color: colors.fgPlaceholder,
+    color: palette.grayOpacity[50],
     alignSelf: 'stretch',
     textAlign: 'left',
   },
