@@ -5,7 +5,7 @@ import axios from 'axios';
 
 import TopNavigation from '../../../shared/components/TopNavigation';
 import KebabIcon from '../../../assets/icons/ic_kebab.svg';
-import MusicPlay from '../../../shared/components/MusicPlay';
+import MusicPlay from '../../../shared/components/music/MusicPlay';
 import Carousel from '../../../shared/components/Carousel';
 import Caption from '../components/Caption';
 import BottomBar from '../components/BottomBar';

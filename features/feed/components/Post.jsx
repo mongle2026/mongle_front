@@ -2,7 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Img from '../../write/components/Img';
 
-import Music from '../../../shared/components/Music';
+import Music from '../../../shared/components/music/Music';
 import Profile from '../../../shared/components/Profile';
 import ButtonIcon from '../../../shared/components/ButtonIcon';
 import BookmarkStroke from '../../../assets/icons/ic_bookmark_stroke.svg';

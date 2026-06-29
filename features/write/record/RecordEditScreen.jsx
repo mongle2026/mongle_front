@@ -17,7 +17,7 @@ import { createFeedUpdateFormData } from './utils/createFeedUpdateFormData.js';
 
 // 공통 컴포넌트
 import TopNavigation from '../../../shared/components/TopNavigation.jsx';
-import Music from '../../../shared/components/Music';
+import Music from '../../../shared/components/music/Music.jsx';
 import Toast from '../../../shared/components/Toast.jsx';
 import Dialog from '../../../shared/components/Dialog.jsx';
 
@@ -41,348 +41,348 @@ const BOTTOM_BAR_HEIGHT = 40;
 const userId = 1;
 
 const RecordEditScreen = ({ route, navigation }) => {
-	const queryClient = useQueryClient();
-	const { feedId } = route?.params ?? {};
-	const {
-		loading,
-		error,
-		originalFileIds,
-	} = useFeedEditForm({
-		feedId,
-		userId,
-	});
+  const queryClient = useQueryClient();
+  const { feedId } = route?.params ?? {};
+  const {
+    loading,
+    error,
+    originalFileIds,
+  } = useFeedEditForm({
+    feedId,
+    userId,
+  });
 
-	const recordForm = useRecordFormStore();
-	const resetForm = useRecordFormStore(state => state.resetForm);
+  const recordForm = useRecordFormStore();
+  const resetForm = useRecordFormStore(state => state.resetForm);
 
-	const pickImages = usePickImages();
-	const { toast, showToast, pressToastAction } = useToast();
+  const pickImages = usePickImages();
+  const { toast, showToast, pressToastAction } = useToast();
 
-	const bottomValue = useFloatingBottomOffset();
-	const insets = useSafeAreaInsets();
+  const bottomValue = useFloatingBottomOffset();
+  const insets = useSafeAreaInsets();
 
-	const [musicOpen, setMusicOpen] = useState(false);
-	const [isDialogVisible, setIsDialogVisible] = useState(false);
+  const [musicOpen, setMusicOpen] = useState(false);
+  const [isDialogVisible, setIsDialogVisible] = useState(false);
 
-	const buttonType = useMemo(() => {
-		return recordForm.music ? 'brand' : 'disabled';
-	}, [recordForm.music]);
+  const buttonType = useMemo(() => {
+    return recordForm.music ? 'brand' : 'disabled';
+  }, [recordForm.music]);
 
-	const handleCloseDialog = useCallback(() => {
-		setIsDialogVisible(false);
-	}, []);
+  const handleCloseDialog = useCallback(() => {
+    setIsDialogVisible(false);
+  }, []);
 
-	const onPressBack = useCallback(() => {
-		Keyboard.dismiss();
-		setIsDialogVisible(true);
-	}, []);
+  const onPressBack = useCallback(() => {
+    Keyboard.dismiss();
+    setIsDialogVisible(true);
+  }, []);
 
-	const handleConfirmBack = useCallback(() => {
-		setIsDialogVisible(false);
-		resetForm();
-		navigation.goBack();
-	}, [navigation, resetForm]);
+  const handleConfirmBack = useCallback(() => {
+    setIsDialogVisible(false);
+    resetForm();
+    navigation.goBack();
+  }, [navigation, resetForm]);
 
-	useEffect(() => {
-		const backAction = () => {
-			if (isDialogVisible) {
-				handleCloseDialog();
-				return true;
-			}
+  useEffect(() => {
+    const backAction = () => {
+      if (isDialogVisible) {
+        handleCloseDialog();
+        return true;
+      }
 
-			onPressBack();
-			return true;
-		};
+      onPressBack();
+      return true;
+    };
 
-		const backHandler = BackHandler.addEventListener(
-			'hardwareBackPress',
-			backAction
-		);
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
 
-		return () => backHandler.remove();
-	}, [isDialogVisible, handleCloseDialog, onPressBack]);
+    return () => backHandler.remove();
+  }, [isDialogVisible, handleCloseDialog, onPressBack]);
 
-	const handleUpdateFeed = useCallback(async () => {
-		if (!feedId) {
-			showToast({
-				message: '수정할 피드 정보를 찾을 수 없습니다.',
-				type: 'warning',
-				duration: 2000,
-				color: colors.fgCritical,
-			});
-			return;
-		}
+  const handleUpdateFeed = useCallback(async () => {
+    if (!feedId) {
+      showToast({
+        message: '수정할 피드 정보를 찾을 수 없습니다.',
+        type: 'warning',
+        duration: 2000,
+        color: colors.fgCritical,
+      });
+      return;
+    }
 
-		if (recordForm.music === null) {
-			showToast({
-				message: '음악을 선택해 주세요.',
-				type: 'warning',
-				duration: 2000,
-				color: colors.fgCritical,
-			});
-			return;
-		}
+    if (recordForm.music === null) {
+      showToast({
+        message: '음악을 선택해 주세요.',
+        type: 'warning',
+        duration: 2000,
+        color: colors.fgCritical,
+      });
+      return;
+    }
 
-		if (recordForm.text === '' && recordForm.files.length === 0) {
-			showToast({
-				message: '메시지를 작성하거나 사진을 첨부해 주세요.',
-				type: 'warning',
-				duration: 2000,
-				color: colors.fgCritical,
-			});
-			return;
-		}
+    if (recordForm.text === '' && recordForm.files.length === 0) {
+      showToast({
+        message: '메시지를 작성하거나 사진을 첨부해 주세요.',
+        type: 'warning',
+        duration: 2000,
+        color: colors.fgCritical,
+      });
+      return;
+    }
 
-		const formData = createFeedUpdateFormData({
-			recordForm,
-			originalFileIds,
-		});
+    const formData = createFeedUpdateFormData({
+      recordForm,
+      originalFileIds,
+    });
 
-		try {
-			const response = await axios.patch(
-				`${API_BASE_URL}/feed/${feedId}`,
-				formData,
-				{
-					params: {
-						userId,
-					},
-					headers: {
-						'Content-Type': 'multipart/form-data',
-					},
-					transformRequest: data => data,
-				}
-			);
+    try {
+      const response = await axios.patch(
+        `${API_BASE_URL}/feed/${feedId}`,
+        formData,
+        {
+          params: {
+            userId,
+          },
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          transformRequest: data => data,
+        }
+      );
 
-			console.log('피드 수정 성공:', response.data);
+      console.log('피드 수정 성공:', response.data);
 
-			await queryClient.invalidateQueries({
-				queryKey: ['feed', String(feedId), userId],
-			});
+      await queryClient.invalidateQueries({
+        queryKey: ['feed', String(feedId), userId],
+      });
 
-			await queryClient.invalidateQueries({
-				queryKey: ['feeds'],
-			});
+      await queryClient.invalidateQueries({
+        queryKey: ['feeds'],
+      });
 
-			resetForm();
+      resetForm();
 
-			navigation.goBack();
-		} catch (error) {
-			console.log('피드 수정 실패 전체 error:', error);
+      navigation.goBack();
+    } catch (error) {
+      console.log('피드 수정 실패 전체 error:', error);
 
-			if (error.response) {
-				console.log('피드 수정 실패 상태:', error.response.status);
-				console.log('피드 수정 실패 데이터:', error.response.data);
-			} else if (error.request) {
-				console.log('피드 수정 응답 없음:', error.request);
-			} else {
-				console.log('피드 수정 요청 설정 오류:', error.message);
-			}
+      if (error.response) {
+        console.log('피드 수정 실패 상태:', error.response.status);
+        console.log('피드 수정 실패 데이터:', error.response.data);
+      } else if (error.request) {
+        console.log('피드 수정 응답 없음:', error.request);
+      } else {
+        console.log('피드 수정 요청 설정 오류:', error.message);
+      }
 
-			showToast({
-				message: '피드 수정에 실패했습니다.',
-				type: 'warning',
-				duration: 2000,
-				color: colors.fgCritical,
-			});
-		}
-	}, [
-		feedId,
-		userId,
-		recordForm,
-		originalFileIds,
-		showToast,
-		resetForm,
-		navigation,
-		queryClient,
-	]);
+      showToast({
+        message: '피드 수정에 실패했습니다.',
+        type: 'warning',
+        duration: 2000,
+        color: colors.fgCritical,
+      });
+    }
+  }, [
+    feedId,
+    userId,
+    recordForm,
+    originalFileIds,
+    showToast,
+    resetForm,
+    navigation,
+    queryClient,
+  ]);
 
-	if (loading) {
-		return null;
-	}
+  if (loading) {
+    return null;
+  }
 
-	if (error) {
-		return (
-			<View style={{ flex: 1, backgroundColor: colors.bgDefault }} />
-		);
-	}
+  if (error) {
+    return (
+      <View style={{ flex: 1, backgroundColor: colors.bgDefault }} />
+    );
+  }
 
-	return (
-		<View style={{ flex: 1 }}>
-			<SelectMusic
-				visible={musicOpen}
-				onClose={() => setMusicOpen(false)}
-				searchPlaceholder="음악을 검색해 주세요."
-			/>
+  return (
+    <View style={{ flex: 1 }}>
+      <SelectMusic
+        visible={musicOpen}
+        onClose={() => setMusicOpen(false)}
+        searchPlaceholder="음악을 검색해 주세요."
+      />
 
-			<TopNavigation
-				title="피드 수정"
-				buttonLabel="완료"
-				onPressButton={handleUpdateFeed}
-				onPressBack={onPressBack}
-				buttonDisabled={false}
-				type={buttonType}
-				backIcon={XIcon}
-			/>
+      <TopNavigation
+        title="피드 수정"
+        buttonLabel="완료"
+        onPressButton={handleUpdateFeed}
+        onPressBack={onPressBack}
+        buttonDisabled={false}
+        type={buttonType}
+        backIcon={XIcon}
+      />
 
-			<View style={styles.container}>
-				<View style={styles.sectionWrapper}>
-					<FoldCorner style={styles.fold} />
+      <View style={styles.container}>
+        <View style={styles.sectionWrapper}>
+          <FoldCorner style={styles.fold} />
 
-					<ScrollView
-						style={styles.section}
-						contentContainerStyle={[
-							styles.sectionContent,
-							{
-								paddingBottom: bottomValue + BOTTOM_BAR_HEIGHT,
-							},
-						]}
-						showsVerticalScrollIndicator={false}
-					>
-						<Music
-							title={recordForm.music?.musicTitle}
-							artist={recordForm.music?.musicArtist}
-							imageSource={recordForm.music?.musicArtwork}
-							empty={!recordForm.music}
-							onPress={() => setMusicOpen(true)}
-						/>
+          <ScrollView
+            style={styles.section}
+            contentContainerStyle={[
+              styles.sectionContent,
+              {
+                paddingBottom: bottomValue + BOTTOM_BAR_HEIGHT,
+              },
+            ]}
+            showsVerticalScrollIndicator={false}
+          >
+            <Music
+              title={recordForm.music?.musicTitle}
+              artist={recordForm.music?.musicArtist}
+              imageSource={recordForm.music?.musicArtwork}
+              empty={!recordForm.music}
+              onPress={() => setMusicOpen(true)}
+            />
 
-						<RecordText
-							recordForm={recordForm}
-							onShowToast={showToast}
-							recordType="FEED"
-						/>
+            <RecordText
+              recordForm={recordForm}
+              onShowToast={showToast}
+              recordType="FEED"
+            />
 
-						<RecordImage
-							recordForm={recordForm}
-							onPressAdd={pickImages}
-							onShowToast={showToast}
-						/>
-					</ScrollView>
-				</View>
-			</View>
+            <RecordImage
+              recordForm={recordForm}
+              onPressAdd={pickImages}
+              onShowToast={showToast}
+            />
+          </ScrollView>
+        </View>
+      </View>
 
-			<View
-				pointerEvents="box-none"
-				style={[
-					styles.toastWrapper,
-					{
-						bottom: bottomValue,
-					},
-				]}
-			>
-				<Toast
-					visible={toast.visible}
-					message={toast.message}
-					type={toast.type}
-					color={toast.color}
-					actionLabel={toast.actionLabel}
-					onPressAction={pressToastAction}
-				/>
-			</View>
+      <View
+        pointerEvents="box-none"
+        style={[
+          styles.toastWrapper,
+          {
+            bottom: bottomValue,
+          },
+        ]}
+      >
+        <Toast
+          visible={toast.visible}
+          message={toast.message}
+          type={toast.type}
+          color={toast.color}
+          actionLabel={toast.actionLabel}
+          onPressAction={pressToastAction}
+        />
+      </View>
 
-			<View
-				style={[
-					styles.bottomBarWrapper,
-					{
-						bottom: bottomValue,
-					},
-				]}
-			>
-				<BottomBar onPressImage={pickImages} />
-			</View>
+      <View
+        style={[
+          styles.bottomBarWrapper,
+          {
+            bottom: bottomValue,
+          },
+        ]}
+      >
+        <BottomBar onPressImage={pickImages} />
+      </View>
 
-			<View
-				pointerEvents="none"
-				style={[
-					styles.navigationBarCover,
-					{
-						height: insets.bottom,
-					},
-				]}
-			/>
+      <View
+        pointerEvents="none"
+        style={[
+          styles.navigationBarCover,
+          {
+            height: insets.bottom,
+          },
+        ]}
+      />
 
-			{isDialogVisible && (
-				<View style={styles.dim}>
-					<Dialog
-						title="수정을 그만둘까요?"
-						description="수정한 내용은 저장되지 않습니다."
-						cancelLabel="계속 수정하기"
-						confirmLabel="그만두기"
-						onCancel={handleCloseDialog}
-						onConfirm={handleConfirmBack}
-					/>
-				</View>
-			)}
-		</View>
-	);
+      {isDialogVisible && (
+        <View style={styles.dim}>
+          <Dialog
+            title="수정을 그만둘까요?"
+            description="수정한 내용은 저장되지 않습니다."
+            cancelLabel="계속 수정하기"
+            confirmLabel="그만두기"
+            onCancel={handleCloseDialog}
+            onConfirm={handleConfirmBack}
+          />
+        </View>
+      )}
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-	dim: {
-		...StyleSheet.absoluteFillObject,
-		backgroundColor: colors.bgOverlay,
-		justifyContent: 'center',
-		alignItems: 'center',
-		zIndex: 999,
-		elevation: 999,
-	},
+  dim: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: colors.bgOverlay,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+    elevation: 999,
+  },
 
-	container: {
-		flex: 1,
-		paddingVertical: padding.XL,
-		paddingHorizontal: padding.M,
-		backgroundColor: colors.bgDefault,
-	},
+  container: {
+    flex: 1,
+    paddingVertical: padding.XL,
+    paddingHorizontal: padding.M,
+    backgroundColor: colors.bgDefault,
+  },
 
-	sectionWrapper: {
-		flex: 1,
-		position: 'relative',
-	},
+  sectionWrapper: {
+    flex: 1,
+    position: 'relative',
+  },
 
-	section: {
-		flex: 1,
-		backgroundColor: colors.bgLayerDefault,
-		borderRadius: 2,
-	},
+  section: {
+    flex: 1,
+    backgroundColor: colors.bgLayerDefault,
+    borderRadius: 2,
+  },
 
-	sectionContent: {
-		paddingVertical: 16,
-	},
+  sectionContent: {
+    paddingVertical: 16,
+  },
 
-	fold: {
-		position: 'absolute',
-		top: -0.5,
-		right: 0,
-		zIndex: 10,
-		elevation: 10,
-	},
+  fold: {
+    position: 'absolute',
+    top: -0.5,
+    right: 0,
+    zIndex: 10,
+    elevation: 10,
+  },
 
-	toastWrapper: {
-		position: 'absolute',
-		left: 0,
-		right: 0,
-		zIndex: 999,
-		elevation: 999,
-		alignItems: 'center',
-	},
+  toastWrapper: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    zIndex: 999,
+    elevation: 999,
+    alignItems: 'center',
+  },
 
-	bottomBarWrapper: {
-		position: 'absolute',
-		left: 0,
-		right: 0,
-		zIndex: 100,
-		elevation: 100,
-	},
+  bottomBarWrapper: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    zIndex: 100,
+    elevation: 100,
+  },
 
-	navigationBarCover: {
-		position: 'absolute',
-		left: 0,
-		right: 0,
-		bottom: 0,
-		backgroundColor: colors.bgDefault,
-		zIndex: 50,
-		elevation: 50,
-	},
+  navigationBarCover: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: colors.bgDefault,
+    zIndex: 50,
+    elevation: 50,
+  },
 });
 
 export default RecordEditScreen;
