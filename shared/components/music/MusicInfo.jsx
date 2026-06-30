@@ -4,9 +4,10 @@ import PlayFillIcon from '../../../assets/icons/ic_play_fill.svg';
 import PauseFillIcon from '../../../assets/icons/ic_pause_fill.svg';
 import ButtonIcon from '../ButtonIcon';
 
-import { colors } from '../../styles/color';
+import { colors, palette } from '../../styles/color';
 import { padding, gap, radius } from '../../styles/token';
 import { typo } from '../../styles/typo';
+import useAlbumTheme from './useAlbumTheme';
 
 const DEFAULT_COVER_IMAGE = require('../../../assets/write/cover_img.png');
 
@@ -20,14 +21,25 @@ export default function MusicInfo({
   onPress,
   onPressButton,
   style,
+  albumTheme,
 }) {
+  const computedTheme = useAlbumTheme(imageSource, !albumTheme && !empty);
+  const theme = albumTheme ?? computedTheme;
+
   const currentImageSource = typeof imageSource === 'string'
     ? { uri: imageSource }
     : imageSource ?? DEFAULT_COVER_IMAGE;
 
   return (
     <View style={[styles.wrapper, style]}>
-      <Pressable style={styles.container} onPress={onPress} disabled={!onPress}>
+      <Pressable
+        style={[
+          styles.container,
+          !empty && { backgroundColor: theme.backgroundColor },
+        ]}
+        onPress={onPress}
+        disabled={!onPress}
+      >
         {!empty && (
           <Image
             source={currentImageSource}
@@ -101,7 +113,7 @@ const styles = StyleSheet.create({
   },
   artist: {
     ...typo.captionSmall,
-    color: colors.fgPlaceholder,
+    color: palette.grayOpacity[50],
     alignSelf: 'stretch',
     textAlign: 'left',
   },

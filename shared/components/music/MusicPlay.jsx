@@ -3,6 +3,7 @@ import { Animated, StyleSheet, View } from 'react-native';
 
 import { colors } from '../../styles/color';
 import { padding, radius } from '../../styles/token';
+import useAlbumTheme, { withOpacity } from './useAlbumTheme';
 
 import MusicInfo from './MusicInfo';
 import useMusicPlayer from './useMusicPlayer';
@@ -34,6 +35,7 @@ export default function MusicPlay({
 }) {
   const [containerWidth, setContainerWidth] = useState(0);
   const progressAnim = useRef(new Animated.Value(0)).current;
+  const albumTheme = useAlbumTheme(imageSource, !!imageSource);
 
   const {
     isPlaying,
@@ -64,7 +66,7 @@ export default function MusicPlay({
 
   return (
     <View style={styles.outer}>
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: albumTheme.backgroundColor }]}>
         <MusicInfo
           title={title}
           artist={artist}
@@ -72,6 +74,7 @@ export default function MusicPlay({
           button
           isPlaying={isPlaying}
           onPressButton={toggle}
+          albumTheme={albumTheme}
         />
 
         <View style={styles.waveOuter}>
@@ -89,7 +92,7 @@ export default function MusicPlay({
                         styles.candle,
                         {
                           height,
-                          backgroundColor: colors.fgNeutralWeak,
+                          backgroundColor: withOpacity(albumTheme.waveColor, 0.3),
                         },
                       ]}
                     />
@@ -113,7 +116,7 @@ export default function MusicPlay({
                           styles.candle,
                           {
                             height,
-                            backgroundColor: colors.fgLayerNeutralWeak,
+                            backgroundColor: withOpacity(albumTheme.waveColor, 1),
                           },
                         ]}
                       />
