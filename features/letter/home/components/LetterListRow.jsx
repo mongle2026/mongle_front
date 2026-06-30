@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { palette, colors } from '../../../../shared/styles/color';
-import { gap, padding } from '../../../../shared/styles/token';
+import { gap, padding, radius } from '../../../../shared/styles/token';
 import { typo } from '../../../../shared/styles/typo';
 
 const BAR_COLORS = [
@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: padding.XL,
     paddingVertical: padding.L,
     width: '100%',
+    borderRadius: radius.M,
   },
   dateColumn: {
     width: 72,

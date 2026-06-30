@@ -1,4 +1,5 @@
-import { Image, Pressable, Text, View, StyleSheet } from 'react-native';
+import { useRef, useEffect } from 'react';
+import { Image, Pressable, Text, View, StyleSheet, Animated } from 'react-native';
 
 import { colors } from '../../../shared/styles/color';
 import { padding, gap, radius } from '../../../shared/styles/token';
@@ -15,33 +16,54 @@ export default function ListRow({
   style,
 }) {
   const hasCaption = caption && subtitle;
+  const bgAnim = useRef(new Animated.Value(selected ? 1 : 0)).current;
+
+  const animateTo = (toValue) => {
+    Animated.timing(bgAnim, {
+      toValue,
+      duration: 150,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  useEffect(() => {
+    animateTo(selected ? 1 : 0);
+  }, [selected]);
+
+  const backgroundColor = bgAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [colors.bgLayerDefault, colors.bgLayerWeak],
+  });
 
   return (
     <View style={[styles.wrapper, style]}>
       <Pressable
         onPress={onPress}
-        style={[styles.row, selected ? styles.selected : styles.default]}
+        onPressIn={() => animateTo(1)}
+        onPressOut={() => !selected && animateTo(0)}
       >
-        <Image
-          source={{ uri: imageSource }}
-          style={[
-            styles.image,
-            img === 'profile' ? styles.profileImage : styles.musicImage,
-          ]}
-          resizeMode="cover"
-        />
+        <Animated.View style={[styles.row, { backgroundColor }]}>
+          <Image
+            source={{ uri: imageSource }}
+            style={[
+              styles.image,
+              img === 'profile' ? styles.profileImage : styles.musicImage,
+            ]}
+            resizeMode="cover"
+          />
 
-        <View style={styles.textContainer}>
-          <Text style={styles.title} numberOfLines={1}>
-            {title}
-          </Text>
-
-          {hasCaption && (
-            <Text style={styles.subtitle} numberOfLines={1}>
-              {subtitle}
+          <View style={styles.textContainer}>
+            <Text style={styles.title} numberOfLines={1}>
+              {title}
             </Text>
-          )}
-        </View>
+
+            {hasCaption && (
+              <Text style={styles.subtitle} numberOfLines={1}>
+                {subtitle}
+              </Text>
+            )}
+          </View>
+        </Animated.View>
       </Pressable>
     </View>
   );
@@ -61,12 +83,7 @@ const styles = StyleSheet.create({
     paddingVertical: padding.L,
     gap: gap.M,
     overflow: 'hidden',
-  },
-  default: {
-    backgroundColor: 'transparent',
-  },
-  selected: {
-    backgroundColor: colors.bgLayerSurface,
+    borderRadius: radius.M,
   },
   image: {
     width: 40,

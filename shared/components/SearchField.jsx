@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: padding.XL,
     paddingVertical: padding.L,
     gap: gap.M,
-    borderRadius: radius.XS,
+    borderRadius: radius.M,
     backgroundColor: colors.bgLayerWeak,
   },
   input: {
