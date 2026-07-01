@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { FlatList, StyleSheet, View, useWindowDimensions, RefreshControl } from 'react-native';
+import { FlatList, StyleSheet, View, useWindowDimensions, RefreshControl, InteractionManager, } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -28,6 +28,8 @@ export default function FeedHomeScreen({ navigation, route }) {
   const [activeMusicFeedId, setActiveMusicFeedId] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const ignoreNextBlurRef = useRef(false);
+  const shownHomeToastIdRef = useRef(null);
+  const homeToastTimerRef = useRef(null);
 
   const {
     activeTab,
@@ -125,23 +127,49 @@ export default function FeedHomeScreen({ navigation, route }) {
     return unsubscribe;
   }, [navigation]);
 
-  useEffect(() => {
-    const receivedToast = route?.params?.homeToast;
+  useFocusEffect(
+    useCallback(() => {
+      const receivedToast = route?.params?.homeToast;
 
-    if (!receivedToast) {
-      return;
-    }
+      if (!receivedToast) {
+        return undefined;
+      }
 
-    showToast({
-      type: receivedToast.type,
-      message: receivedToast.message,
-      duration: 3000,
-    });
+      if (shownHomeToastIdRef.current === receivedToast.id) {
+        return undefined;
+      }
 
-    navigation.setParams({
-      homeToast: undefined,
-    });
-  }, [route?.params?.homeToast?.id, navigation, showToast]);
+      shownHomeToastIdRef.current = receivedToast.id;
+
+      const interactionTask = InteractionManager.runAfterInteractions(() => {
+        homeToastTimerRef.current = setTimeout(() => {
+          showToast({
+            type: receivedToast.type,
+            message: receivedToast.message,
+            duration: 3000,
+          });
+
+          navigation.setParams({
+            homeToast: undefined,
+          });
+        }, 500);
+      });
+
+      return () => {
+        interactionTask?.cancel?.();
+
+        if (homeToastTimerRef.current) {
+          clearTimeout(homeToastTimerRef.current);
+        }
+      };
+    }, [
+      route?.params?.homeToast?.id,
+      route?.params?.homeToast?.type,
+      route?.params?.homeToast?.message,
+      navigation,
+      showToast,
+    ])
+  );
 
   const renderItem = useCallback(({ item, index }) => {
     const images = item.files
