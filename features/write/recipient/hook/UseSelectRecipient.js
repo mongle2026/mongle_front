@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
-export default function useSelectRecipient(onClose) {
+export default function useSelectRecipient(onClose, currentUserId) {
   const [keyword, setKeyword] = useState('');
   const [selectedRecipientId, setSelectedRecipientId] = useState(null);
   const [userList, setUserList] = useState([]);
@@ -13,14 +13,9 @@ export default function useSelectRecipient(onClose) {
   const setReceiver = useRecordFormStore((state) => state.setReceiver);
 
   useEffect(() => {
+    if (!currentUserId) return;
+
     const trimmedKeyword = keyword.trim();
-
-    if (!trimmedKeyword) {
-      setUserList([]);
-      setLoading(false);
-      return;
-    }
-
     const controller = new AbortController();
 
     setLoading(true);
@@ -28,11 +23,14 @@ export default function useSelectRecipient(onClose) {
     const timer = setTimeout(async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/user/search`, {
-          params: { keyword: trimmedKeyword },
+          params: {
+            keyword: trimmedKeyword,
+            currentUserId,
+          },
           signal: controller.signal,
         });
 
-        setUserList(response.data);
+        setUserList(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
         if (error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {
           return;
@@ -45,13 +43,13 @@ export default function useSelectRecipient(onClose) {
           setLoading(false);
         }
       }
-    }, 400);
+    }, trimmedKeyword ? 400 : 0);
 
     return () => {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [keyword]);
+  }, [keyword, currentUserId]);
 
   const handleChangeKeyword = text => {
     setKeyword(text);
@@ -62,12 +60,10 @@ export default function useSelectRecipient(onClose) {
     setSelectedRecipientId(null);
   };
 
-  const handleSelectRecipient = recipientId => {
-    const recipient = userList.find(user => user.id === recipientId);
-
+  const handleSelectRecipient = recipient => {
     if (!recipient) return;
 
-    setSelectedRecipientId(recipientId);
+    setSelectedRecipientId(recipient.id);
     setReceiver(recipient);
     onClose?.();
   };

@@ -7,12 +7,16 @@ import ListRow from '../components/ListRow';
 import BottomSheet from '../../../shared/components/BottomSheet';
 import { colors } from '../../../shared/styles/color';
 import { padding, radius } from '../../../shared/styles/token';
+import SelfRecipientRow from './components/SelfRecipientRow';
 
 import UseSelectRecipient from './hook/UseSelectRecipient';
 import Empty from '../../../shared/components/Empty';
 import { useFloatingBottomOffset } from '../record/hook/useFloatingBottomOffset';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
+
+// 로그인 구현 전 임시값입니다.
+const TEMP_CURRENT_USER_ID = 1;
 
 export default function SelectRecipient({ visible, onClose }) {
   const [searchFieldHeight, setSearchFieldHeight] = useState(0);
@@ -26,7 +30,7 @@ export default function SelectRecipient({ visible, onClose }) {
     handleChangeKeyword,
     handleFocusSearch,
     handleSelectRecipient,
-  } = UseSelectRecipient(onClose);
+  } = UseSelectRecipient(onClose, TEMP_CURRENT_USER_ID);
 
   const trimmedKeyword = keyword.trim();
   const bottomValue = useFloatingBottomOffset();
@@ -62,22 +66,40 @@ export default function SelectRecipient({ visible, onClose }) {
                 },
               ]}
             >
-              {userList.map(item => (
-                <ListRow
-                  key={item.id}
-                  title={item.nickname}
-                  subtitle={item.userCode}
-                  img={item.img}
-                  imageSource={
-                    item.hasProfileImage && item.profileImageUrl
-                      ? `${API_BASE_URL}${item.profileImageUrl}`
-                      : null
-                  }
-                  caption
-                  selected={selectedRecipientId === item.id}
-                  onPress={() => handleSelectRecipient(item.id)}
-                />
-              ))}
+              {userList.map(item =>
+                item.isMe ? (
+                  <SelfRecipientRow
+                    key={item.id}
+                    title={item.nickname}
+                    imageSource={
+                      item.hasProfileImage && item.profileImageUrl
+                        ? `${API_BASE_URL}${item.profileImageUrl}`
+                        : null
+                    }
+                    selected={
+                      String(selectedRecipientId) === String(item.id)
+                    }
+                    onPress={() => handleSelectRecipient(item)}
+                  />
+                ) : (
+                  <ListRow
+                    key={item.id}
+                    title={item.nickname}
+                    subtitle={item.userCode}
+                    img={item.img}
+                    imageSource={
+                      item.hasProfileImage && item.profileImageUrl
+                        ? `${API_BASE_URL}${item.profileImageUrl}`
+                        : null
+                    }
+                    caption
+                    selected={
+                      String(selectedRecipientId) === String(item.id)
+                    }
+                    onPress={() => handleSelectRecipient(item)}
+                  />
+                )
+              )}
             </View>
           )}
         </ScrollView>

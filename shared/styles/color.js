@@ -71,7 +71,7 @@ export const colors = {
   bgBrandSolid:      palette.mongle[50],
   bgCriticalSolid:   palette.red[50],
 
-  strokeNeutralWeak: palette.gray[10],
+  strokeNeutralWeak: palette.gray[20],
 
   fgNeutral:         palette.gray[0],
   fgLayerNeutral:    palette.gray[90],
