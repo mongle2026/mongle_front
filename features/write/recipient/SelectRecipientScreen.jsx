@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, ScrollView, FlatList, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import SearchField from '../../../shared/components/SearchField';
@@ -20,19 +20,16 @@ export default function SelectRecipient({ visible, onClose }) {
 
   const {
     keyword,
-    filteredRecipients,
     userList,
+    loading,
     selectedRecipientId,
     handleChangeKeyword,
     handleFocusSearch,
     handleSelectRecipient,
   } = UseSelectRecipient(onClose);
 
+  const trimmedKeyword = keyword.trim();
   const bottomValue = useFloatingBottomOffset();
-
-  const displayUserList = !keyword.trim()
-    ? filteredRecipients
-    : userList;
 
   return (
     <BottomSheet visible={visible} onClose={onClose}>
@@ -47,24 +44,25 @@ export default function SelectRecipient({ visible, onClose }) {
 
         <ScrollView
           style={styles.list}
-          bounces={!!keyword.trim()}
+          bounces={!!trimmedKeyword}
           onScroll={e => setScrolled(e.nativeEvent.contentOffset.y > 0)}
           scrollEventThrottle={16}
         >
-          {keyword && userList.length === 0 ? (
+          {trimmedKeyword && !loading && userList.length === 0 ? (
             <Empty
-              title='일치하는 사용자가 없습니다.'
-              body='닉네임이나 아이디를 다시 확인해 보세요.'
+              title="일치하는 사용자가 없습니다."
+              body="닉네임이나 아이디를 다시 확인해 보세요."
             />
           ) : (
             <View
-              style={[styles.listContainer,
-              {
-                paddingBottom: bottomValue,
-              },
+              style={[
+                styles.listContainer,
+                {
+                  paddingBottom: bottomValue,
+                },
               ]}
             >
-              {displayUserList.map(item => (
+              {userList.map(item => (
                 <ListRow
                   key={item.id}
                   title={item.nickname}

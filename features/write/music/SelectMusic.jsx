@@ -20,16 +20,12 @@ export default function SelectMusic({ visible, onClose, searchPlaceholder = '기
   const {
     keyword,
     musicList,
-    popularMusicList,
+    loading,
     selectedMusicId,
     handleChangeKeyword,
     handleFocusSearch,
     handleSelectMusic,
   } = UseSelectMusic(null, onClose);
-
-  const displayMusicList = !keyword.trim()
-    ? popularMusicList
-    : musicList;
 
   return (
     <BottomSheet visible={visible} onClose={onClose}>
@@ -58,7 +54,7 @@ export default function SelectMusic({ visible, onClose, searchPlaceholder = '기
             },
           ]}
           >
-            {displayMusicList.map(item => (
+            {musicList.map(item => (
               <ListRow
                 key={item.externalId}
                 title={item.musicTitle}
