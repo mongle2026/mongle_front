@@ -4,7 +4,7 @@ import { getColors } from 'react-native-image-colors';
 
 import { colors } from '../../styles/color';
 
-const BLACK = '#000000';
+const MUSIC_TITLE_COLOR = colors.fgLayerNeutral;
 const MIN_BLACK_TEXT_CONTRAST = 4.5;
 
 export const DEFAULT_MUSIC_THEME = {
@@ -147,6 +147,79 @@ function getContrastRatio(colorA, colorB) {
   return (lighter + 0.05) / (darker + 0.05);
 }
 
+// function makeReadableBackground(hex) {
+//   const normalized = normalizeHex(hex);
+
+//   if (!normalized) {
+//     return DEFAULT_MUSIC_THEME.backgroundColor;
+//   }
+
+//   if (getContrastRatio(normalized, MUSIC_TITLE_COLOR) >= MIN_BLACK_TEXT_CONTRAST) {
+//     return normalized;
+//   }
+
+//   const hsl = rgbToHsl(hexToRgb(normalized));
+
+//   for (let lightness = hsl.l; lightness <= 0.96; lightness += 0.02) {
+//     const candidate = hslToHex({
+//       h: hsl.h,
+//       s: hsl.s,
+//       l: lightness,
+//     });
+
+//     if (getContrastRatio(candidate, MUSIC_TITLE_COLOR) >= MIN_BLACK_TEXT_CONTRAST) {
+//       return candidate;
+//     }
+//   }
+
+//   return '#F2F2F2';
+// }
+
+// function makeWaveColor(backgroundColor) {
+//   const rgb = hexToRgb(backgroundColor);
+
+//   if (!rgb) {
+//     return DEFAULT_MUSIC_THEME.waveColor;
+//   }
+
+//   const hsl = rgbToHsl(rgb);
+
+//   return hslToHex({
+//     h: hsl.h,
+//     s: clamp(hsl.s * 1.08, 0.25, 1),
+//     l: clamp(hsl.l * 0.55, 0.16, 0.42),
+//   });
+// }
+
+// function pickImageColor(result) {
+//   if (!result) return null;
+
+//   const candidates =
+//     result.platform === 'ios'
+//       ? [
+//         result.background,
+//         result.primary,
+//         result.secondary,
+//         result.detail,
+//       ]
+//       : [
+//         result.dominant,
+//         result.average,
+//         result.vibrant,
+//         result.muted,
+//         result.lightVibrant,
+//       ];
+
+//   return candidates.find((color) => normalizeHex(color)) ?? null;
+// }
+
+function hasReadableTitleContrast(backgroundColor) {
+  return (
+    getContrastRatio(backgroundColor, MUSIC_TITLE_COLOR) >=
+    MIN_BLACK_TEXT_CONTRAST
+  );
+}
+
 function makeReadableBackground(hex) {
   const normalized = normalizeHex(hex);
 
@@ -154,40 +227,54 @@ function makeReadableBackground(hex) {
     return DEFAULT_MUSIC_THEME.backgroundColor;
   }
 
-  if (getContrastRatio(normalized, BLACK) >= MIN_BLACK_TEXT_CONTRAST) {
-    return normalized;
-  }
-
-  const hsl = rgbToHsl(hexToRgb(normalized));
-
-  for (let lightness = hsl.l; lightness <= 0.96; lightness += 0.02) {
-    const candidate = hslToHex({
-      h: hsl.h,
-      s: hsl.s,
-      l: lightness,
-    });
-
-    if (getContrastRatio(candidate, BLACK) >= MIN_BLACK_TEXT_CONTRAST) {
-      return candidate;
-    }
-  }
-
-  return '#F2F2F2';
-}
-
-function makeWaveColor(backgroundColor) {
-  const rgb = hexToRgb(backgroundColor);
+  const rgb = hexToRgb(normalized);
 
   if (!rgb) {
-    return DEFAULT_MUSIC_THEME.waveColor;
+    return DEFAULT_MUSIC_THEME.backgroundColor;
   }
 
   const hsl = rgbToHsl(rgb);
 
+  if (hsl.s < 0.08) {
+    return DEFAULT_MUSIC_THEME.backgroundColor;
+  }
+
+  const baseSaturation = clamp(hsl.s * 0.65 + 0.22, 0.34, 0.62);
+
+  for (let lightness = 0.86; lightness <= 0.95; lightness += 0.01) {
+    const candidate = hslToHex({
+      h: hsl.h,
+      s: baseSaturation,
+      l: lightness,
+    });
+
+    if (hasReadableTitleContrast(candidate)) {
+      return candidate;
+    }
+  }
+
+  return DEFAULT_MUSIC_THEME.backgroundColor;
+}
+
+function makeWaveColor(sourceColor, backgroundColor) {
+  const sourceRgb = hexToRgb(sourceColor);
+  const backgroundRgb = hexToRgb(backgroundColor);
+
+  if (!sourceRgb || !backgroundRgb) {
+    return DEFAULT_MUSIC_THEME.waveColor;
+  }
+
+  const sourceHsl = rgbToHsl(sourceRgb);
+  const backgroundHsl = rgbToHsl(backgroundRgb);
+
+  if (sourceHsl.s < 0.08) {
+    return DEFAULT_MUSIC_THEME.waveColor;
+  }
+
   return hslToHex({
-    h: hsl.h,
-    s: clamp(hsl.s * 1.08, 0.25, 1),
-    l: clamp(hsl.l * 0.55, 0.16, 0.42),
+    h: sourceHsl.h,
+    s: clamp(sourceHsl.s * 0.75 + 0.18, 0.5, 0.78),
+    l: clamp(backgroundHsl.l - 0.3, 0.48, 0.62),
   });
 }
 
@@ -197,20 +284,38 @@ function pickImageColor(result) {
   const candidates =
     result.platform === 'ios'
       ? [
-          result.background,
-          result.primary,
-          result.secondary,
-          result.detail,
-        ]
+        result.primary,
+        result.detail,
+        result.background,
+        result.secondary,
+      ]
       : [
-          result.dominant,
-          result.average,
-          result.vibrant,
-          result.muted,
-          result.lightVibrant,
-        ];
+        result.vibrant,
+        result.lightVibrant,
+        result.dominant,
+        result.muted,
+        result.average,
+      ];
 
-  return candidates.find((color) => normalizeHex(color)) ?? null;
+  const validColors = candidates
+    .map((color) => normalizeHex(color))
+    .filter(Boolean)
+    .map((color) => {
+      const hsl = rgbToHsl(hexToRgb(color));
+
+      return {
+        color,
+        hsl,
+        score: hsl.s * 2 - Math.abs(hsl.l - 0.55),
+      };
+    })
+    .filter(({ hsl }) => hsl.s >= 0.12);
+
+  if (validColors.length === 0) {
+    return candidates.find((color) => normalizeHex(color)) ?? null;
+  }
+
+  return validColors.sort((a, b) => b.score - a.score)[0].color;
 }
 
 function getImageUri(imageSource) {
@@ -261,9 +366,12 @@ export default function useAlbumTheme(imageSource, enabled = true) {
       .then((result) => {
         if (cancelled) return;
 
+        // const pickedColor = pickImageColor(result);
+        // const backgroundColor = makeReadableBackground(pickedColor);
+        // const waveColor = makeWaveColor(backgroundColor);
         const pickedColor = pickImageColor(result);
         const backgroundColor = makeReadableBackground(pickedColor);
-        const waveColor = makeWaveColor(backgroundColor);
+        const waveColor = makeWaveColor(pickedColor, backgroundColor);
 
         setTheme({
           backgroundColor,
