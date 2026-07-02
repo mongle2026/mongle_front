@@ -2,6 +2,7 @@ import { View, TextInput, StyleSheet, Platform } from 'react-native';
 
 import SearchIcon from '../../assets/icons/ic_search.svg';
 import { colors } from '../styles/color';
+import { typo } from '../styles/typo';
 import { padding, gap, radius } from '../styles/token';
 
 export default function SearchField({
@@ -61,9 +62,8 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 0,
     margin: 0,
-    fontFamily: 'Pretendard-Regular',
-    fontSize: 15,
-    letterSpacing: -0.15,
+    ...typo.bodyMedium,
+    lineHeight: undefined, // iOS에서 아이콘과 수평 정렬을 위해 제거
     color: colors.fgLayerNeutral,
     includeFontPadding: false,
     textAlignVertical: 'center',
