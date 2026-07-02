@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { FlatList, StyleSheet, View, useWindowDimensions } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -150,7 +151,7 @@ export default function FeedHomeScreen({ navigation, route }) {
   }, [currentIndex, activeMusicFeedId, snapOffsets, toggleBookmark, toggleLike, navigation, recomputeOffsets]);
 
   return (
-    <View style={styles.screen}>
+    <Animated.View style={styles.screen} entering={FadeIn.duration(400)}>
       <FlatList
         ref={flatListRef}
         data={posts}
@@ -185,7 +186,7 @@ export default function FeedHomeScreen({ navigation, route }) {
         actionLabel="이동하기"
         visible={toastVisible}
       />
-    </View>
+    </Animated.View>
   );
 }
 

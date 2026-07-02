@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Image, Text, View, StyleSheet, Pressable } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 
 import PlayFillIcon from '../../assets/icons/ic_play_fill.svg';
@@ -25,6 +26,7 @@ export default function Music({
   empty = false,
   onPress,
   style,
+  buttonStyle,
 }) {
   const player = useAudioPlayer(null);
   const status = useAudioPlayerStatus(player);
@@ -185,13 +187,15 @@ export default function Music({
         </View>
 
         {button && !empty && (
-          <ButtonIcon
-            Icon={shouldShowPauseIcon ? PauseFillIcon : PlayFillIcon}
-            size="XL"
-            variant="none"
-            iconColor={colors.fgLayerNeutral}
-            onPress={onPressMusicButton}
-          />
+          <Animated.View style={buttonStyle}>
+            <ButtonIcon
+              Icon={shouldShowPauseIcon ? PauseFillIcon : PlayFillIcon}
+              size="XL"
+              variant="none"
+              iconColor={colors.fgLayerNeutral}
+              onPress={onPressMusicButton}
+            />
+          </Animated.View>
         )}
       </Pressable>
     </View>
