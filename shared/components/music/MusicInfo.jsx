@@ -1,4 +1,5 @@
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import Animated from 'react-native-reanimated';
 
 import PlayFillIcon from '../../../assets/icons/ic_play_fill.svg';
 import PauseFillIcon from '../../../assets/icons/ic_pause_fill.svg';
@@ -20,6 +21,7 @@ export default function MusicInfo({
   empty = false,
   onPress,
   onPressButton,
+  buttonStyle,
   style,
   albumTheme,
 }) {
@@ -61,13 +63,15 @@ export default function MusicInfo({
         </View>
 
         {button && !empty && (
-          <ButtonIcon
-            Icon={isPlaying ? PauseFillIcon : PlayFillIcon}
-            size="XL"
-            variant="none"
-            iconColor={colors.fgLayerNeutral}
-            onPress={onPressButton}
-          />
+          <Animated.View style={buttonStyle}>
+            <ButtonIcon
+              Icon={isPlaying ? PauseFillIcon : PlayFillIcon}
+              size="XL"
+              variant="none"
+              iconColor={colors.fgLayerNeutral}
+              onPress={onPressButton}
+            />
+          </Animated.View>
         )}
       </Pressable>
     </View>

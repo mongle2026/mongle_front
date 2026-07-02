@@ -12,6 +12,7 @@ export default function Music({
   button = false,
   empty = false,
   onPress,
+  buttonStyle,
   style,
 }) {
   const {
@@ -34,6 +35,7 @@ export default function Music({
       empty={empty}
       onPress={onPress}
       onPressButton={toggle}
+      buttonStyle={buttonStyle}
       style={style}
     />
   );

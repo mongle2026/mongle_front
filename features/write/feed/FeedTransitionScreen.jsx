@@ -11,7 +11,7 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import TopNavigation from '../../../shared/components/TopNavigation';
-import Music from '../../../shared/components/Music';
+import Music from '../../../shared/components/music/Music';
 import Profile from '../../../shared/components/Profile';
 import ButtonIcon from '../../../shared/components/ButtonIcon';
 import BottomBar from '../components/BottomBar';
