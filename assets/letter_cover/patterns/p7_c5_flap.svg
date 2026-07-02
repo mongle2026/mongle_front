@@ -7,7 +7,7 @@
       }
 
       .cls-2 {
-        fill: #ed763b;
+        fill: #757575;
       }
 
       .cls-3 {
@@ -21,7 +21,7 @@
       <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.15"/>
     </filter>
   </defs>
-  <g transform="rotate(180 162.585 86.6)" filter="url(#flap-shadow)"><g class="cls-3">
+  <g transform="translate(0 173.2) scale(1 -1)" filter="url(#flap-shadow)"><g class="cls-3">
     <rect class="cls-2" x="-2.06" y="-59.09" width="329.28" height="291.39"/>
   </g>
 </g></svg>

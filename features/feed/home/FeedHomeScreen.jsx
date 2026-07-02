@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { FlatList, StyleSheet, View, useWindowDimensions } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -14,13 +15,13 @@ import IcHome from '../../../assets/icons/ic_home.svg';
 import IcLetter from '../../../assets/icons/ic_letter.svg';
 
 import useFeedHome from './hook/useFeedHome';
-import useFeedActions from './hook/useFeedActions';
 
 const PROFILE_SOURCE = require('../../../assets/write/profile_img.png');
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 export default function FeedHomeScreen({ navigation, route }) {
+  const userId = 1;
   const insets = useSafeAreaInsets();
   const { height: screenHeight } = useWindowDimensions();
 
@@ -28,7 +29,6 @@ export default function FeedHomeScreen({ navigation, route }) {
   const ignoreNextBlurRef = useRef(false);
 
   const {
-    userId,
     activeTab,
     posts,
     currentIndex,
@@ -36,16 +36,9 @@ export default function FeedHomeScreen({ navigation, route }) {
     toastVisible,
     refetchFeed,
     onTabPress,
-    showToast,
-  } = useFeedHome();
-
-  const {
     toggleLike,
     toggleBookmark,
-  } = useFeedActions({
-    userId,
-    onBookmarkAdded: showToast,
-  });
+  } = useFeedHome();
 
   const [snapOffsets, setSnapOffsets] = useState([]);
   const itemHeightsRef = useRef({});
@@ -85,7 +78,10 @@ export default function FeedHomeScreen({ navigation, route }) {
 
   const onPressFab = useCallback((fabPos) => {
     ignoreNextBlurRef.current = true;
-    navigation.navigate('FabMenuModal', { fabPos });
+
+    navigation.navigate('FabMenuModal', {
+      fabPos,
+    });
   }, [navigation]);
 
   useEffect(() => {
@@ -107,59 +103,49 @@ export default function FeedHomeScreen({ navigation, route }) {
     return unsubscribe;
   }, [navigation]);
 
-  const renderItem = useCallback(({ item, index }) => {
-    const images = item.files
-      ?.reduce((acc, f) => {
-        if (f.mimeType?.startsWith('image/')) acc.push({ uri: `${API_BASE_URL}${f.url}` });
-        return acc;
-      }, []) ?? [];
-
-    return (
-      <View onLayout={({ nativeEvent }) => {
-        itemHeightsRef.current[index] = nativeEvent.layout.height;
-        recomputeOffsets();
-      }}>
-        <Post
-          type={images.length > 0 ? 'img' : 'textFull'}
-          currentView={index === currentIndex}
-          musicTitle={item.music?.musicTitle}
-          musicArtist={item.music?.musicArtist}
-          musicCover={item.music?.musicArtwork ?? undefined}
-          musicAudioUri={item.music?.previewUrl}
-          musicId={item.feedId}
-          activeMusicId={activeMusicFeedId}
-          onChangeActiveMusic={setActiveMusicFeedId}
-          content={item.record?.text ?? ''}
-          images={images}
-          name={item.user?.nickname ?? ''}
-          date={item.record?.date ?? ''}
-          id={item.user?.userCode}
-          profileSource={
-            item.user.hasProfileImage && item.user.profileImageUrl
-              ? { uri: `${API_BASE_URL}${item.user.profileImageUrl}` }
-              : null
+  const renderItem = ({ item, index }) => (
+    <View onLayout={({ nativeEvent }) => {
+      itemHeightsRef.current[index] = nativeEvent.layout.height;
+      recomputeOffsets();
+    }}>
+      <Post
+        type={item.files?.length > 0 ? 'img' : 'textFull'}
+        currentView={index === currentIndex}
+        musicTitle={item.music?.musicTitle}
+        musicArtist={item.music?.musicArtist}
+        musicCover={item.music?.musicArtwork ? item.music.musicArtwork : undefined}
+        musicAudioUri={item.music?.previewUrl}
+        musicId={item.feedId}
+        activeMusicId={activeMusicFeedId}
+        onChangeActiveMusic={setActiveMusicFeedId}
+        content={item.record?.text ?? ''}
+        images={item.files?.filter(f => f.mimeType?.startsWith('image/')).map(f => ({ uri: `${API_BASE_URL}${f.url}` })) ?? []}
+        name={item.user?.nickname ?? ''}
+        date={item.record?.date ?? ''}
+        id={item.user?.userCode}
+        profileSource={item.user.hasProfileImage && item.user.profileImageUrl ? { uri: `${API_BASE_URL}${item.user.profileImageUrl}` } : null}
+        isBookmarked={item.isBookmarked ?? false}
+        isLiked={item.isLiked ?? false}
+        onPressBookmark={() => toggleBookmark(item)}
+        onPressLike={() => toggleLike(item)}
+        onPressBody={() => {
+          if (index !== currentIndex) {
+            flatListRef.current?.scrollToOffset({
+              offset: snapOffsets[index] ?? 0,
+              animated: true,
+            });
+          } else {
+            navigation.navigate('FeedDetail', {
+              feedId: item.feedId,
+            });
           }
-          isBookmarked={item.isBookmarked ?? false}
-          isLiked={item.isLiked ?? false}
-          onPressBookmark={() => toggleBookmark(item)}
-          onPressLike={() => toggleLike(item)}
-          onPressBody={() => {
-            if (index !== currentIndex) {
-              flatListRef.current?.scrollToOffset({
-                offset: snapOffsets[index] ?? 0,
-                animated: true,
-              });
-            } else {
-              navigation.navigate('FeedDetail', { feedId: item.feedId });
-            }
-          }}
-        />
-      </View>
-    );
-  }, [currentIndex, activeMusicFeedId, snapOffsets, toggleBookmark, toggleLike, navigation, recomputeOffsets]);
+        }}
+      />
+    </View>
+  );
 
   return (
-    <View style={styles.screen}>
+    <Animated.View style={styles.screen} entering={FadeIn.duration(400)}>
       <FlatList
         ref={flatListRef}
         data={posts}
@@ -194,7 +180,7 @@ export default function FeedHomeScreen({ navigation, route }) {
         actionLabel="이동하기"
         visible={toastVisible}
       />
-    </View>
+    </Animated.View>
   );
 }
 

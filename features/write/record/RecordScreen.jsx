@@ -30,7 +30,7 @@ import SelectMusic from '../music/SelectMusic.jsx';
 
 
 // 스타일
-import { padding } from '../../../shared/styles/token';
+import { padding, radius } from '../../../shared/styles/token';
 import { colors } from '../../../shared/styles/color';
 
 // 에셋
@@ -190,13 +190,12 @@ const RecordScreen = ({ navigation }) => {
         }
       }
 
-      recordForm.resetForm();
-
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'FeedHome' }],
+      navigation.navigate('FeedTransition', {
+        text: recordForm.text,
+        images: recordForm.files.filter(file => file.fileType === 'IMAGE'),
+        music: recordForm.music,
+        userId,
       });
-
     } else if (recordType === "LETTER") {
       navigation.navigate('LetterCoverSelect');
     }
@@ -333,7 +332,7 @@ const RecordScreen = ({ navigation }) => {
         <View style={styles.dim}>
           <Dialog
             title='작성을 그만둘까요?'
-            description='작성한 내용은 저장되지 않으며\n다시 불러올 수 없습니다.'
+            description={'작성한 내용은 저장되지 않으며\n다시 불러올 수 없습니다.'}
             cancelLabel='계속 작성하기'
             confirmLabel='그만두기'
             onCancel={handleCloseDialog}
@@ -371,11 +370,12 @@ const styles = StyleSheet.create({
     flex: 1,
     // paddingHorizontal: padding.M,
     backgroundColor: colors.bgLayerDefault,
-    borderRadius: 2,
+    borderRadius: radius.M,
   },
 
   sectionContent: {
-    paddingVertical: 16,
+    paddingTop: padding.S,
+    paddingBottom: padding.L,
   },
 
   fold: {

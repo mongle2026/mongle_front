@@ -4,6 +4,19 @@ import { useRecordFormStore } from '../../record/store/useRecordFormStore';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
+const DUMMY_POPULAR = [
+  { externalId: '1', musicTitle: 'Supernova', musicArtist: 'aespa', musicArtwork: null },
+  { externalId: '2', musicTitle: 'Whiplash', musicArtist: 'aespa', musicArtwork: null },
+  { externalId: '3', musicTitle: 'APT.', musicArtist: 'ROSÉ & Bruno Mars', musicArtwork: null },
+  { externalId: '4', musicTitle: 'Love wins all', musicArtist: 'IU', musicArtwork: null },
+  { externalId: '5', musicTitle: 'Dynamite', musicArtist: 'BTS', musicArtwork: null },
+  { externalId: '6', musicTitle: 'Lilac', musicArtist: 'IU', musicArtwork: null },
+  { externalId: '7', musicTitle: 'Celebrity', musicArtist: 'IU', musicArtwork: null },
+  { externalId: '8', musicTitle: 'TOMBOY', musicArtist: '(G)I-DLE', musicArtwork: null },
+  { externalId: '9', musicTitle: 'Hype Boy', musicArtist: 'NewJeans', musicArtwork: null },
+  { externalId: '10', musicTitle: 'OMG', musicArtist: 'NewJeans', musicArtwork: null },
+];
+
 export default function UseSelectMusic(_, onClose) {
   const [keyword, setKeyword] = useState('');
   const [selectedMusicId, setSelectedMusicId] = useState(null);
@@ -43,14 +56,7 @@ export default function UseSelectMusic(_, onClose) {
 
     const timer = setTimeout(async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/music/search`, {
-          params: {
-            keyword: trimmedKeyword,
-          },
-          signal: controller.signal,
-        });
-
-        console.log('음악 검색 응답:', JSON.stringify(response.data));
+        const response = await axios.get(`${API_BASE_URL}/music/search`, { params: { keyword: trimmedKeyword }, signal: controller.signal });
         setMusicList(response.data);
       } catch (error) {
         if (error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {

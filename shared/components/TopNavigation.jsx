@@ -45,6 +45,9 @@ export default function TopNavigation({
   showTextButton = true,
   buttonDisabled = false,
   backIcon: BackIcon = ChevronIcon,
+  rightIcon: RightIcon = null,
+  onPressRightIcon,
+  rightIconColor,
   theme = 'dark',
   usage = 'depth2',
   type = 'brand',
@@ -91,14 +94,22 @@ export default function TopNavigation({
         </Text>
 
         <View style={styles.rightSide}>
-          {showTextButton && (
+          {RightIcon ? (
+            <ButtonIcon
+              Icon={RightIcon}
+              size="L"
+              variant="none"
+              iconColor={rightIconColor ?? ICON_COLOR_DEPTH2_THEME[theme]}
+              onPress={onPressRightIcon}
+            />
+          ) : showTextButton ? (
             <ButtonText
               label={buttonLabel}
               type={type}
               disabled={buttonDisabled}
               onPress={onPressButton}
             />
-          )}
+          ) : null}
         </View>
       </View>
     </View>
@@ -149,6 +160,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexShrink: 1,
     ...typo.labelMedium,
+    lineHeight: undefined,
     textAlign: 'center',
   },
 });

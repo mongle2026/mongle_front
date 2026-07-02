@@ -112,8 +112,5 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: ENV_MARGIN_V + padding.M,
     right: ENV_MARGIN_H + padding.M,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
   },
 });

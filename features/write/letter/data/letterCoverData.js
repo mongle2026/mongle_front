@@ -21,6 +21,11 @@ import Stamp18 from '../../../../assets/letter_cover/stamps/stamp_18.svg';
 import Stamp19 from '../../../../assets/letter_cover/stamps/stamp_19.svg';
 import Stamp20 from '../../../../assets/letter_cover/stamps/stamp_20.svg';
 import Stamp21 from '../../../../assets/letter_cover/stamps/stamp_21.svg';
+import Stamp22 from '../../../../assets/letter_cover/stamps/stamp_22.svg';
+import Stamp23 from '../../../../assets/letter_cover/stamps/stamp_23.svg';
+import Stamp24 from '../../../../assets/letter_cover/stamps/stamp_24.svg';
+import Stamp25 from '../../../../assets/letter_cover/stamps/stamp_25.svg';
+import Stamp26 from '../../../../assets/letter_cover/stamps/stamp_26.svg';
 
 export const useLetterCoverStore = create((set) => ({
   patternId: 'p1',
@@ -105,12 +110,11 @@ export const PATTERNS = [
     id: 'p7',
     thumbnail: require('../../../../assets/letter_cover/patterns/p7_thumbnail.svg'),
     colors: [
-      { id: 'p7_c1', color: '#267f53', frontImg: require('../../../../assets/letter_cover/patterns/p7_c1_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p7_c1_flap.svg') },
-      { id: 'p7_c2', color: '#f196bc', frontImg: require('../../../../assets/letter_cover/patterns/p7_c2_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p7_c2_flap.svg') },
-      { id: 'p7_c3', color: '#9cbbff', frontImg: require('../../../../assets/letter_cover/patterns/p7_c3_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p7_c3_flap.svg') },
-      { id: 'p7_c4', color: '#f7c05f', frontImg: require('../../../../assets/letter_cover/patterns/p7_c4_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p7_c4_flap.svg') },
-      { id: 'p7_c5', color: '#2283b8', frontImg: require('../../../../assets/letter_cover/patterns/p7_c5_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p7_c5_flap.svg') },
-      { id: 'p7_c6', color: '#eb753b', frontImg: require('../../../../assets/letter_cover/patterns/p7_c6_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p7_c6_flap.svg') },
+      { id: 'p7_c1', color: '#ffeea9', frontImg: require('../../../../assets/letter_cover/patterns/p7_c1_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p7_c1_flap.svg') },
+      { id: 'p7_c2', color: '#ff5555', frontImg: require('../../../../assets/letter_cover/patterns/p7_c2_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p7_c2_flap.svg') },
+      { id: 'p7_c3', color: '#b5e099', frontImg: require('../../../../assets/letter_cover/patterns/p7_c3_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p7_c3_flap.svg') },
+      { id: 'p7_c4', color: '#aec1ff', frontImg: require('../../../../assets/letter_cover/patterns/p7_c4_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p7_c4_flap.svg') },
+      { id: 'p7_c5', color: '#757575', frontImg: require('../../../../assets/letter_cover/patterns/p7_c5_front.svg'), flapImg: require('../../../../assets/letter_cover/patterns/p7_c5_flap.svg') },
     ],
   },
 ];
@@ -137,6 +141,11 @@ export const STAMPS = [
   { id: 's19', SvgComponent: Stamp19 },
   { id: 's20', SvgComponent: Stamp20 },
   { id: 's21', SvgComponent: Stamp21 },
+  { id: 's22', SvgComponent: Stamp22 },
+  { id: 's23', SvgComponent: Stamp23 },
+  { id: 's24', SvgComponent: Stamp24 },
+  { id: 's25', SvgComponent: Stamp25 },
+  { id: 's26', SvgComponent: Stamp26 },
 ];
 
 // 템플릿 목록 — 기본 패턴/컬러/우표 조합의 프리셋

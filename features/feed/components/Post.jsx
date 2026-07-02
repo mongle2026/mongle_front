@@ -117,18 +117,16 @@ export default function Post({
       )}
 
       {/* 음악 */}
-      <View style={styles.musicWrapper}>
-        <Music
-          title={musicTitle}
-          artist={musicArtist}
-          imageSource={musicCover}
-          button
-          audioUri={musicAudioUri}
-          musicId={musicId}
-          activeMusicId={activeMusicId}
-          onChangeActiveMusic={onChangeActiveMusic}
-        />
-      </View>
+      <Music
+        title={musicTitle}
+        artist={musicArtist}
+        imageSource={musicCover}
+        button
+        audioUri={musicAudioUri}
+        musicId={musicId}
+        activeMusicId={activeMusicId}
+        onChangeActiveMusic={onChangeActiveMusic}
+      />
 
       {/* 텍스트 + 이미지 */}
       <Pressable style={styles.body} onPress={handleBodyPress}>
@@ -183,7 +181,7 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     backgroundColor: colors.bgLayerDefault,
-    paddingTop: padding.M,
+    paddingTop: padding.S,
     paddingBottom: padding.M,
     gap: gap.M,
     borderRadius: radius.M,
@@ -201,11 +199,6 @@ const styles = StyleSheet.create({
   },
   dimmed: {
     opacity: 0.1,
-  },
-  musicWrapper: {
-    alignSelf: 'stretch',
-    paddingHorizontal: padding.M,
-    paddingVertical: padding.S,
   },
   body: {
     flex: 1,
@@ -252,6 +245,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingRight: padding.S,
   },
   footerLeft: {
     flexDirection: 'row',
