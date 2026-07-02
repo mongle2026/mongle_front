@@ -21,6 +21,13 @@ const PROFILE_SOURCE = require('../../../assets/write/profile_img.png');
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 export default function FeedHomeScreen({ navigation, route }) {
+  const NAV_ITEMS = [
+    { type: 'icon', Icon: IcHome, isActive: true },
+    { type: 'icon', Icon: IcLetter, isActive: false, onPress: () => navigation.navigate('Main', { screen: 'Letter' }) },
+    { type: 'profile', profileSource: PROFILE_SOURCE, isActive: false },
+  ];
+
+  const userId = 1;
   const insets = useSafeAreaInsets();
   const { height: screenHeight } = useWindowDimensions();
 
@@ -77,8 +84,11 @@ export default function FeedHomeScreen({ navigation, route }) {
 
   const onPressFab = useCallback((fabPos) => {
     ignoreNextBlurRef.current = true;
-    navigation.navigate('FabMenuModal', { fabPos });
-  }, [navigation]);
+
+    navigation.navigate('FabMenuModal', {
+      fabPos,
+    });
+  };
 
   useEffect(() => {
     if (activeMusicFeedId === null) return;
@@ -99,56 +109,46 @@ export default function FeedHomeScreen({ navigation, route }) {
     return unsubscribe;
   }, [navigation]);
 
-  const renderItem = useCallback(({ item, index }) => {
-    const images = item.files
-      ?.reduce((acc, f) => {
-        if (f.mimeType?.startsWith('image/')) acc.push({ uri: `${API_BASE_URL}${f.url}` });
-        return acc;
-      }, []) ?? [];
-
-    return (
-      <View onLayout={({ nativeEvent }) => {
-        itemHeightsRef.current[index] = nativeEvent.layout.height;
-        recomputeOffsets();
-      }}>
-        <Post
-          type={images.length > 0 ? 'img' : 'textFull'}
-          currentView={index === currentIndex}
-          musicTitle={item.music?.musicTitle}
-          musicArtist={item.music?.musicArtist}
-          musicCover={item.music?.musicArtwork ?? undefined}
-          musicAudioUri={item.music?.previewUrl}
-          musicId={item.feedId}
-          activeMusicId={activeMusicFeedId}
-          onChangeActiveMusic={setActiveMusicFeedId}
-          content={item.record?.text ?? ''}
-          images={images}
-          name={item.user?.nickname ?? ''}
-          date={item.record?.date ?? ''}
-          id={item.user?.userCode}
-          profileSource={
-            item.user.hasProfileImage && item.user.profileImageUrl
-              ? { uri: `${API_BASE_URL}${item.user.profileImageUrl}` }
-              : null
+  const renderItem = ({ item, index }) => (
+    <View onLayout={({ nativeEvent }) => {
+      itemHeightsRef.current[index] = nativeEvent.layout.height;
+      recomputeOffsets();
+    }}>
+      <Post
+        type={item.files?.length > 0 ? 'img' : 'textFull'}
+        currentView={index === currentIndex}
+        musicTitle={item.music?.musicTitle}
+        musicArtist={item.music?.musicArtist}
+        musicCover={item.music?.musicArtwork ? item.music.musicArtwork : undefined}
+        musicAudioUri={item.music?.previewUrl}
+        musicId={item.feedId}
+        activeMusicId={activeMusicFeedId}
+        onChangeActiveMusic={setActiveMusicFeedId}
+        content={item.record?.text ?? ''}
+        images={item.files?.filter(f => f.mimeType?.startsWith('image/')).map(f => ({ uri: `${API_BASE_URL}${f.url}` })) ?? []}
+        name={item.user?.nickname ?? ''}
+        date={item.record?.date ?? ''}
+        id={item.user?.userCode}
+        profileSource={item.user.hasProfileImage && item.user.profileImageUrl ? { uri: `${API_BASE_URL}${item.user.profileImageUrl}` } : null}
+        isBookmarked={item.isBookmarked ?? false}
+        isLiked={item.isLiked ?? false}
+        onPressBookmark={() => toggleBookmark(item)}
+        onPressLike={() => toggleLike(item)}
+        onPressBody={() => {
+          if (index !== currentIndex) {
+            flatListRef.current?.scrollToOffset({
+              offset: snapOffsets[index] ?? 0,
+              animated: true,
+            });
+          } else {
+            navigation.navigate('FeedDetail', {
+              feedId: item.feedId,
+            });
           }
-          isBookmarked={item.isBookmarked ?? false}
-          isLiked={item.isLiked ?? false}
-          onPressBookmark={() => toggleBookmark(item)}
-          onPressLike={() => toggleLike(item)}
-          onPressBody={() => {
-            if (index !== currentIndex) {
-              flatListRef.current?.scrollToOffset({
-                offset: snapOffsets[index] ?? 0,
-                animated: true,
-              });
-            } else {
-              navigation.navigate('FeedDetail', { feedId: item.feedId, feedData: item });
-            }
-          }}
-        />
-      </View>
-    );
-  }, [currentIndex, activeMusicFeedId, snapOffsets, toggleBookmark, toggleLike, navigation, recomputeOffsets]);
+        }}
+      />
+    </View>
+  );
 
   return (
     <Animated.View style={styles.screen} entering={FadeIn.duration(400)}>
