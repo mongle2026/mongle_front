@@ -9,9 +9,18 @@ export function useToast() {
     message: '',
     type: 'warning',
     color: colors.fgPositive,
+    actionLabel: null,
+    onPressAction: null,
   });
 
   const timerRef = useRef(null);
+
+  const clearToastTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
 
   const hideToast = useCallback(() => {
     setToast(prev => ({
@@ -26,36 +35,45 @@ export function useToast() {
       type = 'warning',
       duration = 3000,
       color = colors.fgPositive,
+      actionLabel = null,
+      onPressAction = null,
     }) => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
+      clearToastTimer();
 
       setToast({
         visible: true,
         message,
         type,
         color,
+        actionLabel,
+        onPressAction,
       });
 
       timerRef.current = setTimeout(() => {
         hideToast();
       }, duration);
     },
-    [hideToast],
+    [clearToastTimer, hideToast],
   );
+
+  const pressToastAction = useCallback(() => {
+    clearToastTimer();
+
+    toast.onPressAction?.();
+
+    hideToast();
+  }, [clearToastTimer, hideToast, toast.onPressAction]);
 
   useEffect(() => {
     return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
+      clearToastTimer();
     };
-  }, []);
+  }, [clearToastTimer]);
 
   return {
     toast,
     showToast,
     hideToast,
+    pressToastAction,
   };
 }

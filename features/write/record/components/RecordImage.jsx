@@ -15,14 +15,28 @@ const RecordImage = ({
 }) => {
   const images = recordForm.files.filter(file => file.fileType === 'IMAGE');
 
-  const handleRemoveImage = uri => {
-    recordForm.removeFile(uri);
+  const handleRemoveImage = image => {
+    const deletedFileIndex = recordForm.files.findIndex(
+      file => file.uri === image.uri
+    );
+
+    const deletedFile = recordForm.files[deletedFileIndex];
+
+    if (!deletedFile) {
+      return;
+    }
+
+    recordForm.removeFile(image.uri);
 
     onShowToast?.({
       message: '사진을 삭제했습니다.',
       type: 'success',
       duration: 2000,
       color: colors.fgPositive,
+      actionLabel: '되돌리기',
+      onPressAction: () => {
+        recordForm.restoreFile(deletedFile, deletedFileIndex);
+      },
     });
   };
 
@@ -47,7 +61,7 @@ const RecordImage = ({
                 Icon={XIcon}
                 size="S"
                 variant="overlay"
-                onPress={() => handleRemoveImage(image.uri)}
+                onPress={() => handleRemoveImage(image)}
               />
             </View>
           </ImageBackground>

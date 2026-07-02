@@ -25,6 +25,7 @@ import SelectRecipientScreen from './features/write/recipient/SelectRecipientScr
 import SelectMusic from './features/write/music/SelectMusic.jsx';
 import LetterHomeScreen from './features/letter/home/LetterHomeScreen.jsx';
 import FabMenuModalScreen from './features/feed/home/FabMenuModalScreen.jsx';
+import RecordEditScreen from './features/write/record/RecordEditScreen.jsx';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -159,6 +160,7 @@ export default function App() {
             <Stack.Screen name="SelectRecipientScreen" component={SelectRecipientScreen} />
             <Stack.Screen name="SelectMusic" component={SelectMusic} />
             <Stack.Screen name="Record" component={RecordScreen} />
+            <Stack.Screen name="RecordEdit" component={RecordEditScreen} />
             <Stack.Screen name="SelectDate" component={SelectDateScreen} />
             <Stack.Screen name="SendAnimation" component={SendAnimationScreen} />
             <Stack.Screen name="FeedTransition" component={FeedTransitionScreen} options={{ animation: 'none' }} />

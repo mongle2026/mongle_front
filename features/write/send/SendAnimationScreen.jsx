@@ -9,11 +9,9 @@ import Animated, {
 
 import Profile from '../../../shared/components/Profile';
 import FlapShadow from '../../../shared/components/FlapShadow';
-import Toast from '../../../shared/components/Toast';
 import { PATTERNS, useLetterCoverStore } from '../letter/data/letterCoverData';
 import { colors, shadow } from '../../../shared/styles/color';
 import { padding } from '../../../shared/styles/token';
-import { useFloatingBottomOffset } from '../record/hook/useFloatingBottomOffset';
 import { useRecordFormStore } from '../record/store/useRecordFormStore';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -44,25 +42,28 @@ export default function SendAnimationScreen({ navigation, route }) {
   const FrontSvg = selectedColor?.frontImg?.default ?? selectedColor?.frontImg;
   const FlapSvg = selectedColor?.flapImg?.default ?? selectedColor?.flapImg;
 
-  const [toastVisible, setToastVisible] = useState(false);
-  const bottomValue = useFloatingBottomOffset();
-
-  // const showToast = () => {
-  //   setToastVisible(true);
-  //   setTimeout(() => setToastVisible(false), 2000);
-  // };
-
   const showToastAndGoHome = () => {
-    setToastVisible(true);
+    const toastMessage = toMe === true
+      ? `편지가 ${deliveryLabel} 0시의 나에게 전송됐어요.`
+      : `편지가 ${receiver}에게 전송됐어요.`;
 
-    setTimeout(() => {
-      recordForm.resetForm();
+    recordForm.resetForm();
 
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'FeedHome' }],
-      });
-    }, 2000);
+    navigation.reset({
+      index: 0,
+      routes: [
+        {
+          name: 'FeedHome',
+          params: {
+            homeToast: {
+              id: Date.now(),
+              type: 'success',
+              message: toastMessage,
+            },
+          },
+        },
+      ],
+    });
   };
 
   const screenOpacity = useSharedValue(0);
@@ -95,7 +96,6 @@ export default function SendAnimationScreen({ navigation, route }) {
 
   return (
     <Animated.View style={[styles.screen, screenStyle]}>
-
       <Animated.View style={[styles.envelopeContainer, envelopeStyle]}>
         {FrontSvg && <FrontSvg width={ENVELOPE_WIDTH} height={ENVELOPE_HEIGHT} />}
         {FlapSvg && (
@@ -108,42 +108,14 @@ export default function SendAnimationScreen({ navigation, route }) {
         )}
         <Profile
           imageOnly
-          imageSource={ 
-            recordForm.receiver.hasProfileImage && recordForm.receiver.profileImageUrl 
-            ? `${API_BASE_URL}${recordForm.receiver.profileImageUrl}` 
-            : null 
+          imageSource={
+            recordForm.receiver.hasProfileImage && recordForm.receiver.profileImageUrl
+              ? `${API_BASE_URL}${recordForm.receiver.profileImageUrl}`
+              : null
           }
           style={styles.profileOverlay}
         />
       </Animated.View>
-
-      <View
-        style={[
-          styles.toastWrapper,
-          {
-            bottom: bottomValue,
-          },
-        ]}
-      >
-        {toMe === true ? (
-          <Toast
-            type="success"
-            message={`편지가 ${deliveryLabel} 0시의 나에게 전송됐어요.`}
-            visible={toastVisible}
-            style={styles.toast}
-          />
-        ) : (
-          <Toast
-            type="success"
-            message={`편지가 ${receiver}에게 전송됐어요.`}
-            visible={toastVisible}
-            style={styles.toast}
-          />
-        )}
-
-      </View>
-
-
     </Animated.View>
   );
 }

@@ -15,7 +15,7 @@ import { useFloatingBottomOffset } from './hook/useFloatingBottomOffset.js';
 
 // 공통 컴포넌트
 import TopNavigation from '../../../shared/components/TopNavigation.jsx';
-import Music from '../../../shared/components/Music';
+import Music from '../../../shared/components/music/Music';
 import Profile from '../../../shared/components/Profile.jsx';
 import Toast from '../../../shared/components/Toast.jsx';
 import Dialog from '../../../shared/components/Dialog.jsx';
@@ -52,7 +52,7 @@ const RecordScreen = ({ navigation }) => {
   const [recipientOpen, setRecipientOpen] = useState(false);
   const [musicOpen, setMusicOpen] = useState(false);
 
-  const { toast, showToast } = useToast();
+  const { toast, showToast, pressToastAction } = useToast();
   const bottomValue = useFloatingBottomOffset();
   const insets = useSafeAreaInsets();
 
@@ -300,6 +300,8 @@ const RecordScreen = ({ navigation }) => {
           message={toast.message}
           type={toast.type}
           color={toast.color}
+          actionLabel={toast.actionLabel}
+          onPressAction={pressToastAction}
         />
       </View>
 

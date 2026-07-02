@@ -1,8 +1,8 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Img from '../../write/components/Img';
 
-import Music from '../../../shared/components/Music';
+import Music from '../../../shared/components/music/Music';
 import Profile from '../../../shared/components/Profile';
 import ButtonIcon from '../../../shared/components/ButtonIcon';
 import BookmarkStroke from '../../../assets/icons/ic_bookmark_stroke.svg';
@@ -20,6 +20,11 @@ const AUTO_THRESHOLD = 12;
 function TextLines({ content, maxLines, onPressMore }) {
   const [lines, setLines] = useState([]);
   const [measured, setMeasured] = useState(false);
+
+  useEffect(() => {
+    setLines([]);
+    setMeasured(false);
+  }, [content]);
 
   const onTextLayout = useCallback((e) => {
     if (!measured) {
@@ -142,7 +147,7 @@ export default function Post({
               <Img
                 key={i}
                 variant="ImgOnly"
-                imageSource={typeof src === 'string' ? { uri: src } : src}
+                imageSource={src}
               />
             ))}
           </View>

@@ -11,7 +11,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import GraphicPaper from '../../../assets/write/graphic_paper.svg';
-import Music from '../../../shared/components/Music';
+import Music from '../../../shared/components/music/Music';
 import Profile from '../../../shared/components/Profile';
 import Button from '../../../shared/components/Button';
 import { colors } from '../../../shared/styles/color';

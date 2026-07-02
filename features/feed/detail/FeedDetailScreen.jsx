@@ -1,25 +1,34 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { formatDateDetail } from '../../../shared/utils/formatDate';
-import { Dimensions, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View, BackHandler } from 'react-native';
 import axios from 'axios';
-import { useQuery } from '@tanstack/react-query';
 
 import TopNavigation from '../../../shared/components/TopNavigation';
 import KebabIcon from '../../../assets/icons/ic_kebab.svg';
-import MusicPlay from '../../../shared/components/MusicPlay';
+import MusicPlay from '../../../shared/components/music/MusicPlay';
 import Carousel from '../../../shared/components/Carousel';
 import Caption from '../components/Caption';
 import BottomBar from '../components/BottomBar';
+import Menu from '../../../shared/components/Menu';
+import Dialog from '../../../shared/components/Dialog';
 
 import { colors } from '../../../shared/styles/color';
 import { typo } from '../../../shared/styles/typo';
 import { gap, padding } from '../../../shared/styles/token';
+
+import useFeedDetail from './hook/useFeedDetail';
+import useFeedActions from '../home/hook/useFeedActions';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 function TextLines({ content = '' }) {
   const [lines, setLines] = useState([]);
   const [measured, setMeasured] = useState(false);
+
+  useEffect(() => {
+    setLines([]);
+    setMeasured(false);
+  }, [content]);
 
   const onTextLayout = useCallback((e) => {
     if (!measured) {
@@ -60,34 +69,61 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
 
   const [isFollowing, setFollowing] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [dialogVisible, setDialogVisible] = useState(false);
 
   const { feedData: initialFeedData } = route?.params ?? {};
 
   const {
-    data: apiFeed,
-  } = useQuery({
-    queryKey: ['feed', String(feedId), userId],
-    queryFn: async () => {
-      const response = await axios.get(`${API_BASE_URL}/feed/${feedId}`, {
-        params: { userId },
-      });
-      return response.data;
+    feed,
+    deleteFeed,
+    isDeletingFeed,
+  } = useFeedDetail({
+    feedId,
+    userId,
+    initialFeedData,
+    onDeleteSuccess: () => {
+      setDialogVisible(false);
+      navigation.goBack();
     },
-    enabled: !!API_BASE_URL,
   });
 
-  const feed = apiFeed ?? initialFeedData;
+  const {
+    toggleLike,
+    toggleBookmark,
+  } = useFeedActions({ userId });
+
+  const handleCloseDialog = useCallback(() => {
+    setDialogVisible(false);
+  }, []);
+
+  const handleDeleteFeed = () => {
+    if (isDeletingFeed) {
+      return;
+    }
+
+    deleteFeed();
+  };
 
   const [localFeed, setLocalFeed] = useState(feed);
   useEffect(() => { setLocalFeed(feed); }, [feed]);
 
-  const toggleLike = useCallback(() => {
-    setLocalFeed(f => f ? { ...f, isLiked: !f.isLiked } : f);
-  }, []);
+  useEffect(() => {
+    if (!dialogVisible) {
+      return;
+    }
 
-  const toggleBookmark = useCallback(() => {
-    setLocalFeed(f => f ? { ...f, isBookmarked: !f.isBookmarked } : f);
-  }, []);
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        handleCloseDialog();
+        return true;
+      }
+    );
+
+    return () => backHandler.remove();
+  }, [dialogVisible, handleCloseDialog]);
+
 
   if (!localFeed) {
     return null;
@@ -100,14 +136,42 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
 
   return (
     <View style={styles.screen}>
-      <TopNavigation
-        title="기록"
-        showTextButton={false}
-        onPressBack={() => navigation?.goBack()}
-        rightIcon={KebabIcon}
-        rightIconColor={colors.fgNeutralWeak}
-        theme="light"
-      />
+
+      {menuVisible && (
+        <Pressable
+          style={styles.menuBackdrop}
+          onPress={() => setMenuVisible(false)}
+        />
+      )}
+
+      <View style={styles.topArea}>
+        <TopNavigation
+          title="기록"
+          showTextButton={false}
+          onPressBack={() => navigation?.goBack()}
+          rightIcon={KebabIcon}
+          rightIconColor={colors.fgNeutralWeak}
+          onPressRightIcon={() => setMenuVisible(prev => !prev)}
+          theme="light"
+        />
+
+        {menuVisible && (
+          <View style={styles.menuWrapper}>
+            <Menu
+              onEdit={() => {
+                setMenuVisible(false);
+                navigation.navigate('RecordEdit', {
+                  feedId: localFeed.feedId,
+                });
+              }}
+              onDelete={() => {
+                setMenuVisible(false);
+                setDialogVisible(true);
+              }}
+            />
+          </View>
+        )}
+      </View>
 
       <ScrollView
         style={styles.scroll}
@@ -129,7 +193,10 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
 
         <Carousel images={images} onPressImage={setSelectedImage} />
 
-        <Caption date={record?.date ? formatDateDetail(record.date) : ''} bookmarkCount={localFeed.bookmarkCount} />
+        <Caption
+          date={localFeed.createdAt ? formatDateDetail(localFeed.createdAt) : ''}
+          bookmarkCount={localFeed.bookmarkCount}
+        />
       </ScrollView>
 
       <Modal visible={!!selectedImage} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setSelectedImage(null)}>
@@ -161,9 +228,22 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
           setFollowing(f => !f);
           onPressFollow?.();
         }}
-        onPressBookmark={toggleBookmark}
-        onPressLike={toggleLike}
+        onPressBookmark={() => toggleBookmark(localFeed)}
+        onPressLike={() => toggleLike(localFeed)}
       />
+
+      {dialogVisible && (
+        <View style={styles.dim}>
+          <Dialog
+            title='글을 영구 삭제할까요?'
+            description='삭제한 글은 다시 되돌릴 수 없습니다.'
+            cancelLabel='취소'
+            confirmLabel='삭제'
+            onCancel={handleCloseDialog}
+            onConfirm={handleDeleteFeed}
+          />
+        </View>
+      )}
     </View>
   );
 }
@@ -172,6 +252,21 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: colors.bgLayerDefault,
+  },
+  topArea: {
+    zIndex: 20,
+    elevation: 20,
+  },
+  menuWrapper: {
+    position: 'absolute',
+    top: '100%',
+    right: 18,
+    zIndex: 30,
+    elevation: 30,
+  },
+  menuBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 10,
   },
   scroll: {
     flex: 1,
@@ -217,5 +312,13 @@ const styles = StyleSheet.create({
   modalImage: {
     width: '100%',
     height: '100%',
+  },
+  dim: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: colors.bgOverlay,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+    elevation: 999,
   },
 });

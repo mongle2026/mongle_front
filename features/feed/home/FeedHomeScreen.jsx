@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { FlatList, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { FlatList, StyleSheet, View, useWindowDimensions, RefreshControl, InteractionManager, } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,10 +15,12 @@ import IcHome from '../../../assets/icons/ic_home.svg';
 import IcLetter from '../../../assets/icons/ic_letter.svg';
 
 import useFeedHome from './hook/useFeedHome';
+import useFeedActions from './hook/useFeedActions';
 
 const PROFILE_SOURCE = require('../../../assets/write/profile_img.png');
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
+const userId = 1;
 
 export default function FeedHomeScreen({ navigation, route }) {
   const userId = 1;
@@ -26,19 +28,35 @@ export default function FeedHomeScreen({ navigation, route }) {
   const { height: screenHeight } = useWindowDimensions();
 
   const [activeMusicFeedId, setActiveMusicFeedId] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
   const ignoreNextBlurRef = useRef(false);
+  const shownHomeToastIdRef = useRef(null);
+  const homeToastTimerRef = useRef(null);
 
   const {
     activeTab,
-    posts,
+    posts = [],
     currentIndex,
     setCurrentIndex,
-    toastVisible,
+    toast,
+    showToast,
     refetchFeed,
     onTabPress,
+  } = useFeedHome({ userId });
+
+  const {
     toggleLike,
     toggleBookmark,
-  } = useFeedHome();
+  } = useFeedActions({
+    userId,
+    onBookmarkAdded: () => {
+      showToast({
+        type: 'success',
+        message: '기록을 북마크에 추가했습니다.',
+        actionLabel: '이동하기',
+      });
+    },
+  });
 
   const [snapOffsets, setSnapOffsets] = useState([]);
   const itemHeightsRef = useRef({});
@@ -84,6 +102,17 @@ export default function FeedHomeScreen({ navigation, route }) {
     });
   }, [navigation]);
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    setActiveMusicFeedId(null);
+
+    try {
+      await refetchFeed();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetchFeed]);
+
   useEffect(() => {
     if (activeMusicFeedId === null) return;
     const currentFeedId = posts[currentIndex]?.feedId;
@@ -103,46 +132,100 @@ export default function FeedHomeScreen({ navigation, route }) {
     return unsubscribe;
   }, [navigation]);
 
-  const renderItem = ({ item, index }) => (
-    <View onLayout={({ nativeEvent }) => {
-      itemHeightsRef.current[index] = nativeEvent.layout.height;
-      recomputeOffsets();
-    }}>
-      <Post
-        type={item.files?.length > 0 ? 'img' : 'textFull'}
-        currentView={index === currentIndex}
-        musicTitle={item.music?.musicTitle}
-        musicArtist={item.music?.musicArtist}
-        musicCover={item.music?.musicArtwork ? item.music.musicArtwork : undefined}
-        musicAudioUri={item.music?.previewUrl}
-        musicId={item.feedId}
-        activeMusicId={activeMusicFeedId}
-        onChangeActiveMusic={setActiveMusicFeedId}
-        content={item.record?.text ?? ''}
-        images={item.files?.filter(f => f.mimeType?.startsWith('image/')).map(f => ({ uri: `${API_BASE_URL}${f.url}` })) ?? []}
-        name={item.user?.nickname ?? ''}
-        date={item.record?.date ?? ''}
-        id={item.user?.userCode}
-        profileSource={item.user.hasProfileImage && item.user.profileImageUrl ? { uri: `${API_BASE_URL}${item.user.profileImageUrl}` } : null}
-        isBookmarked={item.isBookmarked ?? false}
-        isLiked={item.isLiked ?? false}
-        onPressBookmark={() => toggleBookmark(item)}
-        onPressLike={() => toggleLike(item)}
-        onPressBody={() => {
-          if (index !== currentIndex) {
-            flatListRef.current?.scrollToOffset({
-              offset: snapOffsets[index] ?? 0,
-              animated: true,
-            });
-          } else {
-            navigation.navigate('FeedDetail', {
-              feedId: item.feedId,
-            });
-          }
-        }}
-      />
-    </View>
+  useFocusEffect(
+    useCallback(() => {
+      const receivedToast = route?.params?.homeToast;
+
+      if (!receivedToast) {
+        return undefined;
+      }
+
+      if (shownHomeToastIdRef.current === receivedToast.id) {
+        return undefined;
+      }
+
+      shownHomeToastIdRef.current = receivedToast.id;
+
+      const interactionTask = InteractionManager.runAfterInteractions(() => {
+        homeToastTimerRef.current = setTimeout(() => {
+          showToast({
+            type: receivedToast.type,
+            message: receivedToast.message,
+            duration: 3000,
+          });
+
+          navigation.setParams({
+            homeToast: undefined,
+          });
+        }, 500);
+      });
+
+      return () => {
+        interactionTask?.cancel?.();
+
+        if (homeToastTimerRef.current) {
+          clearTimeout(homeToastTimerRef.current);
+        }
+      };
+    }, [
+      route?.params?.homeToast?.id,
+      route?.params?.homeToast?.type,
+      route?.params?.homeToast?.message,
+      navigation,
+      showToast,
+    ])
   );
+
+  const renderItem = useCallback(({ item, index }) => {
+    const images = item.files
+      ?.reduce((acc, f) => {
+        if (f.mimeType?.startsWith('image/')) acc.push({ uri: `${API_BASE_URL}${f.url}` });
+        return acc;
+      }, []) ?? [];
+
+    return (
+      <View onLayout={({ nativeEvent }) => {
+        itemHeightsRef.current[index] = nativeEvent.layout.height;
+        recomputeOffsets();
+      }}>
+        <Post
+          type={images.length > 0 ? 'img' : 'textFull'}
+          currentView={index === currentIndex}
+          musicTitle={item.music?.musicTitle}
+          musicArtist={item.music?.musicArtist}
+          musicCover={item.music?.musicArtwork ?? undefined}
+          musicAudioUri={item.music?.previewUrl}
+          musicId={item.feedId}
+          activeMusicId={activeMusicFeedId}
+          onChangeActiveMusic={setActiveMusicFeedId}
+          content={item.record?.text ?? ''}
+          images={images}
+          name={item.user?.nickname ?? ''}
+          date={item.record?.date ?? ''}
+          id={item.user?.userCode}
+          profileSource={
+            item.user.hasProfileImage && item.user.profileImageUrl
+              ? { uri: `${API_BASE_URL}${item.user.profileImageUrl}` }
+              : null
+          }
+          isBookmarked={item.isBookmarked ?? false}
+          isLiked={item.isLiked ?? false}
+          onPressBookmark={() => toggleBookmark(item)}
+          onPressLike={() => toggleLike(item)}
+          onPressBody={() => {
+            if (index !== currentIndex) {
+              flatListRef.current?.scrollToOffset({
+                offset: snapOffsets[index] ?? 0,
+                animated: true,
+              });
+            } else {
+              navigation.navigate('FeedDetail', { feedId: item.feedId, feedData: item });
+            }
+          }}
+        />
+      </View>
+    );
+  }, [currentIndex, activeMusicFeedId, snapOffsets, toggleBookmark, toggleLike, navigation, recomputeOffsets]);
 
   return (
     <Animated.View style={styles.screen} entering={FadeIn.duration(400)}>
@@ -160,6 +243,13 @@ export default function FeedHomeScreen({ navigation, route }) {
         snapToOffsets={snapOffsets}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={viewabilityConfig}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            progressViewOffset={insets.top + 58}
+          />
+        }
       />
 
       <TopNavigation
@@ -175,10 +265,11 @@ export default function FeedHomeScreen({ navigation, route }) {
 
       <Toast
         style={[styles.toast, { bottom: insets.bottom + 44 + padding.XXL }]}
-        message="기록을 북마크에 추가했습니다."
-        type="success"
-        actionLabel="이동하기"
-        visible={toastVisible}
+        message={toast.message}
+        type={toast.type}
+        actionLabel={toast.actionLabel}
+        // onPressAction={undoLastBookmark}
+        visible={toast.visible}
       />
     </Animated.View>
   );

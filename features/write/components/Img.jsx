@@ -15,6 +15,12 @@ export default function Img({
   style,
   variant,
 }) {
+  const currentImageSource = imageSource
+    ? typeof imageSource === 'string'
+      ? { uri: imageSource }
+      : imageSource
+    : null;
+
   if (variant === 'ImgOnly') {
     return (
       <View style={[styles.container, style]}>
