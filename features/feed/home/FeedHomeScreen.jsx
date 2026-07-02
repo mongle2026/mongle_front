@@ -21,12 +21,6 @@ const PROFILE_SOURCE = require('../../../assets/write/profile_img.png');
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 export default function FeedHomeScreen({ navigation, route }) {
-  const NAV_ITEMS = [
-    { type: 'icon', Icon: IcHome, isActive: true },
-    { type: 'icon', Icon: IcLetter, isActive: false, onPress: () => navigation.navigate('Main', { screen: 'Letter' }) },
-    { type: 'profile', profileSource: PROFILE_SOURCE, isActive: false },
-  ];
-
   const userId = 1;
   const insets = useSafeAreaInsets();
   const { height: screenHeight } = useWindowDimensions();
@@ -88,7 +82,7 @@ export default function FeedHomeScreen({ navigation, route }) {
     navigation.navigate('FabMenuModal', {
       fabPos,
     });
-  };
+  }, [navigation]);
 
   useEffect(() => {
     if (activeMusicFeedId === null) return;
