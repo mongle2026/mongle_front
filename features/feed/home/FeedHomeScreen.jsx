@@ -69,15 +69,32 @@ export default function FeedHomeScreen({ navigation, route }) {
   ], [navigation]);
 
   const recomputeOffsets = useCallback(() => {
-    const paddingTop = insets.top + 58 + padding.M;
     const count = posts.length;
+
+    if (count === 0) {
+      setSnapOffsets([]);
+      return;
+    }
+
+    const allMeasured = posts.every((_, index) => {
+      return itemHeightsRef.current[index] > 0;
+    });
+
+    if (!allMeasured) {
+      return;
+    }
+
+    const paddingTop = insets.top + 58 + padding.M;
     const offsets = [];
     let cumulative = paddingTop;
+
     for (let i = 0; i < count; i++) {
-      const h = itemHeightsRef.current[i] ?? 0;
+      const h = itemHeightsRef.current[i];
+
       offsets.push(Math.max(0, cumulative - (screenHeight - h) / 2));
       cumulative += h + padding.XL;
     }
+
     setSnapOffsets(offsets);
   }, [posts.length, insets.top, screenHeight]);
 
@@ -112,6 +129,16 @@ export default function FeedHomeScreen({ navigation, route }) {
       setRefreshing(false);
     }
   }, [refetchFeed]);
+
+  const postIdsKey = useMemo(
+    () => posts.map(post => post.feedId).join(','),
+    [posts],
+  );
+
+  useEffect(() => {
+    itemHeightsRef.current = {};
+    setSnapOffsets([]);
+  }, [postIdsKey]);
 
   useEffect(() => {
     if (activeMusicFeedId === null) return;
@@ -234,13 +261,20 @@ export default function FeedHomeScreen({ navigation, route }) {
         data={posts}
         keyExtractor={item => String(item.feedId)}
         renderItem={renderItem}
+        initialNumToRender={20}
+        maxToRenderPerBatch={20}
+        windowSize={10}
+        removeClippedSubviews={false}
         contentContainerStyle={[
           styles.list,
-          { paddingTop: insets.top + 58 + padding.M, paddingBottom: insets.bottom + 44 + padding.XXL },
+          {
+            paddingTop: insets.top + 58 + padding.M,
+            paddingBottom: insets.bottom + 44 + padding.XXL,
+          },
         ]}
         showsVerticalScrollIndicator={false}
         decelerationRate="fast"
-        snapToOffsets={snapOffsets}
+        snapToOffsets={snapOffsets.length === posts.length ? snapOffsets : undefined}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={viewabilityConfig}
         refreshControl={

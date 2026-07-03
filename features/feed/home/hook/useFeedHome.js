@@ -17,6 +17,23 @@ export default function useFeedHome() {
   });
   const [localOverrides, setLocalOverrides] = useState({});
   const toastTimerRef = useRef(null);
+  const normalizeFeedItem = (item) => {
+    if (!item || !item.feedId) {
+      return null;
+    }
+
+    return {
+      ...item,
+      user: item.user ?? {},
+      record: item.record ?? {},
+      music: item.music ?? null,
+      files: Array.isArray(item.files) ? item.files : [],
+      isLiked: item.isLiked ?? false,
+      isBookmarked: item.isBookmarked ?? false,
+      likeCount: item.likeCount ?? 0,
+      bookmarkCount: item.bookmarkCount ?? 0,
+    };
+  };
 
   const {
     data: apiPosts = [],
@@ -25,13 +42,29 @@ export default function useFeedHome() {
     queryKey: ['feeds', USER_ID],
     queryFn: async () => {
       const response = await axios.get(`${API_BASE_URL}/feed`, {
-        params: { userId: USER_ID },
+        params: {
+          userId: USER_ID,
+          limit: 20,
+        },
       });
-      return response.data;
+
+      const data = response.data;
+      const items = Array.isArray(data) ? data : data?.items;
+
+      return Array.isArray(items)
+        ? items
+          .map(normalizeFeedItem)
+          .filter(Boolean)
+        : [];
     },
   });
 
-  const posts = apiPosts.map(p => ({ ...p, ...localOverrides[p.feedId] }));
+  const posts = Array.isArray(apiPosts)
+    ? apiPosts.map(p => ({
+      ...p,
+      ...localOverrides[p.feedId],
+    }))
+    : [];
 
   const onTabPress = useCallback((tab) => {
     setActiveTab(tab);
