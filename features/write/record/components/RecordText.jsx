@@ -13,8 +13,8 @@ const INPUT_TYPO = typo.bodyMedium;
 
 const NOTE_LINE_HEIGHT = 33;
 const MIN_LINES = 15;
-const TOP_GAP = 8;
-const BOTTOM_GAP = 16;
+const TOP_GAP = padding.M;
+const BOTTOM_GAP = padding.XL;
 const TEXT_TOP_OFFSET = Platform.OS === 'ios' ? -4 : 4;
 const MAX_TEXT_LENGTH = 2000;
 
@@ -25,7 +25,6 @@ const RecordText = ({
   recordType,
 }) => {
   const minTextHeight = NOTE_LINE_HEIGHT * MIN_LINES;
-  const minWrapperHeight = TOP_GAP + minTextHeight + BOTTOM_GAP;
 
   const [textHeight, setTextHeight] = useState(minTextHeight);
 
@@ -107,7 +106,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 1,
-    backgroundColor: '#ddd',
+    backgroundColor: colors.strokeNeutralWeak,
   },
 
   input: {
