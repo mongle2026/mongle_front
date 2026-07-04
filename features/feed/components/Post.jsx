@@ -1,5 +1,10 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
 import Img from '../../write/components/Img';
 
 import Music from '../../../shared/components/music/Music';
@@ -71,7 +76,7 @@ function TextLines({ content, maxLines, onPressMore }) {
   );
 }
 
-const DOUBLE_TAP_DELAY = 300;
+const DOUBLE_TAP_DELAY = 150;
 
 export default function Post({
   type = 'textFull',
@@ -105,6 +110,18 @@ export default function Post({
   const likeRef = useRef(null);
   const showImages = type === 'img' && images.length > 0;
 
+  // 카드 press 피드백: 누르는 동안 살짝 축소(0.98) → 떼면 원래대로
+  const pressScale = useSharedValue(1);
+  const cardAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pressScale.value }],
+  }));
+  const handlePressIn = useCallback(() => {
+    pressScale.value = withTiming(0.98, { duration: 100 });
+  }, [pressScale]);
+  const handlePressOut = useCallback(() => {
+    pressScale.value = withTiming(1, { duration: 150 });
+  }, [pressScale]);
+
   const handleBodyPress = useCallback(() => {
     const now = Date.now();
     if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
@@ -122,11 +139,12 @@ export default function Post({
   }, [onPressLike, onPressBody]);
 
   return (
-    <View
+    <Animated.View
       style={[
         styles.container,
         type === 'img' ? styles.fixedHeight : styles.fixedHeightText,
         !currentView && styles.dimmed,
+        cardAnimatedStyle,
       ]}
     >
       {!currentView && (
@@ -146,7 +164,12 @@ export default function Post({
       />
 
       {/* 텍스트 + 이미지 */}
-      <Pressable style={styles.body} onPress={handleBodyPress}>
+      <Pressable
+        style={styles.body}
+        onPress={handleBodyPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+      >
         <TextLines
           content={content}
           maxLines={type === 'img' ? MAX_LINES.img : MAX_LINES.textFull}
@@ -176,7 +199,7 @@ export default function Post({
           <LikeButton ref={likeRef} isLiked={isLiked} onPress={onPressLike} />
         </View>
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
