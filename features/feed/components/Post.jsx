@@ -76,7 +76,8 @@ function TextLines({ content, maxLines, onPressMore }) {
   );
 }
 
-const DOUBLE_TAP_DELAY = 150;
+const DOUBLE_TAP_DELAY = 200;
+const DOUBLE_TAP_COOLDOWN = 350;
 
 export default function Post({
   type = 'textFull',
@@ -108,6 +109,7 @@ export default function Post({
   const lastTapRef = useRef(0);
   const tapTimerRef = useRef(null);
   const likeRef = useRef(null);
+  const lastToggleRef = useRef(0);
   const showImages = type === 'img' && images.length > 0;
 
   // 카드 press 피드백: 누르는 동안 살짝 축소(0.98) → 떼면 원래대로
@@ -124,9 +126,16 @@ export default function Post({
 
   const handleBodyPress = useCallback(() => {
     const now = Date.now();
+
+    // 방금 더블탭 토글이 일어났으면, OS가 중복 전달한 여분의 탭을 무시 (like+unlike 상쇄 방지)
+    if (now - lastToggleRef.current < DOUBLE_TAP_COOLDOWN) {
+      return;
+    }
+
     if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
       clearTimeout(tapTimerRef.current);
       lastTapRef.current = 0;
+      lastToggleRef.current = now;
       // 더블탭: 하트 바운스 + 좋아요 토글 (안 눌렀으면 좋아요, 이미 눌렀으면 취소)
       likeRef.current?.bounce();
       onPressLike?.();

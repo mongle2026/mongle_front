@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { Animated, PanResponder, StyleSheet, View } from 'react-native';
 
 import { colors } from '../../styles/color';
 import { padding, radius } from '../../styles/token';
@@ -41,9 +41,53 @@ export default function MusicPlay({
     isPlaying,
     progress,
     toggle,
+    seek,
   } = useMusicPlayer({
     audioUri,
   });
+
+  // 파형 스크럽용 refs (PanResponder는 최초 1회 생성되므로 최신 값은 ref로 읽는다)
+  const containerWidthRef = useRef(0);
+  const isScrubbingRef = useRef(false);
+  const seekRef = useRef(seek);
+  seekRef.current = seek;
+
+  const panResponder = useRef(
+    (() => {
+      // 터치 x좌표 → 0~1 비율
+      const toRatio = (x) => {
+        const w = containerWidthRef.current;
+        if (!w) return null;
+        return Math.max(0, Math.min(x / w, 1));
+      };
+
+      return PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponder: () => true,
+        onPanResponderGrant: (evt) => {
+          isScrubbingRef.current = true;
+          const r = toRatio(evt.nativeEvent.locationX);
+          if (r != null) progressAnim.setValue(r);
+        },
+        onPanResponderMove: (evt) => {
+          const r = toRatio(evt.nativeEvent.locationX);
+          if (r != null) progressAnim.setValue(r);
+        },
+        onPanResponderRelease: (evt) => {
+          isScrubbingRef.current = false;
+          const r = toRatio(evt.nativeEvent.locationX);
+          if (r != null) {
+            progressAnim.setValue(r);
+            // 놓은 위치부터 재생
+            seekRef.current?.(r, { autoPlay: true });
+          }
+        },
+        onPanResponderTerminate: () => {
+          isScrubbingRef.current = false;
+        },
+      });
+    })()
+  ).current;
 
   const visibleBars = containerWidth > 0
     ? Math.floor(containerWidth / (CANDLE_WIDTH + CANDLE_SPACE))
@@ -52,6 +96,11 @@ export default function MusicPlay({
   const bars = useMemo(() => generateBars(visibleBars), [visibleBars]);
 
   useEffect(() => {
+    // 스크럽 중에는 손가락 위치를 따라가야 하므로 자동 애니메이션을 건너뛴다
+    if (isScrubbingRef.current) {
+      return;
+    }
+
     Animated.timing(progressAnim, {
       toValue: progress,
       duration: 250,
@@ -79,36 +128,18 @@ export default function MusicPlay({
 
         <View style={styles.waveOuter}>
           <View
-            style={styles.waveInner}
-            onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}
+            style={styles.waveTouch}
+            onLayout={(e) => {
+              const w = e.nativeEvent.layout.width;
+              setContainerWidth(w);
+              containerWidthRef.current = w;
+            }}
+            {...panResponder.panHandlers}
           >
-            {visibleBars > 0 && (
-              <>
-                <View style={styles.waveRow}>
-                  {bars.map((height, index) => (
-                    <View
-                      key={index}
-                      style={[
-                        styles.candle,
-                        {
-                          height,
-                          backgroundColor: withOpacity(albumTheme.waveColor, 0.3),
-                        },
-                      ]}
-                    />
-                  ))}
-                </View>
-
-                <Animated.View
-                  style={[
-                    StyleSheet.absoluteFill,
-                    {
-                      width: filledWidth,
-                      overflow: 'hidden',
-                    },
-                  ]}
-                >
-                  <View style={[styles.waveRow, { width: containerWidth }]}>
+            <View style={styles.waveInner}>
+              {visibleBars > 0 && (
+                <>
+                  <View style={styles.waveRow}>
                     {bars.map((height, index) => (
                       <View
                         key={index}
@@ -116,15 +147,40 @@ export default function MusicPlay({
                           styles.candle,
                           {
                             height,
-                            backgroundColor: withOpacity(albumTheme.waveColor, 1),
+                            backgroundColor: withOpacity(albumTheme.waveColor, 0.3),
                           },
                         ]}
                       />
                     ))}
                   </View>
-                </Animated.View>
-              </>
-            )}
+
+                  <Animated.View
+                    style={[
+                      StyleSheet.absoluteFill,
+                      {
+                        width: filledWidth,
+                        overflow: 'hidden',
+                      },
+                    ]}
+                  >
+                    <View style={[styles.waveRow, { width: containerWidth }]}>
+                      {bars.map((height, index) => (
+                        <View
+                          key={index}
+                          style={[
+                            styles.candle,
+                            {
+                              height,
+                              backgroundColor: withOpacity(albumTheme.waveColor, 1),
+                            },
+                          ]}
+                        />
+                      ))}
+                    </View>
+                  </Animated.View>
+                </>
+              )}
+            </View>
           </View>
         </View>
       </View>
@@ -150,6 +206,10 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     paddingHorizontal: padding.XL,
     paddingBottom: padding.M,
+  },
+  // 터치 영역을 위아래로 넓혀 파형을 잡기 쉽게 한다 (가로 padding 없음 → 폭은 파형과 동일)
+  waveTouch: {
+    paddingVertical: padding.S,
   },
   waveInner: {
     height: WAVE_HEIGHT,

@@ -89,6 +89,39 @@ export default function useMusicPlayer({
     play();
   }, [audioUri, isPlaying, pause, play]);
 
+  // 파형에서 터치/드래그한 위치(0~1 비율)로 재생 위치 이동
+  const seek = useCallback(
+    (ratio, { autoPlay = false } = {}) => {
+      if (!audioUri) {
+        return;
+      }
+
+      const clamped = Math.max(0, Math.min(ratio, 1));
+
+      try {
+        const isNewAudio = loadedAudioUriRef.current !== audioUri;
+
+        if (isNewAudio) {
+          player.replace({ uri: audioUri });
+          loadedAudioUriRef.current = audioUri;
+        }
+
+        const target = (status.duration ?? 0) * clamped;
+        player.seekTo(target);
+        isFinishedRef.current = false;
+
+        if (autoPlay) {
+          player.play();
+          setInternalIsPlaying(true);
+          onChangeActiveMusic?.(musicId);
+        }
+      } catch (error) {
+        console.log('audio seek failed:', error?.message);
+      }
+    },
+    [audioUri, player, status.duration, musicId, onChangeActiveMusic],
+  );
+
   useEffect(() => {
     if (activeMusicId === undefined) {
       return;
@@ -122,5 +155,6 @@ export default function useMusicPlayer({
     pause,
     reset,
     toggle,
+    seek,
   };
 }

@@ -22,6 +22,7 @@ import useFeedActions from '../home/hook/useFeedActions';
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 const DOUBLE_TAP_DELAY = 300;
+const DOUBLE_TAP_COOLDOWN = 350;
 
 function TextLines({ content = '' }) {
   const [lines, setLines] = useState([]);
@@ -113,11 +114,19 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
   // 본문 더블탭 → 하트 바운스 + 좋아요 토글 (취소 포함)
   const likeRef = useRef(null);
   const lastTapRef = useRef(0);
+  const lastToggleRef = useRef(0);
 
   const handleContentTap = useCallback(() => {
     const now = Date.now();
+
+    // 방금 토글했으면 OS가 중복 전달한 여분 탭 무시 (like+unlike 상쇄 방지)
+    if (now - lastToggleRef.current < DOUBLE_TAP_COOLDOWN) {
+      return;
+    }
+
     if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
       lastTapRef.current = 0;
+      lastToggleRef.current = now;
       likeRef.current?.bounce();
       toggleLike(localFeed);
     } else {
