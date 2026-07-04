@@ -11,7 +11,7 @@ import BookmarkFill from '../../../assets/icons/ic_bookmark_fill.svg';
 import HeartStroke from '../../../assets/icons/ic_heart_stroke.svg';
 import HeartFill from '../../../assets/icons/ic_heart_fill.svg';
 
-export default function BottomBar({
+export default function AuthorAction({
   name = '수신인 선택',
   id,
   profileSource,
@@ -22,9 +22,8 @@ export default function BottomBar({
   onPressBookmark,
   onPressLike,
 }) {
-  const insets = useSafeAreaInsets();
   return (
-    <View style={[styles.container, { paddingBottom: padding.M + insets.bottom }]}>
+    <View style={styles.container}>
       {/* 프로필 + 팔로우 */}
       <View style={styles.left}>
         <Profile name={name} id={id} imageSource={profileSource} type="id" />
@@ -71,10 +70,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: padding.M,
-    paddingVertical: padding.M,
     backgroundColor: colors.bgLayerDefault,
-    borderTopWidth: 1,
-    borderTopColor: colors.strokeNeutralWeak,
   },
   left: {
     flex: 1,
