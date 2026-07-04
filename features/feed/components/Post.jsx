@@ -1,15 +1,17 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
 import Img from '../../write/components/Img';
 
 import Music from '../../../shared/components/music/Music';
 import Profile from '../../../shared/components/Profile';
-import ButtonIcon from '../../../shared/components/ButtonIcon';
-import BookmarkStroke from '../../../assets/icons/ic_bookmark_stroke.svg';
-import BookmarkFill from '../../../assets/icons/ic_bookmark_fill.svg';
-import HeartStroke from '../../../assets/icons/ic_heart_stroke.svg';
-import HeartFill from '../../../assets/icons/ic_heart_fill.svg';
-import { colors, palette } from '../../../shared/styles/color';
+import LikeButton from '../home/hook/LikeButton';
+import BookmarkButton from '../home/hook/BookmarkButton';
+import { colors } from '../../../shared/styles/color';
 import { gap, padding, radius } from '../../../shared/styles/token';
 import { typo } from '../../../shared/styles/typo';
 import { formatDate } from '../../../shared/utils/formatDate';
@@ -26,12 +28,15 @@ function TextLines({ content, maxLines, onPressMore }) {
     setMeasured(false);
   }, [content]);
 
-  const onTextLayout = useCallback((e) => {
-    if (!measured) {
-      setLines(e.nativeEvent.lines);
-      setMeasured(true);
-    }
-  }, [measured]);
+  const onTextLayout = useCallback(
+    e => {
+      if (!measured) {
+        setLines(e.nativeEvent.lines);
+        setMeasured(true);
+      }
+    },
+    [measured],
+  );
 
   if (!content) return null;
 
@@ -40,7 +45,10 @@ function TextLines({ content, maxLines, onPressMore }) {
 
   if (!measured) {
     return (
-      <Text style={[styles.lineText, { opacity: 0 }]} onTextLayout={onTextLayout}>
+      <Text
+        style={[styles.lineText, { opacity: 0 }]}
+        onTextLayout={onTextLayout}
+      >
         {content}
       </Text>
     );
@@ -68,7 +76,8 @@ function TextLines({ content, maxLines, onPressMore }) {
   );
 }
 
-const DOUBLE_TAP_DELAY = 300;
+const DOUBLE_TAP_DELAY = 200;
+const DOUBLE_TAP_COOLDOWN = 350;
 
 export default function Post({
   type = 'textFull',
@@ -99,24 +108,54 @@ export default function Post({
 
   const lastTapRef = useRef(0);
   const tapTimerRef = useRef(null);
+  const likeRef = useRef(null);
+  const lastToggleRef = useRef(0);
   const showImages = type === 'img' && images.length > 0;
+
+  // 카드 press 피드백: 누르는 동안 살짝 축소(0.98) → 떼면 원래대로
+  const pressScale = useSharedValue(1);
+  const cardAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pressScale.value }],
+  }));
+  const handlePressIn = useCallback(() => {
+    pressScale.value = withTiming(0.98, { duration: 100 });
+  }, [pressScale]);
+  const handlePressOut = useCallback(() => {
+    pressScale.value = withTiming(1, { duration: 150 });
+  }, [pressScale]);
 
   const handleBodyPress = useCallback(() => {
     const now = Date.now();
+
+    // 방금 더블탭 토글이 일어났으면, OS가 중복 전달한 여분의 탭을 무시 (like+unlike 상쇄 방지)
+    if (now - lastToggleRef.current < DOUBLE_TAP_COOLDOWN) {
+      return;
+    }
+
     if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
       clearTimeout(tapTimerRef.current);
       lastTapRef.current = 0;
-      if (!isLiked) onPressLike?.();
+      lastToggleRef.current = now;
+      // 더블탭: 하트 바운스 + 좋아요 토글 (안 눌렀으면 좋아요, 이미 눌렀으면 취소)
+      likeRef.current?.bounce();
+      onPressLike?.();
     } else {
       lastTapRef.current = now;
       tapTimerRef.current = setTimeout(() => {
         onPressBody?.();
       }, DOUBLE_TAP_DELAY);
     }
-  }, [isLiked, onPressLike, onPressBody]);
+  }, [onPressLike, onPressBody]);
 
   return (
-    <View style={[styles.container, type === 'img' ? styles.fixedHeight : styles.fixedHeightText, !currentView && styles.dimmed]}>
+    <Animated.View
+      style={[
+        styles.container,
+        type === 'img' ? styles.fixedHeight : styles.fixedHeightText,
+        !currentView && styles.dimmed,
+        cardAnimatedStyle,
+      ]}
+    >
       {!currentView && (
         <Pressable style={styles.focusOverlay} onPress={onPressBody} />
       )}
@@ -134,7 +173,12 @@ export default function Post({
       />
 
       {/* 텍스트 + 이미지 */}
-      <Pressable style={styles.body} onPress={handleBodyPress}>
+      <Pressable
+        style={styles.body}
+        onPress={handleBodyPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+      >
         <TextLines
           content={content}
           maxLines={type === 'img' ? MAX_LINES.img : MAX_LINES.textFull}
@@ -144,11 +188,7 @@ export default function Post({
         {showImages && (
           <View style={styles.imageRow}>
             {images.slice(0, 2).map((src, i) => (
-              <Img
-                key={i}
-                variant="ImgOnly"
-                imageSource={src}
-              />
+              <Img key={i} variant="ImgOnly" imageSource={src} />
             ))}
           </View>
         )}
@@ -161,24 +201,14 @@ export default function Post({
           <Text style={styles.date}>{date ? formatDate(date) : ''}</Text>
         </View>
         <View style={styles.footerRight}>
-          <ButtonIcon
-            Icon={isBookmarked ? BookmarkFill : BookmarkStroke}
-            size="L"
-            variant="none"
-            iconColor={isBookmarked ? colors.fgBrand : palette.gray[30]}
+          <BookmarkButton
+            isBookmarked={isBookmarked}
             onPress={onPressBookmark}
           />
-          <ButtonIcon
-            Icon={isLiked ? HeartFill : HeartStroke}
-            size="L"
-            variant="none"
-            iconColor={isLiked ? palette.pink[50] : palette.gray[30]}
-            onPress={onPressLike}
-          />
+          <LikeButton ref={likeRef} isLiked={isLiked} onPress={onPressLike} />
         </View>
       </View>
-
-    </View>
+    </Animated.View>
   );
 }
 

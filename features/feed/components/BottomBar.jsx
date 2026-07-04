@@ -1,15 +1,12 @@
 import { StyleSheet, View } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, palette } from '../../../shared/styles/color';
+import { colors } from '../../../shared/styles/color';
 import { padding } from '../../../shared/styles/token';
 import Profile from '../../../shared/components/Profile';
 import ButtonText from '../../../shared/components/ButtonText';
-import ButtonIcon from '../../../shared/components/ButtonIcon';
-import BookmarkStroke from '../../../assets/icons/ic_bookmark_stroke.svg';
-import BookmarkFill from '../../../assets/icons/ic_bookmark_fill.svg';
-import HeartStroke from '../../../assets/icons/ic_heart_stroke.svg';
-import HeartFill from '../../../assets/icons/ic_heart_fill.svg';
+import LikeButton from '../home/hook/LikeButton';
+import BookmarkButton from '../home/hook/BookmarkButton';
 
 export default function BottomBar({
   name = '수신인 선택',
@@ -21,10 +18,13 @@ export default function BottomBar({
   onPressFollow,
   onPressBookmark,
   onPressLike,
+  likeRef,
 }) {
   const insets = useSafeAreaInsets();
   return (
-    <View style={[styles.container, { paddingBottom: padding.M + insets.bottom }]}>
+    <View
+      style={[styles.container, { paddingBottom: padding.M + insets.bottom }]}
+    >
       {/* 프로필 + 팔로우 */}
       <View style={styles.left}>
         <Profile name={name} id={id} imageSource={profileSource} type="id" />
@@ -32,7 +32,8 @@ export default function BottomBar({
           label={isFollowing ? '팔로잉' : '팔로우'}
           type={isFollowing ? 'neutral' : 'brand'}
           onPress={() => {
-            if (!isFollowing) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            if (!isFollowing)
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             onPressFollow?.();
           }}
         />
@@ -40,25 +41,8 @@ export default function BottomBar({
 
       {/* 북마크 + 좋아요 */}
       <View style={styles.actions}>
-        <ButtonIcon
-          Icon={isBookmarked ? BookmarkFill : BookmarkStroke}
-          size="L"
-          variant="none"
-          iconColor={isBookmarked ? colors.fgBrand : palette.gray[30]}
-          onPress={() => {
-            onPressBookmark?.();
-          }}
-        />
-        <ButtonIcon
-          Icon={isLiked ? HeartFill : HeartStroke}
-          size="L"
-          variant="none"
-          iconColor={isLiked ? palette.pink[50] : palette.gray[30]}
-          onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            onPressLike?.();
-          }}
-        />
+        <BookmarkButton isBookmarked={isBookmarked} onPress={onPressBookmark} />
+        <LikeButton ref={likeRef} isLiked={isLiked} onPress={onPressLike} />
       </View>
     </View>
   );
