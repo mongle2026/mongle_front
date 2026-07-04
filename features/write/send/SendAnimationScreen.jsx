@@ -24,9 +24,9 @@ const FLAP_LEFT = (ENVELOPE_WIDTH - FLAP_RENDER_WIDTH) / 2;
 const ENV_MARGIN_H = ENVELOPE_WIDTH * (15.8 / 342.6);
 const ENV_MARGIN_V = ENVELOPE_WIDTH * (13.92 / 342.6);
 
-const DISSOLVE_DURATION = 500;
+const DISSOLVE_DURATION = 1000;
 const FLY_IN_DURATION = 900;
-const FLY_OUT_DURATION = 600;
+const FLY_OUT_DURATION = 1200;
 
 const FINAL_SCALE = 48 / ENVELOPE_WIDTH;
 const FINAL_TRANSLATE_Y = SCREEN_HEIGHT * 0.38;
@@ -34,18 +34,25 @@ const FINAL_TRANSLATE_Y = SCREEN_HEIGHT * 0.38;
 const API_BASE_URL = 'http://192.168.0.3:3000';
 
 export default function SendAnimationScreen({ navigation, route }) {
-  const { deliveryLabel = '일주일 뒤', toMe = false, receiver = null } = route?.params ?? {};
+  const {
+    deliveryLabel = '일주일 뒤',
+    toMe = false,
+    receiver = null,
+  } = route?.params ?? {};
   const { patternId, colorId } = useLetterCoverStore();
   const recordForm = useRecordFormStore();
 
-  const selectedColor = PATTERNS.find(p => p.id === patternId)?.colors.find(c => c.id === colorId);
+  const selectedColor = PATTERNS.find(p => p.id === patternId)?.colors.find(
+    c => c.id === colorId,
+  );
   const FrontSvg = selectedColor?.frontImg?.default ?? selectedColor?.frontImg;
   const FlapSvg = selectedColor?.flapImg?.default ?? selectedColor?.flapImg;
 
   const showToastAndGoHome = () => {
-    const toastMessage = toMe === true
-      ? `편지가 ${deliveryLabel} 0시의 나에게 전송됐어요.`
-      : `편지가 ${receiver}에게 전송됐어요.`;
+    const toastMessage =
+      toMe === true
+        ? `편지가 ${deliveryLabel} 0시의 나에게 전송됐어요.`
+        : `편지가 ${receiver}에게 전송됐어요.`;
 
     recordForm.resetForm();
 
@@ -74,17 +81,29 @@ export default function SendAnimationScreen({ navigation, route }) {
   useEffect(() => {
     screenOpacity.value = withTiming(1, { duration: DISSOLVE_DURATION }, () => {
       envelopeOpacity.value = withTiming(1, { duration: 200 });
-      envelopeTranslateY.value = withTiming(0, { duration: FLY_IN_DURATION }, () => {
-        envelopeScale.value = withTiming(FINAL_SCALE, { duration: FLY_OUT_DURATION });
-        envelopeOpacity.value = withTiming(0, { duration: FLY_OUT_DURATION });
-        envelopeTranslateY.value = withTiming(FINAL_TRANSLATE_Y, { duration: FLY_OUT_DURATION }, () => {
-          runOnJS(showToastAndGoHome)();
-        });
-      });
+      envelopeTranslateY.value = withTiming(
+        0,
+        { duration: FLY_IN_DURATION },
+        () => {
+          envelopeScale.value = withTiming(FINAL_SCALE, {
+            duration: FLY_OUT_DURATION,
+          });
+          envelopeOpacity.value = withTiming(0, { duration: FLY_OUT_DURATION });
+          envelopeTranslateY.value = withTiming(
+            FINAL_TRANSLATE_Y,
+            { duration: FLY_OUT_DURATION },
+            () => {
+              runOnJS(showToastAndGoHome)();
+            },
+          );
+        },
+      );
     });
   }, []);
 
-  const screenStyle = useAnimatedStyle(() => ({ opacity: screenOpacity.value }));
+  const screenStyle = useAnimatedStyle(() => ({
+    opacity: screenOpacity.value,
+  }));
 
   const envelopeStyle = useAnimatedStyle(() => ({
     opacity: envelopeOpacity.value,
@@ -97,11 +116,16 @@ export default function SendAnimationScreen({ navigation, route }) {
   return (
     <Animated.View style={[styles.screen, screenStyle]}>
       <Animated.View style={[styles.envelopeContainer, envelopeStyle]}>
-        {FrontSvg && <FrontSvg width={ENVELOPE_WIDTH} height={ENVELOPE_HEIGHT} />}
+        {FrontSvg && (
+          <FrontSvg width={ENVELOPE_WIDTH} height={ENVELOPE_HEIGHT} />
+        )}
         {FlapSvg && (
           <View style={[styles.flapWrapper, { height: FLAP_RENDER_HEIGHT }]}>
             {Platform.OS === 'android' && (
-              <FlapShadow width={FLAP_RENDER_WIDTH} height={FLAP_RENDER_HEIGHT} />
+              <FlapShadow
+                width={FLAP_RENDER_WIDTH}
+                height={FLAP_RENDER_HEIGHT}
+              />
             )}
             <FlapSvg width={FLAP_RENDER_WIDTH} height={FLAP_RENDER_HEIGHT} />
           </View>
@@ -109,7 +133,8 @@ export default function SendAnimationScreen({ navigation, route }) {
         <Profile
           imageOnly
           imageSource={
-            recordForm.receiver.hasProfileImage && recordForm.receiver.profileImageUrl
+            recordForm.receiver.hasProfileImage &&
+            recordForm.receiver.profileImageUrl
               ? `${API_BASE_URL}${recordForm.receiver.profileImageUrl}`
               : null
           }
