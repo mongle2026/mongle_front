@@ -5,10 +5,9 @@ import Img from '../../write/components/Img';
 import Music from '../../../shared/components/music/Music';
 import Profile from '../../../shared/components/Profile';
 import ButtonIcon from '../../../shared/components/ButtonIcon';
+import LikeButton from '../home/hook/LikeButton';
 import BookmarkStroke from '../../../assets/icons/ic_bookmark_stroke.svg';
 import BookmarkFill from '../../../assets/icons/ic_bookmark_fill.svg';
-import HeartStroke from '../../../assets/icons/ic_heart_stroke.svg';
-import HeartFill from '../../../assets/icons/ic_heart_fill.svg';
 import { colors, palette } from '../../../shared/styles/color';
 import { gap, padding, radius } from '../../../shared/styles/token';
 import { typo } from '../../../shared/styles/typo';
@@ -26,12 +25,15 @@ function TextLines({ content, maxLines, onPressMore }) {
     setMeasured(false);
   }, [content]);
 
-  const onTextLayout = useCallback((e) => {
-    if (!measured) {
-      setLines(e.nativeEvent.lines);
-      setMeasured(true);
-    }
-  }, [measured]);
+  const onTextLayout = useCallback(
+    e => {
+      if (!measured) {
+        setLines(e.nativeEvent.lines);
+        setMeasured(true);
+      }
+    },
+    [measured],
+  );
 
   if (!content) return null;
 
@@ -40,7 +42,10 @@ function TextLines({ content, maxLines, onPressMore }) {
 
   if (!measured) {
     return (
-      <Text style={[styles.lineText, { opacity: 0 }]} onTextLayout={onTextLayout}>
+      <Text
+        style={[styles.lineText, { opacity: 0 }]}
+        onTextLayout={onTextLayout}
+      >
         {content}
       </Text>
     );
@@ -116,7 +121,13 @@ export default function Post({
   }, [isLiked, onPressLike, onPressBody]);
 
   return (
-    <View style={[styles.container, type === 'img' ? styles.fixedHeight : styles.fixedHeightText, !currentView && styles.dimmed]}>
+    <View
+      style={[
+        styles.container,
+        type === 'img' ? styles.fixedHeight : styles.fixedHeightText,
+        !currentView && styles.dimmed,
+      ]}
+    >
       {!currentView && (
         <Pressable style={styles.focusOverlay} onPress={onPressBody} />
       )}
@@ -144,11 +155,7 @@ export default function Post({
         {showImages && (
           <View style={styles.imageRow}>
             {images.slice(0, 2).map((src, i) => (
-              <Img
-                key={i}
-                variant="ImgOnly"
-                imageSource={src}
-              />
+              <Img key={i} variant="ImgOnly" imageSource={src} />
             ))}
           </View>
         )}
@@ -168,16 +175,9 @@ export default function Post({
             iconColor={isBookmarked ? colors.fgBrand : palette.gray[30]}
             onPress={onPressBookmark}
           />
-          <ButtonIcon
-            Icon={isLiked ? HeartFill : HeartStroke}
-            size="L"
-            variant="none"
-            iconColor={isLiked ? palette.pink[50] : palette.gray[30]}
-            onPress={onPressLike}
-          />
+          <LikeButton isLiked={isLiked} onPress={onPressLike} />
         </View>
       </View>
-
     </View>
   );
 }
