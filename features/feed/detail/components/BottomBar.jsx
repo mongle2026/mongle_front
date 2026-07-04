@@ -27,6 +27,7 @@ export default function BottomBar({
         onChangeText={onChangeText}
         onMaxHeightChange={setShowCount}
         maxLength={MAX_COMMENT_LENGTH}
+        style={styles.textField}
         {...props}
       />
 
@@ -66,8 +67,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgLayerDefault,
   },
 
+  textField: {
+    flex: 1,
+  },
+
   buttonColumn: {
     alignItems: 'center',
+    flexShrink: 0,
   },
 
   countText: {

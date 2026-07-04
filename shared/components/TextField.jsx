@@ -66,8 +66,6 @@ export default function TextField({
 
 const styles = StyleSheet.create({
   textField: {
-    width: 295,
-
     paddingVertical: PADDING_VERTICAL,
     paddingHorizontal: padding.L,
 
