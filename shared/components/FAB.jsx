@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   main: {
     width: FAB_SIZE,
     height: FAB_SIZE,
-    borderRadius: 100,
+    borderRadius: FAB_SIZE / 2,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.bgBrandSolid,
