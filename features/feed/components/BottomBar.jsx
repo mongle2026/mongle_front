@@ -1,14 +1,12 @@
 import { StyleSheet, View } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, palette } from '../../../shared/styles/color';
+import { colors } from '../../../shared/styles/color';
 import { padding } from '../../../shared/styles/token';
 import Profile from '../../../shared/components/Profile';
 import ButtonText from '../../../shared/components/ButtonText';
-import ButtonIcon from '../../../shared/components/ButtonIcon';
 import LikeButton from '../home/hook/LikeButton';
-import BookmarkStroke from '../../../assets/icons/ic_bookmark_stroke.svg';
-import BookmarkFill from '../../../assets/icons/ic_bookmark_fill.svg';
+import BookmarkButton from '../home/hook/BookmarkButton';
 
 export default function BottomBar({
   name = '수신인 선택',
@@ -43,15 +41,7 @@ export default function BottomBar({
 
       {/* 북마크 + 좋아요 */}
       <View style={styles.actions}>
-        <ButtonIcon
-          Icon={isBookmarked ? BookmarkFill : BookmarkStroke}
-          size="L"
-          variant="none"
-          iconColor={isBookmarked ? colors.fgBrand : palette.gray[30]}
-          onPress={() => {
-            onPressBookmark?.();
-          }}
-        />
+        <BookmarkButton isBookmarked={isBookmarked} onPress={onPressBookmark} />
         <LikeButton ref={likeRef} isLiked={isLiked} onPress={onPressLike} />
       </View>
     </View>

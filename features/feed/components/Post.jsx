@@ -4,11 +4,9 @@ import Img from '../../write/components/Img';
 
 import Music from '../../../shared/components/music/Music';
 import Profile from '../../../shared/components/Profile';
-import ButtonIcon from '../../../shared/components/ButtonIcon';
 import LikeButton from '../home/hook/LikeButton';
-import BookmarkStroke from '../../../assets/icons/ic_bookmark_stroke.svg';
-import BookmarkFill from '../../../assets/icons/ic_bookmark_fill.svg';
-import { colors, palette } from '../../../shared/styles/color';
+import BookmarkButton from '../home/hook/BookmarkButton';
+import { colors } from '../../../shared/styles/color';
 import { gap, padding, radius } from '../../../shared/styles/token';
 import { typo } from '../../../shared/styles/typo';
 import { formatDate } from '../../../shared/utils/formatDate';
@@ -171,11 +169,8 @@ export default function Post({
           <Text style={styles.date}>{date ? formatDate(date) : ''}</Text>
         </View>
         <View style={styles.footerRight}>
-          <ButtonIcon
-            Icon={isBookmarked ? BookmarkFill : BookmarkStroke}
-            size="L"
-            variant="none"
-            iconColor={isBookmarked ? colors.fgBrand : palette.gray[30]}
+          <BookmarkButton
+            isBookmarked={isBookmarked}
             onPress={onPressBookmark}
           />
           <LikeButton ref={likeRef} isLiked={isLiked} onPress={onPressLike} />
