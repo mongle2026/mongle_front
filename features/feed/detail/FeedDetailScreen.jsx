@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useRef, useState, useEffect } from 'react';
 import { formatDateDetail } from '../../../shared/utils/formatDate';
 import { Dimensions, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View, BackHandler } from 'react-native';
 import axios from 'axios';
@@ -20,6 +20,8 @@ import useFeedDetail from './hook/useFeedDetail';
 import useFeedActions from '../home/hook/useFeedActions';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
+
+const DOUBLE_TAP_DELAY = 300;
 
 function TextLines({ content = '' }) {
   const [lines, setLines] = useState([]);
@@ -108,6 +110,21 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
   const [localFeed, setLocalFeed] = useState(feed);
   useEffect(() => { setLocalFeed(feed); }, [feed]);
 
+  // 본문 더블탭 → 하트 바운스 + 좋아요 토글 (취소 포함)
+  const likeRef = useRef(null);
+  const lastTapRef = useRef(0);
+
+  const handleContentTap = useCallback(() => {
+    const now = Date.now();
+    if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
+      lastTapRef.current = 0;
+      likeRef.current?.bounce();
+      toggleLike(localFeed);
+    } else {
+      lastTapRef.current = now;
+    }
+  }, [toggleLike, localFeed]);
+
   useEffect(() => {
     if (!dialogVisible) {
       return;
@@ -186,9 +203,9 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
         />
 
         {!!record?.text && (
-          <View style={styles.textSection}>
+          <Pressable style={styles.textSection} onPress={handleContentTap}>
             <TextLines content={record?.text} />
-          </View>
+          </Pressable>
         )}
 
         <Carousel images={images} onPressImage={setSelectedImage} />
@@ -214,6 +231,7 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
       </Modal>
 
       <BottomBar
+        likeRef={likeRef}
         name={user.nickname}
         id={user.userCode}
         profileSource={

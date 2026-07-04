@@ -20,6 +20,7 @@ export default function BottomBar({
   onPressFollow,
   onPressBookmark,
   onPressLike,
+  likeRef,
 }) {
   const insets = useSafeAreaInsets();
   return (
@@ -51,7 +52,7 @@ export default function BottomBar({
             onPressBookmark?.();
           }}
         />
-        <LikeButton isLiked={isLiked} onPress={onPressLike} />
+        <LikeButton ref={likeRef} isLiked={isLiked} onPress={onPressLike} />
       </View>
     </View>
   );

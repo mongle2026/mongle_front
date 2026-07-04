@@ -104,6 +104,7 @@ export default function Post({
 
   const lastTapRef = useRef(0);
   const tapTimerRef = useRef(null);
+  const likeRef = useRef(null);
   const showImages = type === 'img' && images.length > 0;
 
   const handleBodyPress = useCallback(() => {
@@ -111,14 +112,16 @@ export default function Post({
     if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
       clearTimeout(tapTimerRef.current);
       lastTapRef.current = 0;
-      if (!isLiked) onPressLike?.();
+      // 더블탭: 하트 바운스 + 좋아요 토글 (안 눌렀으면 좋아요, 이미 눌렀으면 취소)
+      likeRef.current?.bounce();
+      onPressLike?.();
     } else {
       lastTapRef.current = now;
       tapTimerRef.current = setTimeout(() => {
         onPressBody?.();
       }, DOUBLE_TAP_DELAY);
     }
-  }, [isLiked, onPressLike, onPressBody]);
+  }, [onPressLike, onPressBody]);
 
   return (
     <View
@@ -175,7 +178,7 @@ export default function Post({
             iconColor={isBookmarked ? colors.fgBrand : palette.gray[30]}
             onPress={onPressBookmark}
           />
-          <LikeButton isLiked={isLiked} onPress={onPressLike} />
+          <LikeButton ref={likeRef} isLiked={isLiked} onPress={onPressLike} />
         </View>
       </View>
     </View>
