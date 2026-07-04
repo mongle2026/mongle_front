@@ -142,5 +142,8 @@ const styles = StyleSheet.create({
   selfBadgeText: {
     ...typo.titleMedium,
     color: colors.fgLayerNeutral,
+    includeFontPadding: false,
+    lineHeight: typo.titleMedium.fontSize,
+    textAlignVertical: 'center',
   },
 });

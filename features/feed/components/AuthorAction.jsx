@@ -8,7 +8,7 @@ import ButtonText from '../../../shared/components/ButtonText';
 import LikeButton from '../home/hook/LikeButton';
 import BookmarkButton from '../home/hook/BookmarkButton';
 
-export default function BottomBar({
+export default function AuthorAction({
   name = '수신인 선택',
   id,
   profileSource,
@@ -20,11 +20,8 @@ export default function BottomBar({
   onPressLike,
   likeRef,
 }) {
-  const insets = useSafeAreaInsets();
   return (
-    <View
-      style={[styles.container, { paddingBottom: padding.M + insets.bottom }]}
-    >
+    <View style={styles.container}>
       {/* 프로필 + 팔로우 */}
       <View style={styles.left}>
         <Profile name={name} id={id} imageSource={profileSource} type="id" />
@@ -55,10 +52,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: padding.M,
-    paddingVertical: padding.M,
     backgroundColor: colors.bgLayerDefault,
-    borderTopWidth: 1,
-    borderTopColor: colors.strokeNeutralWeak,
   },
   left: {
     flex: 1,

@@ -18,8 +18,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: padding.XL,
-    paddingVertical: padding.M,
+    paddingTop: padding.M,      
+    paddingRight: padding.XL,   
+    paddingBottom: padding.XL,  
+    paddingLeft: padding.XL,    
   },
   text: {
     ...typo.captionSmall,
