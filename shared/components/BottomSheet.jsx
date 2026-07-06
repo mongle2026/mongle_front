@@ -115,7 +115,7 @@ export default function BottomSheet({ children, visible = false, onClose, style 
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: colors.bgOverlay,
+    backgroundColor: colors.bgDim,
     justifyContent: 'flex-end',
   },
   content: {
