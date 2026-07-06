@@ -1,12 +1,13 @@
-import React, { useState } from 'react'
-import { Platform, StyleSheet, Text, View, Pressable } from 'react-native'
+import React, { useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
-import Button from '../../../../shared/components/Button';
-import { padding, gap } from '../../../../shared/styles/token';
+
 import { colors } from '../../../../shared/styles/color';
+import { padding, gap, radius } from '../../../../shared/styles/token';
 import { typo } from '../../../../shared/styles/typo';
-import getCalendarDate from '../hook/getCalendarDate';
 import getLocalDateString from '../hook/getLocalDateString';
+import ButtonIcon from '../../../../shared/components/ButtonIcon';
+import ChevronIcon from '../../../../assets/icons/ic_chevron.svg';
 
 LocaleConfig.locales['ko-custom'] = {
   monthNames: [
@@ -21,311 +22,300 @@ LocaleConfig.locales['ko-custom'] = {
     '일요일', '월요일', '화요일', '수요일',
     '목요일', '금요일', '토요일',
   ],
-
   dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
-
   today: '오늘',
 };
 
 LocaleConfig.defaultLocale = 'ko-custom';
 
-// const monthNames = LocaleConfig.locales['ko-custom'].monthNames;
+const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'];
 
-// const getTomorrowDateString = () => {
-//   const tomorrow = new Date();
-//   tomorrow.setDate(tomorrow.getDate() + 1);
+const getDateString = date => getLocalDateString(date);
 
-//   return getLocalDateString(tomorrow);
-// };
+const getTomorrowDateString = () => {
+  const date = new Date();
+  date.setDate(date.getDate() + 1);
+
+  return getDateString(date);
+};
+
+const getOneYearLaterDateString = () => {
+  const date = new Date();
+  date.setFullYear(date.getFullYear() + 1);
+
+  return getDateString(date);
+};
+
+const getMonthString = date => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+
+  return `${year}-${month}`;
+};
+
+const addMonth = (monthString, amount) => {
+  const [year, month] = monthString.split('-').map(Number);
+  const nextDate = new Date(year, month - 1 + amount, 1);
+
+  return getMonthString(nextDate);
+};
 
 const SelectDateCalendar = ({
   selectedDate,
   setSelectedDate,
   dateType,
   setDateType,
-  isCalendarOpen,
-  setIsCalendarOpen,
   setDeliveryAt,
 }) => {
-  // const [visibleMonth, setVisibleMonth] = useState(
-  //   selectedDate.dateString.slice(0, 7)
-  // );
-
-  // const todayDateString = getLocalDateString();
-  // const minSelectableDate = getTomorrowDateString();
-
-  // const visibleYear = Number(visibleMonth.split('-')[0]);
-  // const visibleMonthNumber = Number(visibleMonth.split('-')[1]);
-
-  // const handleSelectDate = day => {
-  //   setSelectedDate(day);
-  //   setVisibleMonth(day.dateString.slice(0, 7));
-  // };
-
-  // const handlePressPrevMonth = () => {
-  //   const nextDate = new Date(visibleYear, visibleMonthNumber - 2, 1);
-  //   setVisibleMonth(getCalendarDate(nextDate).dateString.slice(0, 7));
-  // };
-
-  // const handlePressNextMonth = () => {
-  //   const nextDate = new Date(visibleYear, visibleMonthNumber, 1);
-  //   setVisibleMonth(getCalendarDate(nextDate).dateString.slice(0, 7));
-  // };
-
-
-  // const handlePressDateButton = value => {
-  //   setDateType(prev => (prev === value ? null : value))
-  //   setIsCalendarOpen(prev => !prev);
-  // };
-
-  // const handleSelectDate = day => {
-  //   if (day.dateString <= todayDateString) return;
-
-  //   setSelectedDate(day);
-  //   setDeliveryAt(`${day.dateString} 00:00:00`);
-  // };
-
-  const todayDateString = getLocalDateString();
-
-  const getOneYearLaterDateString = () => {
-    const date = new Date();
-    date.setFullYear(date.getFullYear() + 1);
-
-    return getLocalDateString(date);
-  };
-
-  const maxDateString = getOneYearLaterDateString();
+  const todayDateString = getDateString(new Date());
+  const minSelectableDate = getTomorrowDateString();
+  const maxSelectableDate = getOneYearLaterDateString();
 
   const minVisibleMonth = todayDateString.slice(0, 7);
-  const maxVisibleMonth = maxDateString.slice(0, 7);
+  const maxVisibleMonth = maxSelectableDate.slice(0, 7);
 
-  const [visibleMonth, setVisibleMonth] = useState(
-    selectedDate?.dateString?.slice(0, 7) || minVisibleMonth
-  );
+  const [visibleMonth, setVisibleMonth] = useState(minVisibleMonth);
+
+  const [visibleYear, visibleMonthNumber] = visibleMonth.split('-').map(Number);
 
   const isMinVisibleMonth = visibleMonth <= minVisibleMonth;
   const isMaxVisibleMonth = visibleMonth >= maxVisibleMonth;
 
-  const handlePressDateButton = value => {
-    setDateType(prev => (prev === value ? null : value));
-    setIsCalendarOpen(prev => !prev);
+  const handlePressPrevMonth = () => {
+    if (isMinVisibleMonth) return;
+
+    setVisibleMonth(prev => addMonth(prev, -1));
+  };
+
+  const handlePressNextMonth = () => {
+    if (isMaxVisibleMonth) return;
+
+    setVisibleMonth(prev => addMonth(prev, 1));
   };
 
   const handleSelectDate = day => {
-    if (day.dateString <= todayDateString) return;
-    if (day.dateString > maxDateString) return;
+    if (day.dateString < minSelectableDate) return;
+    if (day.dateString > maxSelectableDate) return;
+
+    const isSameDate =
+      dateType === 'date' &&
+      selectedDate?.dateString === day.dateString;
+
+    if (isSameDate) {
+      setSelectedDate(null);
+      setDateType(null);
+      setDeliveryAt(null);
+      return;
+    }
 
     setSelectedDate(day);
+    setDateType('date');
     setDeliveryAt(`${day.dateString} 00:00:00`);
   };
 
-
   return (
     <View style={styles.container}>
-      <Text style={styles.caption}>직접 선택</Text>
-      <Button
-        label={`${selectedDate.year}년 ${selectedDate.month}월 ${selectedDate.day}일`}
-        color={dateType === 'date' ? 'brand' : 'defaultWeak'}
-        onPress={() => handlePressDateButton('date')}
-      />
+      <View style={styles.calendarHeader}>
+        <Text style={styles.monthText}>
+          {visibleYear}년 {visibleMonthNumber}월
+        </Text>
 
-      {/* {isCalendarOpen && (
-        <View style={styles.calendarContainer}>
-          <View style={styles.customHeader}>
-            <Pressable style={styles.monthButton}>
-              <Text style={styles.monthText}>
-                {visibleYear}년 {monthNames[visibleMonthNumber - 1]}
+        <View style={styles.arrowGroup}>
+          <ButtonIcon
+            Icon={ChevronIcon}
+            size="M"
+            variant="none"
+            disabled={isMinVisibleMonth}
+            onPress={handlePressPrevMonth}
+            iconColor={colors.fgNeutral}
+          />
+
+          <ButtonIcon
+            Icon={ChevronIcon}
+            size="M"
+            variant="none"
+            disabled={isMaxVisibleMonth}
+            onPress={handlePressNextMonth}
+            iconColor={colors.fgNeutral}
+            style={styles.rightArrowButton}
+          />
+        </View>
+      </View>
+
+      <View style={styles.weekRow}>
+        {DAY_NAMES.map(dayName => (
+          <View key={dayName} style={styles.calendarCell}>
+            <Text style={styles.weekDayText}>{dayName}</Text>
+          </View>
+        ))}
+      </View>
+
+      <Calendar
+        style={styles.calendar}
+        key={visibleMonth}
+        current={`${visibleMonth}-01`}
+        minDate={minSelectableDate}
+        maxDate={maxSelectableDate}
+        hideExtraDays
+        hideArrows
+        hideDayNames
+        renderHeader={() => null}
+        enableSwipeMonths={false}
+        dayComponent={({ date, state }) => {
+          const isDisabled =
+            state === 'disabled' ||
+            date.dateString < minSelectableDate ||
+            date.dateString > maxSelectableDate;
+
+          const isSelected =
+            dateType === 'date' &&
+            selectedDate?.dateString === date.dateString;
+
+          return (
+            <Pressable
+              disabled={isDisabled}
+              onPress={() => handleSelectDate(date)}
+              style={[
+                styles.calendarCell,
+                isSelected && styles.selectedDayButton,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.dayText,
+                  isDisabled && styles.disabledDayText,
+                  isSelected && styles.selectedDayText,
+                ]}
+              >
+                {date.day}
               </Text>
             </Pressable>
+          );
+        }}
+        theme={{
+          calendarBackground: colors.bgDefault,
 
-            <View style={styles.arrowGroup}>
-              <Pressable onPress={handlePressPrevMonth} style={styles.arrowButton}>
-                <Text style={styles.arrowText}>‹</Text>
-              </Pressable>
+          'stylesheet.calendar.header': {
+            header: {
+              height: 0,
+              paddingTop: 0,
+              paddingBottom: 0,
+              marginTop: 0,
+              marginBottom: 0,
+            },
+            week: {
+              height: 0,
+              marginTop: 0,
+              marginBottom: 0,
+            },
+          },
 
-              <Pressable onPress={handlePressNextMonth} style={styles.arrowButton}>
-                <Text style={styles.arrowText}>›</Text>
-              </Pressable>
-            </View>
-          </View>
-          <Calendar
-            style={styles.calendar}
-            key={visibleMonth}
-            current={`${visibleMonth}-01`}
-            minDate={minSelectableDate}
-            hideExtraDays={false}
-            onDayPress={handleSelectDate}
-            markedDates={{
-              [selectedDate.dateString]: {
-                selected: true,
-                selectedColor: colors.fgBrand,
-              },
-            }}
-            dayComponent={({ date, state }) => {
-              const isSelected = date.dateString === selectedDate.dateString;
-              const isToday = date.dateString === todayDateString;
-              const isPastOrToday = date.dateString <= todayDateString;
-              const isDisabled = state === 'disabled' || isPastOrToday;
-
-              return (
-                <Pressable
-                  disabled={isDisabled}
-                  onPress={() => handleSelectDate(date)}
-                  style={[
-                    styles.dayCircle,
-                    isToday && styles.todayCircle,
-                    isSelected && styles.selectedCircle,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.dayText,
-                      isDisabled && styles.disabledDayText,
-                      isToday && styles.disabledDayText,
-                      isSelected && styles.selectedDayText,
-                    ]}
-                  >
-                    {date.day}
-                  </Text>
-                </Pressable>
-              );
-            }}
-          />
-        </View>
-      )} */}
-
-      {isCalendarOpen && (
-        <View style={styles.calendarWrapper}>
-          <Calendar
-            current={`${visibleMonth}-01`}
-            minDate={todayDateString}
-            maxDate={maxDateString}
-            disableArrowLeft={isMinVisibleMonth}
-            disableArrowRight={isMaxVisibleMonth}
-            enableSwipeMonths={false}
-            onMonthChange={month => {
-              const nextVisibleMonth = `${month.year}-${String(month.month).padStart(2, '0')}`;
-              setVisibleMonth(nextVisibleMonth);
-            }}
-            onDayPress={handleSelectDate}
-            markedDates={{
-              [selectedDate?.dateString]: {
-                selected: true,
-                selectedColor: colors.fgBrand,
-              },
-              [todayDateString]: {
-                disabled: true,
-                disableTouchEvent: true,
-                customStyles: {
-                  container: {
-                    backgroundColor: colors.bgLayerWeak,
-                    borderRadius: 20,
-                  },
-                },
-              },
-            }}
-            markingType="custom"
-            theme={{
-              arrowColor: colors.fgBrand,
-            }}
-          />
-        </View>
-      )}
-    </View >
-  )
-}
+          'stylesheet.calendar.main': {
+            container: {
+              width: '100%',
+              paddingLeft: 0,
+              paddingRight: 0,
+              backgroundColor: colors.bgDefault,
+            },
+            monthView: {
+              width: '100%',
+              backgroundColor: colors.bgDefault,
+            },
+            week: {
+              width: '100%',
+              height: 48,
+              marginTop: 0,
+              marginBottom: 0,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            },
+          },
+        }}
+      />
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
-    padding: padding.XL,
-    gap: gap.M,
+    paddingVertical: padding.M,
+    paddingHorizontal: padding.XL,
     flexDirection: 'column',
     alignItems: 'flex-start',
-    alignSelf: 'stretch'
+    gap: gap.S,
+    alignSelf: 'stretch',
+    backgroundColor: colors.bgDefault,
   },
-  caption: {
-    ...typo.labelSmall,
-    color: colors.fgPlaceholder
+
+  calendarHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    alignSelf: 'stretch',
   },
-  calendarWrapper: {
+
+  monthText: {
+    ...typo.titleLarge,
+    color: colors.fgNeutral,
+    textAlign: 'center',
+  },
+
+  arrowGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: gap.S,
+  },
+
+  rightArrowButton: {
+    transform: [{ scaleX: -1 }],
+  },
+
+  weekRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignSelf: 'stretch',
+  },
+
+  calendar: {
     width: '100%',
-    padding: padding.L,
-    borderRadius: 5,
-    backgroundColor: '#ffffff',
+    alignSelf: 'stretch',
+    backgroundColor: colors.bgDefault,
   },
 
-  // calendarContainer: {
-  //   width: '100%',
-  //   alignSelf: 'stretch',
-  //   borderRadius: 5,
-  //   backgroundColor: '#FFFFFF',
-  //   overflow: 'hidden',
-  // },
-  // customHeader: {
-  //   paddingTop: 21,
-  //   paddingHorizontal: 32,
-  //   paddingBottom: 16,
-  //   alignItems: 'flex-start',
-  //   alignSelf: 'stretch',
-  //   flexDirection: 'row',
-  //   justifyContent: 'space-between',
-  //   gap: 0,
-  // },
+  calendarCell: {
+    width: 48,
+    height: 48,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: radius.M,
+    backgroundColor: colors.bgDefault,
+  },
 
-  // monthText: {
-  //   fontSize: 15,
-  //   fontWeight: '600',
-  //   color: colors.fgLayerNeutral,
-  // },
-  // arrowGroup: {
-  //   flexDirection: 'row',
-  //   alignItems: 'center',
-  // },
-  // arrowButton: {
-  //   width: 32,
-  //   height: 32,
-  //   alignItems: 'center',
-  //   justifyContent: 'center',
-  // },
-  // arrowText: {
-  //   fontSize: 28,
-  //   color: '#4A4A4A',
-  //   lineHeight: 30,
-  // },
+  selectedDayButton: {
+    backgroundColor: colors.fgBrand,
+  },
 
+  weekDayText: {
+    ...typo.labelSmall,
+    color: colors.fgNeutralWeak,
+    textAlign: 'center',
+  },
 
-  // calendar: {
-  //   paddingHorizontal: 21,
-  //   paddingBottom: 10,
-  // },
+  dayText: {
+    ...typo.labelSmall,
+    color: colors.fgNeutral,
+    textAlign: 'center',
+  },
 
-  // dayCircle: {
-  //   width: 36,
-  //   height: 36,
-  //   borderRadius: 100,
-  //   alignItems: 'center',
-  //   justifyContent: 'center',
-  // },
+  disabledDayText: {
+    color: colors.fgNeutralDisabled,
+  },
 
-  // todayCircle: {
-  //   backgroundColor: colors.bgLayerWeak,
-  // },
+  selectedDayText: {
+    color: colors.fgNeutral,
+  },
+});
 
-  // selectedCircle: {
-  //   backgroundColor: '#64A8FF',
-  // },
-
-  // dayText: {
-  //   color: '#222222',
-  // },
-
-  // disabledDayText: {
-  //   color: '#BFC2C7',
-  // },
-
-  // selectedDayText: {
-  //   color: '#FFFFFF',
-  // },
-})
-
-export default SelectDateCalendar
+export default SelectDateCalendar;

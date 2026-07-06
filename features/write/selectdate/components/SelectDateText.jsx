@@ -16,8 +16,7 @@ const SelectDateText = ({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>편지가 도착할 날짜를 선택해 주세요.</Text>
-      <Text style={styles.caption}><Text style={styles.selectText}>{captionDate} 0시</Text>에 편지가 도착합니다.</Text>
+      <Text style={styles.title}><Text style={styles.selectText}>{captionDate} 0시</Text>에 편지가 도착합니다.</Text>
     </View>
   )
 }
@@ -32,11 +31,7 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    ...typo.titleXLarge,
-    color: colors.fgNeutral
-  },
-  caption: {
-    ...typo.bodyMediumStrong,
+    ...typo.titleLarge,
     color: colors.fgLayerNeutralWeak
   },
   selectText: {

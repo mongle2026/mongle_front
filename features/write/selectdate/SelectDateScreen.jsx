@@ -1,35 +1,39 @@
 import React, { useEffect, useState } from 'react'
-import { Button, StyleSheet, View } from 'react-native'
+import { StyleSheet, View, ScrollView } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import axios from 'axios';
 import TopNavigation from '../../../shared/components/TopNavigation'
 import SelectDateText from './components/SelectDateText';
 import SelectDateButtons from './components/SelectDateButtons';
 import SelectDateCalendar from './components/SelectDateCalendar';
-import getTomorrowCalendarDate from './utils/getTomorrowCalendarDate';
+import SelectedLetterCoverPreview from './components/SelectedLetterCoverPreview';
 import { colors } from '../../../shared/styles/color';
+import { padding, gap } from '../../../shared/styles/token';
 import { useRecordFormStore } from '../record/store/useRecordFormStore';
 import { createRecordFormData } from '../utils/createRecordFormData ';
 import { useLetterCoverStore } from '../letter/data/letterCoverData';
 import getDiffDaysFromToday from './hook/getDiffDaysFromToday ';
 import { getCaptionDateLabel } from './utils/getCaptionDateLabel';
+import { useFloatingBottomOffset } from '../record/hook/useFloatingBottomOffset';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 const SelectDateScreen = ({ navigation }) => {
   const [visible, setVisible] = React.useState(false);
   const [date, setDate] = React.useState(undefined);
-  const [selectedDate, setSelectedDate] = useState(getTomorrowCalendarDate);
+  const [selectedDate, setSelectedDate] = useState(null);
   const [dateType, setDateType] = useState(null);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [buttonDisabled, setButtonDisalbed] = useState(true);
   const setDeliveryAt = useRecordFormStore((state) => state.setDeliveryAt);
   const recordForm = useRecordFormStore();
-  const [dateOffsetLabel, setDateOffsetLabel] = useState('1');
+  const [dateOffsetLabel, setDateOffsetLabel] = useState(null);
   const userId = '1';
   const recordType = useRecordFormStore(state => state.recordType);
   const { patternId, colorId, stampId } = useLetterCoverStore();
 
-
+  const bottomValue = useFloatingBottomOffset();
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     if (dateType === null) setButtonDisalbed(true);
@@ -37,10 +41,14 @@ const SelectDateScreen = ({ navigation }) => {
   }, [dateType]);
 
   useEffect(() => {
-    const diffDays = getDiffDaysFromToday(selectedDate.dateString);
+    if (!selectedDate?.dateString) {
+      setDateOffsetLabel(null);
+      return;
+    }
 
+    const diffDays = getDiffDaysFromToday(selectedDate.dateString);
     setDateOffsetLabel(diffDays);
-  }, [selectedDate.dateString])
+  }, [selectedDate?.dateString]);
 
   const handleCommit = async () => {
     if (dateType === null) return;
@@ -99,25 +107,28 @@ const SelectDateScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <TopNavigation
-        title='나에게 전송'
+        title='편지 도착 날짜 선택'
         buttonLabel='전송'
         buttonDisabled={buttonDisabled}
         onPressBack={() => navigation.goBack()}
         onPressButton={handleCommit}
       />
 
-      <View>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={{
+          paddingBottom: insets.bottom + padding.XL,
+        }}
+      >
+        <View style={styles.letterSection}>
+          <SelectedLetterCoverPreview />
+        </View>
+
         <SelectDateText
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
           dateType={dateType}
           dateOffsetLabel={dateOffsetLabel}
-        />
-        <SelectDateButtons
-          dateType={dateType}
-          setDateType={setDateType}
-          setIsCalendarOpen={setIsCalendarOpen}
-          setDeliveryAt={setDeliveryAt}
         />
 
         <SelectDateCalendar
@@ -125,11 +136,16 @@ const SelectDateScreen = ({ navigation }) => {
           setSelectedDate={setSelectedDate}
           dateType={dateType}
           setDateType={setDateType}
-          isCalendarOpen={isCalendarOpen}
+          setDeliveryAt={setDeliveryAt}
+        />
+
+        <SelectDateButtons
+          dateType={dateType}
+          setDateType={setDateType}
           setIsCalendarOpen={setIsCalendarOpen}
           setDeliveryAt={setDeliveryAt}
         />
-      </View>
+      </ScrollView>
     </View>
   )
 }
@@ -138,7 +154,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.bgDefault
-  }
+  },
+
+  scrollView: {
+    flex: 1,
+  },
+
+  letterSection: {
+    width: '100%',
+    paddingVertical: padding.XL,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: gap.M,
+  },
 });
 
 export default SelectDateScreen

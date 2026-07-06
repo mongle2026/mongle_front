@@ -49,6 +49,6 @@ const styles = StyleSheet.create({
     color: colors.fgPlaceholder,
   },
   disabled: {
-    color: colors.fgDisabled,
+    color: colors.fgNeutralDisabled,
   },
 });

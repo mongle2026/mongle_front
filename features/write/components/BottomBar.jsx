@@ -18,7 +18,7 @@ export default function BottomBar({
     <View style={[styles.container, { paddingBottom }]}>
       <ButtonIcon
         Icon={ImageIcon}
-        iconColor={disabledImage ? colors.fgDisabled : undefined}
+        iconColor={disabledImage ? colors.fgNeutralDisabled : undefined}
         size="L"
         variant="none"
         disabled={disabledImage}
