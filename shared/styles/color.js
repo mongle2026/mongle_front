@@ -31,6 +31,7 @@ export const palette = {
     90: '#c17c1a', 100: '#965b13',
   },
   grayOpacity: {
+    20: '#1a1b1c33',
     50: '#1a1b1c80',
     75: '#1a1b1cbf',
   },
@@ -66,8 +67,9 @@ export const colors = {
   bgDefaultWeak:     palette.gray[90],
   bgSurface:         palette.gray[80],
   bgLayerSurface:    palette.gray[20],
-  bgOverlay:         palette.grayOpacity[75],
-  bgOverlayWeak:     palette.grayOpacity[50],
+  bgDimStrong:       palette.grayOpacity[75],
+  bgDim:             palette.grayOpacity[50],
+  bgDimWeak:         palette.grayOpacity[20],
   bgBrandSolid:      palette.mongle[50],
   bgCriticalSolid:   palette.red[50],
 

@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.bgOverlayWeak,
+    backgroundColor: colors.bgDim,
     overflow: 'hidden',
     borderRadius: 200,
     ...shadow.middleDown,

@@ -521,7 +521,7 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
       )}
 
       {isCommentDeleteDialogVisible && (
-        <View style={styles.dim}>
+        <View style={styles.dimWeak}>
           <Dialog
             title="댓글을 영구 삭제할까요?"
             description="삭제한 댓글은 다시 되돌릴 수 없습니다."
@@ -618,7 +618,15 @@ const styles = StyleSheet.create({
   },
   dim: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: colors.bgOverlay,
+    backgroundColor: colors.bgDim,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+    elevation: 999,
+  },
+  dimWeak: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: colors.bgDimWeak,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 999,

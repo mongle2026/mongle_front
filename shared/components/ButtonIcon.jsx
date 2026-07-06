@@ -4,6 +4,7 @@ import { colors } from '../styles/color';
 import { padding, radius } from '../styles/token';
 
 const BUTTON_SIZE = {
+  XS: 16,
   S: 28,
   M: 40,
   L: 40,
@@ -11,6 +12,7 @@ const BUTTON_SIZE = {
 };
 
 const ICON_SIZE = {
+  XS: 8,
   S: 12,
   M: 16,
   L: 20,
@@ -23,16 +25,20 @@ export default function ButtonIcon({
   variant = 'overlay',
   onPress,
   disabled = false,
-  iconColor = colors.fgNeutral,
+  iconColor,
   style,
 }) {
+  const isXs = size === 'XS';
+  const resolvedIconColor =
+    iconColor ?? (isXs ? colors.fgLayerNeutral : colors.fgNeutral);
+
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
       style={[
         styles.button,
-        styles[variant],
+        isXs ? styles.xs : styles[variant],
         {
           width: BUTTON_SIZE[size],
           height: BUTTON_SIZE[size],
@@ -44,7 +50,7 @@ export default function ButtonIcon({
       <Icon
         width={ICON_SIZE[size]}
         height={ICON_SIZE[size]}
-        color={disabled ? colors.fgNeutralDisabled : iconColor}
+        color={disabled ? colors.fgDisabled : resolvedIconColor}
       />
     </Pressable>
   );
@@ -57,9 +63,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   overlay: {
-    backgroundColor: colors.bgOverlay,
+    backgroundColor: colors.bgDimStrong,
   },
   none: {
     backgroundColor: 'transparent',
+  },
+  xs: {
+    backgroundColor: colors.bgLayerSurface,
+    borderRadius: 9999,
   },
 });
