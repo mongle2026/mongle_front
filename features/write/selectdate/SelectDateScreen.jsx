@@ -53,11 +53,28 @@ const SelectDateScreen = ({ navigation }) => {
   const handleCommit = async () => {
     if (dateType === null) return;
 
-    console.log('선택한 날짜:', `${selectedDate.dateString} 00:00:00`);
-    console.log('전역변수', recordForm.deliveryAt);
-    console.log('dateType: ', dateType);
-
     try {
+      const deliveryAt = recordForm.deliveryAt;
+
+      if (!deliveryAt) {
+        console.log('deliveryAt 없음:', {
+          dateType,
+          selectedDate,
+          deliveryAt,
+        });
+        return;
+      }
+
+      const selectedDateString =
+        selectedDate?.dateString ?? String(deliveryAt).slice(0, 10);
+
+      const resolvedDateOffsetLabel =
+        selectedDateString ? getDiffDaysFromToday(selectedDateString) : null;
+
+      console.log('선택한 날짜:', deliveryAt);
+      console.log('전역변수', recordForm.deliveryAt);
+      console.log('dateType: ', dateType);
+
       const formData = createRecordFormData({
         userId,
         recordForm,
@@ -84,7 +101,11 @@ const SelectDateScreen = ({ navigation }) => {
 
       console.log('요청 성공:', response.data);
 
-      const captionDate = getCaptionDateLabel(dateType, dateOffsetLabel)
+      const captionDate = getCaptionDateLabel(
+        dateType,
+        resolvedDateOffsetLabel
+      );
+
       navigation.navigate('SendAnimation', {
         deliveryLabel: captionDate,
         toMe: true,
@@ -142,6 +163,7 @@ const SelectDateScreen = ({ navigation }) => {
         <SelectDateButtons
           dateType={dateType}
           setDateType={setDateType}
+          setSelectedDate={setSelectedDate}
           setIsCalendarOpen={setIsCalendarOpen}
           setDeliveryAt={setDeliveryAt}
         />

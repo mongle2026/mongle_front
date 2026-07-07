@@ -31,12 +31,14 @@ export default function EnvelopePreview({
   profileStyle,
   isNew,
   imageSource = null,
+  showProfile = true,
 }) {
   return (
     <Pressable onPress={onPress} onLongPress={onLongPress} style={styles.envelopeContainer}>
       {/* 앞면 */}
       <Animated.View style={[styles.envelopeFace, frontAnimStyle]}>
         {FrontSvg && <FrontSvg width={ENVELOPE_WIDTH} height={ENVELOPE_HEIGHT} />}
+
         {FlapSvg && (
           <View style={[styles.flapWrapper, { height: FLAP_RENDER_HEIGHT }]}>
             {Platform.OS === 'android' && (
@@ -45,27 +47,36 @@ export default function EnvelopePreview({
             <FlapSvg width={FLAP_RENDER_WIDTH} height={FLAP_RENDER_HEIGHT} />
           </View>
         )}
-        <Profile
-          imageOnly
-          imageSource={imageSource}
-          style={[styles.profileOverlay, profileStyle]}
-        />
+
+        {showProfile && (
+          <Profile
+            imageOnly
+            imageSource={imageSource}
+            style={[styles.profileOverlay, profileStyle]}
+          />
+        )}
+
         {isNew && <Badge style={styles.badge} />}
       </Animated.View>
 
       {/* 뒷면 */}
       <Animated.View style={[styles.envelopeFace, styles.envelopeFaceBack, backAnimStyle]}>
         {BackSvg && <BackSvg width={ENVELOPE_WIDTH} height={ENVELOPE_HEIGHT} />}
+
         {selectedStamp?.SvgComponent && (
           <View style={styles.stamp}>
             <selectedStamp.SvgComponent width="100%" height="100%" />
           </View>
         )}
-        <Profile
-          imageOnly
-          imageSource={imageSource}
-          style={[styles.profileOverlay, profileStyle]}
-        />
+
+        {showProfile && (
+          <Profile
+            imageOnly
+            imageSource={imageSource}
+            style={[styles.profileOverlay, profileStyle]}
+          />
+        )}
+
         {isNew && <Badge style={styles.badge} />}
       </Animated.View>
     </Pressable>

@@ -1,60 +1,76 @@
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { useCallback } from 'react';
+import {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+
+import EnvelopePreview from '../../../../shared/components/EnvelopePreview';
 
 import {
   PATTERNS,
   STAMPS,
   useLetterCoverStore,
 } from '../../letter/data/letterCoverData';
+import { useRecordFormStore } from '../../record/store/useRecordFormStore';
 
-import { padding } from '../../../../shared/styles/token';
+function resolveSvgComponent(svgSource) {
+  return svgSource?.default ?? svgSource;
+}
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
-const ENVELOPE_WIDTH = SCREEN_WIDTH - padding.XL * 2;
-const ENVELOPE_HEIGHT = ENVELOPE_WIDTH * (253.33 / 342.6);
-
-const ENV_MARGIN_H = ENVELOPE_WIDTH * (15.8 / 342.6);
-const ENV_MARGIN_V = ENVELOPE_WIDTH * (13.92 / 342.6);
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 export default function SelectedLetterCoverPreview() {
   const { patternId, colorId, stampId } = useLetterCoverStore();
+  const recordForm = useRecordFormStore();
+
+  const rotateY = useSharedValue(0);
 
   const selectedPattern = PATTERNS.find(pattern => pattern.id === patternId);
   const selectedColor = selectedPattern?.colors.find(color => color.id === colorId);
   const selectedStamp = STAMPS.find(stamp => stamp.id === stampId);
 
-  const backSrc = selectedColor?.backImg ?? selectedColor?.frontImg;
-  const BackSvg = backSrc?.default ?? backSrc;
-  const StampSvg = selectedStamp?.SvgComponent;
+  const FrontSvg = resolveSvgComponent(selectedColor?.frontImg);
+  const FlapSvg = resolveSvgComponent(selectedColor?.flapImg);
+  const BackSvg = resolveSvgComponent(
+    selectedColor?.backImg ?? selectedColor?.frontImg
+  );
+
+  const handlePressEnvelope = useCallback(() => {
+    rotateY.value = withTiming(rotateY.value === 0 ? 180 : 0, {
+      duration: 450,
+    });
+  }, [rotateY]);
+
+  const frontAnimStyle = useAnimatedStyle(() => ({
+    transform: [
+      { perspective: 1000 },
+      { rotateY: `${rotateY.value}deg` },
+    ],
+  }));
+
+  const backAnimStyle = useAnimatedStyle(() => ({
+    transform: [
+      { perspective: 1000 },
+      { rotateY: `${rotateY.value + 180}deg` },
+    ],
+  }));
 
   return (
-    <View style={styles.envelopeContainer}>
-      {BackSvg && (
-        <BackSvg
-          width={ENVELOPE_WIDTH}
-          height={ENVELOPE_HEIGHT}
-        />
-      )}
-
-      {StampSvg && (
-        <View style={styles.stamp}>
-          <StampSvg width="100%" height="100%" />
-        </View>
-      )}
-    </View>
+    <EnvelopePreview
+      FrontSvg={FrontSvg}
+      FlapSvg={FlapSvg}
+      BackSvg={BackSvg}
+      selectedStamp={selectedStamp}
+      frontAnimStyle={frontAnimStyle}
+      backAnimStyle={backAnimStyle}
+      onPress={handlePressEnvelope}
+      showProfile={false}
+      imageSource={
+        recordForm.receiver.hasProfileImage && recordForm.receiver.profileImageUrl
+          ? `${API_BASE_URL}${recordForm.receiver.profileImageUrl}`
+          : null
+      }
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  envelopeContainer: {
-    width: ENVELOPE_WIDTH,
-    height: ENVELOPE_HEIGHT,
-  },
-  stamp: {
-    position: 'absolute',
-    top: ENV_MARGIN_V + padding.XL,
-    left: ENV_MARGIN_H + padding.XL,
-    width: 72,
-    height: 106,
-  },
-});
