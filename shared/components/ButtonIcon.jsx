@@ -50,7 +50,7 @@ export default function ButtonIcon({
       <Icon
         width={ICON_SIZE[size]}
         height={ICON_SIZE[size]}
-        color={disabled ? colors.fgDisabled : resolvedIconColor}
+        color={disabled ? colors.fgNeutralDisabled : resolvedIconColor}
       />
     </Pressable>
   );

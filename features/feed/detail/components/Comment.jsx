@@ -1,16 +1,14 @@
-import { useRef, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, Animated } from 'react-native';
 
 import Profile from '../../../../shared/components/Profile';
-import Button from '../../../../shared/components/Button';
+import CommentIcon from '../../../../assets/icons/ic_comment.svg';
 import { colors, palette } from '../../../../shared/styles/color';
 import { padding, gap, radius } from '../../../../shared/styles/token';
 import { typo } from '../../../../shared/styles/typo';
 
-const LONG_PRESS_DELAY = 450;
-const BACKGROUND_CLOSE_DURATION = 120;
-const DELETE_BUTTON_OPEN_DURATION = 60;
-const DELETE_MODE_CLOSE_DURATION = 120;
+import useCommentLongPressAnimation, {
+  LONG_PRESS_DELAY,
+} from '../hook/useCommentLongPressAnimation';
 
 export default function Comment({
   userCode,
@@ -18,119 +16,40 @@ export default function Comment({
   createdAt,
   profileImageUrl,
   depth = 0,
+  isDeleteMode = false,
   onPress,
-  onDeletePress,
+  onOpenDeleteMode,
+  onCloseDeleteMode,
+  measureRelativeToRef,
 }) {
   const isReply = depth === 1;
 
-  const [isDeleteMode, setIsDeleteMode] = useState(false);
-
-  const backgroundProgress = useRef(new Animated.Value(0)).current;
-  const deleteButtonProgress = useRef(new Animated.Value(0)).current;
-  const isLongPressedRef = useRef(false);
-  const ignoreCloseUntilRef = useRef(0);
-
-  const backgroundColor = backgroundProgress.interpolate({
-    inputRange: [0, 1],
-    outputRange: [colors.bgLayerDefault, colors.bgLayerSurface],
+  const {
+    containerRef,
+    backgroundColor,
+    startPressBackground,
+    resetPressBackground,
+    openDeleteMode,
+    handlePress,
+  } = useCommentLongPressAnimation({
+    isDeleteMode,
+    onOpenDeleteMode,
+    onCloseDeleteMode,
+    measureRelativeToRef,
   });
 
-  const startPressBackground = () => {
+  const handleReplyPress = () => {
     if (isDeleteMode) {
-      return;
-    }
-
-    isLongPressedRef.current = false;
-
-    backgroundProgress.stopAnimation();
-
-    Animated.timing(backgroundProgress, {
-      toValue: 1,
-      duration: LONG_PRESS_DELAY,
-      useNativeDriver: false,
-    }).start();
-  };
-
-  const resetPressBackground = () => {
-    if (isDeleteMode) {
-      if (isLongPressedRef.current) {
-        ignoreCloseUntilRef.current = Date.now() + 250;
-        isLongPressedRef.current = false;
-      }
-
-      return;
-    }
-
-    backgroundProgress.stopAnimation();
-
-    Animated.timing(backgroundProgress, {
-      toValue: 0,
-      duration: BACKGROUND_CLOSE_DURATION,
-      useNativeDriver: false,
-    }).start();
-  };
-
-  const openDeleteMode = () => {
-    isLongPressedRef.current = true;
-
-    setIsDeleteMode(true);
-
-    backgroundProgress.stopAnimation();
-    backgroundProgress.setValue(1);
-
-    deleteButtonProgress.stopAnimation();
-    deleteButtonProgress.setValue(0);
-
-    Animated.timing(deleteButtonProgress, {
-      toValue: 1,
-      duration: DELETE_BUTTON_OPEN_DURATION,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const closeDeleteMode = () => {
-    backgroundProgress.stopAnimation();
-    deleteButtonProgress.stopAnimation();
-
-    Animated.parallel([
-      Animated.timing(backgroundProgress, {
-        toValue: 0,
-        duration: DELETE_MODE_CLOSE_DURATION,
-        useNativeDriver: false,
-      }),
-      Animated.timing(deleteButtonProgress, {
-        toValue: 0,
-        duration: DELETE_MODE_CLOSE_DURATION,
-        useNativeDriver: true,
-      }),
-    ]).start(({ finished }) => {
-      if (finished) {
-        setIsDeleteMode(false);
-        isLongPressedRef.current = false;
-      }
-    });
-  };
-
-  const handlePress = () => {
-    if (isLongPressedRef.current) {
-      return;
-    }
-
-    if (isDeleteMode) {
-      closeDeleteMode();
       return;
     }
 
     onPress?.();
   };
 
-  const handleDeletePress = () => {
-    onDeletePress?.();
-    closeDeleteMode();
-  };
-
   return (
     <View
+      ref={containerRef}
+      collapsable={false}
       style={[
         styles.container,
         isReply && styles.replyContainer,
@@ -162,26 +81,26 @@ export default function Comment({
           <View style={styles.containerTexts}>
             <Text style={styles.userId}>@{userCode}</Text>
             <Text style={styles.comment}>{comment}</Text>
-            <Text style={styles.date}>{createdAt}</Text>
+
+            <View style={styles.dateRow}>
+              <Text style={styles.date}>{createdAt}</Text>
+
+              <Pressable
+                onPress={handleReplyPress}
+                hitSlop={8}
+                accessibilityRole="button"
+                style={styles.buttonReply}
+              >
+                <CommentIcon
+                  width="12"
+                  height="12"
+                />
+                <Text style={styles.replyText}>답글 달기</Text>
+              </Pressable>
+            </View>
           </View>
         </Animated.View>
       </Pressable>
-
-      {isDeleteMode && (
-        <View pointerEvents="box-none" style={styles.deleteOverlay}>
-          <Animated.View
-            style={{
-              opacity: deleteButtonProgress,
-            }}
-          >
-            <Button
-              label="삭제하기"
-              color="defaultWeak"
-              onPress={handleDeletePress}
-            />
-          </Animated.View>
-        </View>
-      )}
     </View>
   );
 }
@@ -233,11 +152,9 @@ const styles = StyleSheet.create({
     gap: gap.S,
   },
 
-  deleteOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 10,
+  activeContainer: {
+    zIndex: 20,
+    elevation: 20,
   },
 
   userId: {
@@ -251,8 +168,27 @@ const styles = StyleSheet.create({
     color: colors.fgLayerNeutral,
   },
 
+  dateRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: gap.M,
+    alignSelf: 'stretch',
+  },
+
   date: {
     ...typo.captionSmall,
     color: palette.gray[40],
   },
+
+  buttonReply: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: gap.S,
+  },
+
+  replyText: {
+    ...typo.captionSmall,
+    color: colors.fgLayerNeutral,
+  },
+
 });

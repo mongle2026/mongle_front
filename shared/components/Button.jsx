@@ -1,16 +1,19 @@
 import { Pressable, Text, StyleSheet } from 'react-native';
 import { colors } from '../styles/color';
-import { padding, radius } from '../styles/token';
+import { gap, padding, radius } from '../styles/token';
 import { typo } from '../styles/typo';
 
 export default function Button({
   label = '버튼',
+  icon,
   color = 'brand',
+  text,
   onPress,
   disabled = false,
   style,
 }) {
   const buttonColor = disabled ? 'disabled' : color;
+  const textColor = text ?? color;
 
   return (
     <Pressable
@@ -18,7 +21,9 @@ export default function Button({
       disabled={disabled}
       style={[styles.button, styles[buttonColor], style]}
     >
-      <Text style={[styles.text, styles[`${buttonColor}Text`]]}>
+      {icon ? icon : null}
+
+      <Text style={[styles.text, styles[`${textColor}Text`]]}>
         {label}
       </Text>
     </Pressable>
@@ -32,6 +37,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: gap.M,
     paddingHorizontal: padding.XL,
     paddingVertical: padding.L,
     borderRadius: radius.M,
@@ -49,6 +55,9 @@ const styles = StyleSheet.create({
   defaultWeak: {
     backgroundColor: colors.bgDefaultWeak,
   },
+  layerDefault: {
+    backgroundColor: colors.bgLayerDefault,
+  },
 
   text: {
     ...typo.labelMedium,
@@ -65,6 +74,9 @@ const styles = StyleSheet.create({
   },
   defaultWeakText: {
     color: colors.fgNeutral,
-  }
-  
+  },
+  criticalStrongText: {
+    color: colors.fgCriticalStrong,
+  },
+
 });

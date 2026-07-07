@@ -70,10 +70,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: padding.L,
 
     borderRadius: radius.M,
-    borderWidth: 1,
-    borderColor: colors.strokeNeutralWeak,
 
-    backgroundColor: colors.bgLayerDefault,
+    backgroundColor: colors.bgLayerWeak,
 
     color: colors.fgLayerNeutral,
 

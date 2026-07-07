@@ -1,7 +1,6 @@
 import React, { useCallback, useRef, useState, useEffect } from 'react';
 import { formatDateDetail } from '../../../shared/utils/formatDate';
-import { Alert, Dimensions, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View, BackHandler, KeyboardAvoidingView, Platform, Keyboard, } from 'react-native';
-import axios from 'axios';
+import { Dimensions, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View, BackHandler, KeyboardAvoidingView, Platform, Keyboard, useWindowDimensions, } from 'react-native';
 
 import TopNavigation from '../../../shared/components/TopNavigation';
 import KebabIcon from '../../../assets/icons/ic_kebab.svg';
@@ -13,13 +12,17 @@ import Menu from '../../../shared/components/Menu';
 import Dialog from '../../../shared/components/Dialog';
 import BottomBar from './components/BottomBar';
 import Comment from './components/Comment';
+import Button from '../../../shared/components/Button';
+import TrashIcon from '../../../assets/icons/ic_trash.svg';
 
 import { colors } from '../../../shared/styles/color';
 import { typo } from '../../../shared/styles/typo';
 import { gap, padding } from '../../../shared/styles/token';
 
 import useFeedDetail from './hook/useFeedDetail';
+import useCommentDeleteMode from './hook/useCommentDeleteMode';
 import useFeedActions from '../home/hook/useFeedActions';
+import useFeedComments from './hook/useFeedComments';
 import { useFloatingBottomOffset } from '../../write/record/hook/useFloatingBottomOffset';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
@@ -78,18 +81,49 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
   const [menuVisible, setMenuVisible] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false);
 
-  const [comments, setComments] = useState([]);                           // 댓글 모음들
-  const [isLoadingComments, setIsLoadingComments] = useState(false);
-  const [commentText, setCommentText] = useState('');                     // 내가 작성 중인 댓글 text
-  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
-  const [replyTarget, setReplyTarget] = useState(null);
-
-  const [commentDeleteTarget, setCommentDeleteTarget] = useState(null);
-  const isCommentDeleteDialogVisible = !!commentDeleteTarget;
-  const [isDeletingComment, setIsDeletingComment] = useState(false);
+  const screenRef = useRef(null);
+  const [screenLayoutHeight, setScreenLayoutHeight] = useState(0);
+  const [bottomBarHeight, setBottomBarHeight] = useState(0);
 
   const bottomValue = useFloatingBottomOffset();
-  // const [bottomBarHeight, setBottomBarHeight] = useState(0);
+  const { height: windowHeight } = useWindowDimensions();
+
+  const {
+    comments,
+    commentText,
+    setCommentText,
+    isSubmittingComment,
+    replyTarget,
+    setReplyTarget,
+    isDeletingComment,
+    getCommentProfileSource,
+    handleCreateComment,
+    handleDeleteComment,
+  } = useFeedComments({
+    feedId,
+    userId,
+  });
+
+  const {
+    activeDeleteComment,
+    commentDeleteTarget,
+    isCommentDeleteDialogVisible,
+    deleteButtonHeight,
+
+    setDeleteButtonHeight,
+    openDeleteMode: handleOpenCommentDeleteMode,
+    closeDeleteMode: handleCloseCommentDeleteMode,
+    pressDeleteButton: handlePressCommentDeleteButton,
+    closeDeleteDialog: handleCloseCommentDeleteDialog,
+    clearDeleteTarget,
+    isDeleteModeComment,
+  } = useCommentDeleteMode({
+    screenLayoutHeight,
+    windowHeight,
+    bottomValue,
+    bottomBarHeight,
+    isDeletingComment,
+  });
 
   const { feedData: initialFeedData } = route?.params ?? {};
 
@@ -112,6 +146,10 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
     toggleBookmark,
   } = useFeedActions({ userId });
 
+  const handleScreenLayout = useCallback((event) => {
+    setScreenLayoutHeight(event.nativeEvent.layout.height);
+  }, []);
+
   const handleCloseDialog = useCallback(() => {
     setDialogVisible(false);
   }, []);
@@ -124,149 +162,23 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
     deleteFeed();
   };
 
-  const handleOpenCommentDeleteDialog = useCallback((comment) => {
-    setCommentDeleteTarget(comment);
-  }, []);
+  const handleConfirmDeleteComment = useCallback(async () => {
+    const isDeleted = await handleDeleteComment(commentDeleteTarget);
 
-  const handleCloseCommentDeleteDialog = useCallback(() => {
-    if (isDeletingComment) {
-      return;
-    }
-
-    setCommentDeleteTarget(null);
-  }, [isDeletingComment]);
-
-  const getCommentProfileSource = useCallback((profileImageUrl) => {
-    if (!profileImageUrl) {
-      return null;
-    }
-
-    if (profileImageUrl.startsWith('http')) {
-      return { uri: profileImageUrl };
-    }
-
-    return { uri: `${API_BASE_URL}${profileImageUrl}` };
-  }, []);
-
-  const getComments = useCallback(async () => {
-    if (!feedId || !userId) {
-      return;
-    }
-
-    try {
-      setIsLoadingComments(true);
-
-      const { data } = await axios.get(
-        `${API_BASE_URL}/feed/${feedId}/comments`,
-        {
-          params: {
-            userId,
-          },
-        }
-      );
-
-      setComments(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error(error);
-      setComments([]);
-    } finally {
-      setIsLoadingComments(false);
-    }
-  }, [feedId, userId]);
-
-  const handleCreateComment = useCallback(async () => {
-    const content = commentText.trim();
-
-    if (!content || isSubmittingComment) {
-      return;
-    }
-
-    try {
-      setIsSubmittingComment(true);
-
-      await axios.post(
-        `${API_BASE_URL}/feed/${feedId}/comments`,
-        {
-          content,
-          ...(replyTarget
-            ? { parentCommentId: replyTarget.commentId }
-            : {}),
-        },
-        {
-          params: {
-            userId,
-          },
-        }
-      );
-
-      setCommentText('');
-      setReplyTarget(null);
-      await getComments();
-    } catch (error) {
-      console.error(error);
-
-      Alert.alert(
-        '댓글 작성 실패',
-        error.response?.data?.message ?? '댓글을 작성하지 못했습니다.'
-      );
-    } finally {
-      setIsSubmittingComment(false);
+    if (isDeleted) {
+      clearDeleteTarget();
     }
   }, [
-    commentText,
-    isSubmittingComment,
-    feedId,
-    userId,
-    replyTarget,
-    getComments,
-  ]);
-
-  const handleDeleteComment = useCallback(async () => {
-    if (!commentDeleteTarget || isDeletingComment) {
-      return;
-    }
-
-    try {
-      setIsDeletingComment(true);
-
-      await axios.delete(
-        `${API_BASE_URL}/feed/${feedId}/comments/${commentDeleteTarget.commentId}`,
-        {
-          params: {
-            userId,
-          },
-        }
-      );
-
-      setCommentDeleteTarget(null);
-      await getComments();
-    } catch (error) {
-      console.error(error);
-
-      Alert.alert(
-        '댓글 삭제 실패',
-        error.response?.data?.message ?? '댓글을 삭제하지 못했습니다.'
-      );
-    } finally {
-      setIsDeletingComment(false);
-    }
-  }, [
+    handleDeleteComment,
     commentDeleteTarget,
-    isDeletingComment,
-    feedId,
-    userId,
-    getComments,
+    clearDeleteTarget,
   ]);
 
   useEffect(() => {
-    getComments();
-  }, [getComments]);
-
-  useEffect(() => {
-    if (dialogVisible || isCommentDeleteDialogVisible) {
+    if (dialogVisible || isCommentDeleteDialogVisible || activeDeleteComment) {
       Keyboard.dismiss();
     }
-  }, [dialogVisible, isCommentDeleteDialogVisible]);
+  }, [dialogVisible, isCommentDeleteDialogVisible, activeDeleteComment]);
 
   const [localFeed, setLocalFeed] = useState(feed);
   useEffect(() => { setLocalFeed(feed); }, [feed]);
@@ -295,7 +207,7 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
   }, [toggleLike, localFeed]);
 
   useEffect(() => {
-    if (!dialogVisible && !isCommentDeleteDialogVisible) {
+    if (!dialogVisible && !isCommentDeleteDialogVisible && !activeDeleteComment) {
       return;
     }
 
@@ -304,6 +216,11 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
       () => {
         if (isCommentDeleteDialogVisible) {
           handleCloseCommentDeleteDialog();
+          return true;
+        }
+
+        if (activeDeleteComment) {
+          handleCloseCommentDeleteMode();
           return true;
         }
 
@@ -318,6 +235,8 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
     isCommentDeleteDialogVisible,
     handleCloseDialog,
     handleCloseCommentDeleteDialog,
+    activeDeleteComment,
+    handleCloseCommentDeleteMode,
   ]);
 
   // 코드 최적화나 정리할 때, if (!localFeed)부터 const들 정의까지는 여기에 고정할 것
@@ -333,7 +252,12 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
   const hasComments = comments.length > 0;
 
   return (
-    <View style={styles.screen}>
+    <View
+      ref={screenRef}
+      collapsable={false}
+      style={styles.screen}
+      onLayout={handleScreenLayout}
+    >
 
       {menuVisible && (
         <Pressable
@@ -436,14 +360,17 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
                     createdAt={item.createdAt ? formatDateDetail(item.createdAt) : ''}
                     profileImageUrl={getCommentProfileSource(item.user?.profileImageUrl)}
                     depth={0}
+                    isDeleteMode={isDeleteModeComment(item.commentId)}
+                    measureRelativeToRef={screenRef}
+                    onOpenDeleteMode={(layout) => {
+                      handleOpenCommentDeleteMode(item, layout, 0);
+                    }}
+                    onCloseDeleteMode={handleCloseCommentDeleteMode}
                     onPress={() => {
                       setReplyTarget({
                         commentId: item.commentId,
                         userCode: item.user?.userCode ?? `user_${item.userId}`,
                       });
-                    }}
-                    onDeletePress={() => {
-                      setCommentDeleteTarget(item);
                     }}
                   />
 
@@ -455,14 +382,17 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
                       createdAt={reply.createdAt ? formatDateDetail(reply.createdAt) : ''}
                       profileImageUrl={getCommentProfileSource(reply.user?.profileImageUrl)}
                       depth={1}
+                      isDeleteMode={isDeleteModeComment(reply.commentId)}
+                      measureRelativeToRef={screenRef}
+                      onOpenDeleteMode={(layout) => {
+                        handleOpenCommentDeleteMode(reply, layout, 1);
+                      }}
+                      onCloseDeleteMode={handleCloseCommentDeleteMode}
                       onPress={() => {
                         setReplyTarget({
                           commentId: item.commentId,
                           userCode: item.user?.userCode ?? `user_${item.userId}`,
                         });
-                      }}
-                      onDeletePress={() => {
-                        setCommentDeleteTarget(reply);
                       }}
                     />
                   ))}
@@ -472,6 +402,41 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
           </>
         )}
       </ScrollView>
+
+      {activeDeleteComment && (
+        <>
+          <Pressable
+            style={styles.commentDeleteDim}
+            onPress={handleCloseCommentDeleteMode}
+          />
+
+          <View
+            pointerEvents="box-none"
+            onLayout={(event) => {
+              setDeleteButtonHeight(event.nativeEvent.layout.height);
+            }}
+            style={[
+              styles.commentDeleteButtonWrapper,
+              {
+                left: activeDeleteComment.left,
+                top:
+                  activeDeleteComment.placement === 'top'
+                    ? activeDeleteComment.y - deleteButtonHeight
+                    : activeDeleteComment.y + activeDeleteComment.height,
+              },
+            ]}
+          >
+            <Button
+              label="삭제하기"
+              icon={<TrashIcon width={16} height={16} color='#E4130C' />}
+              color="layerDefault"
+              text="criticalStrong"
+              onPress={handlePressCommentDeleteButton}
+              style={styles.shadow}
+            />
+          </View>
+        </>
+      )}
 
       <Modal visible={!!selectedImage} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setSelectedImage(null)}>
         <Pressable style={styles.modalDim} onPress={() => setSelectedImage(null)}>
@@ -489,9 +454,9 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
 
       <View
         style={{ bottom: bottomValue }}
-      // onLayout={(event) => {
-      //   setBottomBarHeight(event.nativeEvent.layout.height);
-      // }}
+        onLayout={(event) => {
+          setBottomBarHeight(event.nativeEvent.layout.height);
+        }}
       >
         <BottomBar
           value={commentText}
@@ -528,7 +493,7 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
             cancelLabel="취소"
             confirmLabel="삭제"
             onCancel={handleCloseCommentDeleteDialog}
-            onConfirm={handleDeleteComment}
+            onConfirm={handleConfirmDeleteComment}
           />
         </View>
       )}
@@ -604,7 +569,7 @@ const styles = StyleSheet.create({
   },
   modalDim: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.85)',
+    backgroundColor: colors.bgDim,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -631,5 +596,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 999,
     elevation: 999,
+  },
+  commentDeleteDim: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: colors.bgDimWeak,
+    zIndex: 999,
+    elevation: 999,
+  },
+
+  commentDeleteButtonWrapper: {
+    position: 'absolute',
+    zIndex: 1000,
+    elevation: 1000,
+  },
+  shadow: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 15,
+    elevation: 8,
   },
 });
