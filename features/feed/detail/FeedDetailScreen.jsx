@@ -343,6 +343,7 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
         <Caption
           date={localFeed.createdAt ? formatDateDetail(localFeed.createdAt) : ''}
           bookmarkCount={localFeed.bookmarkCount}
+          isEdited={localFeed.isEdited}
         />
 
         {hasComments && (
