@@ -1,10 +1,16 @@
 // React
 import React, { useEffect, useState } from 'react'
-import { ScrollView, View, StyleSheet, Keyboard, BackHandler } from 'react-native'
+import { ScrollView, View, StyleSheet, Keyboard, BackHandler, Dimensions } from 'react-native'
 
 // 서드파티
 import axios from 'axios';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  runOnJS,
+} from 'react-native-reanimated';
 
 // 스토어 / 훅 / 유틸
 import { useRecordFormStore } from '../record/store/useRecordFormStore.js';
@@ -41,6 +47,13 @@ const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 const BOTTOM_BAR_HEIGHT = 40;
 
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+
+// 편지 전송 인터랙션(SendAnimationScreen)의 FLY_OUT_DURATION과 동일 — 이동+페이드가 동시에 일어나는 구간 기준
+const POST_RISE_DURATION = 600;
+const POST_RISE_DISTANCE = SCREEN_HEIGHT * 0.3;
+const POST_RISE_SCALE = 0.92;
+
 const RecordScreen = ({ navigation }) => {
   const recordForm = useRecordFormStore();
   const recordType = useRecordFormStore(state => state.recordType);
@@ -58,6 +71,29 @@ const RecordScreen = ({ navigation }) => {
 
   const [disabled, setDisabled] = useState('disabled');
   const [isDialogVisible, setIsDialogVisible] = useState(false);
+  const [isPosting, setIsPosting] = useState(false);
+
+  const navOpacity = useSharedValue(1);
+  const bottomBarOpacity = useSharedValue(1);
+  const contentOpacity = useSharedValue(1);
+  const contentTranslateY = useSharedValue(0);
+  const contentScale = useSharedValue(1);
+
+  const navAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: navOpacity.value,
+  }));
+
+  const bottomBarAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: bottomBarOpacity.value,
+  }));
+
+  const contentAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: contentOpacity.value,
+    transform: [
+      { translateY: contentTranslateY.value },
+      { scale: contentScale.value },
+    ],
+  }));
 
   const isFormEmpty =
     recordForm.music === null &&
@@ -104,6 +140,10 @@ const RecordScreen = ({ navigation }) => {
 
   useEffect(() => {
     const backAction = () => {
+      if (isPosting) {
+        return true;
+      }
+
       if (isDialogVisible) {
         handleCloseDialog();
         return true;
@@ -119,7 +159,39 @@ const RecordScreen = ({ navigation }) => {
     );
 
     return () => backHandler.remove();
-  }, [isDialogVisible, isFormEmpty]);
+  }, [isDialogVisible, isFormEmpty, isPosting]);
+
+  const goToFeedHome = () => {
+    recordForm.resetForm();
+
+    navigation.reset({
+      index: 0,
+      routes: [{
+        name: 'FeedHome',
+        params: {
+          homeToast: {
+            id: Date.now(),
+            type: 'success',
+            message: '기록이 피드에 게시됐어요.',
+          },
+        },
+      }],
+    });
+  };
+
+  const playPostAnimation = () => {
+    navOpacity.value = withTiming(0, { duration: POST_RISE_DURATION });
+    bottomBarOpacity.value = withTiming(0, { duration: POST_RISE_DURATION });
+    contentOpacity.value = withTiming(0, { duration: POST_RISE_DURATION });
+    contentScale.value = withTiming(POST_RISE_SCALE, { duration: POST_RISE_DURATION });
+    contentTranslateY.value = withTiming(
+      -POST_RISE_DISTANCE,
+      { duration: POST_RISE_DURATION },
+      (finished) => {
+        if (finished) runOnJS(goToFeedHome)();
+      }
+    );
+  };
 
   const handleCommit = async () => {
     if (recordType === 'LETTER' && recordForm.receiver === null) {
@@ -153,11 +225,17 @@ const RecordScreen = ({ navigation }) => {
     };
 
     if (recordType === "FEED") {
+      if (isPosting) {
+        return;
+      }
+
       const formData = createRecordFormData({
         userId,
         recordForm,
         recordType
       });
+
+      setIsPosting(true);
 
       // =========== 전송 ============
       try {
@@ -173,6 +251,7 @@ const RecordScreen = ({ navigation }) => {
         );
 
         console.log('요청 성공:', response.data);
+        playPostAnimation();
       } catch (error) {
         console.log('요청 실패 전체 error:', error);
 
@@ -188,14 +267,15 @@ const RecordScreen = ({ navigation }) => {
           // 요청 만들기 전에 프론트 코드에서 터진 경우
           console.log('요청 설정 오류:', error.message);
         }
-      }
 
-      navigation.navigate('FeedTransition', {
-        text: recordForm.text,
-        images: recordForm.files.filter(file => file.fileType === 'IMAGE'),
-        music: recordForm.music,
-        userId,
-      });
+        setIsPosting(false);
+        showToast({
+          message: '게시에 실패했어요. 다시 시도해 주세요.',
+          type: 'warning',
+          duration: 2000,
+          color: colors.fgCritical,
+        });
+      }
     } else if (recordType === "LETTER") {
       navigation.navigate('LetterCoverSelect');
     }
@@ -212,29 +292,31 @@ const RecordScreen = ({ navigation }) => {
         onClose={() => setMusicOpen(false)}
         searchPlaceholder="함께 보낼 음악을 검색해 주세요."
       />
-      {recordType === "LETTER" ?
-        <TopNavigation
-          title='편지 작성'
-          buttonLabel='다음'
-          onPressButton={handleCommit}
-          onPressBack={onPressBack}
-          buttonDisabled={false}
-          type={disabled}
-          backIcon={XIcon}
-        />
-        : <TopNavigation
-          title='피드 작성'
-          buttonLabel='게시'
-          onPressButton={handleCommit}
-          onPressBack={onPressBack}
-          buttonDisabled={false}
-          type={disabled}
-          backIcon={XIcon}
-        />
-      }
+      <Animated.View style={navAnimatedStyle}>
+        {recordType === "LETTER" ?
+          <TopNavigation
+            title='편지 작성'
+            buttonLabel='다음'
+            onPressButton={handleCommit}
+            onPressBack={onPressBack}
+            buttonDisabled={false}
+            type={disabled}
+            backIcon={XIcon}
+          />
+          : <TopNavigation
+            title='피드 작성'
+            buttonLabel='게시'
+            onPressButton={handleCommit}
+            onPressBack={onPressBack}
+            buttonDisabled={isPosting}
+            type={disabled}
+            backIcon={XIcon}
+          />
+        }
+      </Animated.View>
 
-      <View
-        style={styles.container}
+      <Animated.View
+        style={[styles.container, contentAnimatedStyle]}
       >
         <View style={styles.sectionWrapper}>
           <FoldCorner
@@ -285,7 +367,7 @@ const RecordScreen = ({ navigation }) => {
             />
           </ScrollView>
         </View>
-      </View>
+      </Animated.View>
       <View
         pointerEvents="box-none"
         style={[
@@ -306,27 +388,29 @@ const RecordScreen = ({ navigation }) => {
       </View>
 
 
-      <View
+      <Animated.View
         style={[
           styles.bottomBarWrapper,
           {
             bottom: bottomValue,
           },
+          bottomBarAnimatedStyle,
         ]}
       >
         <BottomBar
           onPressImage={pickImages}
         />
-      </View>
+      </Animated.View>
 
 
-      <View
+      <Animated.View
         pointerEvents="none"
         style={[
           styles.navigationBarCover,
           {
             height: insets.bottom,
           },
+          bottomBarAnimatedStyle,
         ]}
       />
 

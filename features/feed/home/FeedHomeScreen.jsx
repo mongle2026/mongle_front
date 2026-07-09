@@ -298,7 +298,7 @@ export default function FeedHomeScreen({ navigation, route }) {
       </View>
 
       <Toast
-        style={[styles.toast, { bottom: insets.bottom + 44 + padding.XXL }]}
+        style={[styles.toast, { bottom: insets.bottom }]}
         message={toast.message}
         type={toast.type}
         actionLabel={toast.actionLabel}

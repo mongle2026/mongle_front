@@ -31,7 +31,7 @@ const FLY_OUT_DURATION = 600;
 const FINAL_SCALE = 48 / ENVELOPE_WIDTH;
 const FINAL_TRANSLATE_Y = SCREEN_HEIGHT * 0.38;
 
-const API_BASE_URL = 'http://192.168.0.3:3000';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 export default function SendAnimationScreen({ navigation, route }) {
   const { deliveryLabel = '일주일 뒤', toMe = false, receiver = null } = route?.params ?? {};

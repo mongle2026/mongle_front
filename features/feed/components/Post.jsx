@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -11,6 +11,7 @@ import Music from '../../../shared/components/music/Music';
 import Profile from '../../../shared/components/Profile';
 import LikeButton from '../home/hook/LikeButton';
 import BookmarkButton from '../home/hook/BookmarkButton';
+import useDoubleTapLike from '../hooks/useDoubleTapLike';
 import { colors } from '../../../shared/styles/color';
 import { gap, padding, radius } from '../../../shared/styles/token';
 import { typo } from '../../../shared/styles/typo';
@@ -76,9 +77,6 @@ function TextLines({ content, maxLines, onPressMore }) {
   );
 }
 
-const DOUBLE_TAP_DELAY = 200;
-const DOUBLE_TAP_COOLDOWN = 350;
-
 export default function Post({
   type = 'textFull',
   currentView = true,
@@ -106,10 +104,11 @@ export default function Post({
   // img      — 이미지 포함 (텍스트+이미지 or 이미지만), 고정 높이 520, 텍스트 최대 6줄
   // textFull — 텍스트만, 고정 높이 550, 최대 12줄
 
-  const lastTapRef = useRef(0);
-  const tapTimerRef = useRef(null);
-  const likeRef = useRef(null);
-  const lastToggleRef = useRef(0);
+  const { likeRef, handleTap: handleBodyPress } = useDoubleTapLike({
+    onToggleLike: onPressLike,
+    onSingleTap: onPressBody,
+    doubleTapDelay: 200,
+  });
   const showImages = type === 'img' && images.length > 0;
 
   // 카드 press 피드백: 누르는 동안 살짝 축소(0.98) → 떼면 원래대로
@@ -123,29 +122,6 @@ export default function Post({
   const handlePressOut = useCallback(() => {
     pressScale.value = withTiming(1, { duration: 150 });
   }, [pressScale]);
-
-  const handleBodyPress = useCallback(() => {
-    const now = Date.now();
-
-    // 방금 더블탭 토글이 일어났으면, OS가 중복 전달한 여분의 탭을 무시 (like+unlike 상쇄 방지)
-    if (now - lastToggleRef.current < DOUBLE_TAP_COOLDOWN) {
-      return;
-    }
-
-    if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
-      clearTimeout(tapTimerRef.current);
-      lastTapRef.current = 0;
-      lastToggleRef.current = now;
-      // 더블탭: 하트 바운스 + 좋아요 토글 (안 눌렀으면 좋아요, 이미 눌렀으면 취소)
-      likeRef.current?.bounce();
-      onPressLike?.();
-    } else {
-      lastTapRef.current = now;
-      tapTimerRef.current = setTimeout(() => {
-        onPressBody?.();
-      }, DOUBLE_TAP_DELAY);
-    }
-  }, [onPressLike, onPressBody]);
 
   return (
     <Animated.View
