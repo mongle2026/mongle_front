@@ -17,6 +17,7 @@ import Music from '../../../shared/components/music/Music';
 import Profile from '../../../shared/components/Profile';
 import LikeButton from '../home/hook/LikeButton';
 import BookmarkButton from '../home/hook/BookmarkButton';
+import useDoubleTapLike from '../hooks/useDoubleTapLike';
 import { colors } from '../../../shared/styles/color';
 import { gap, padding, radius } from '../../../shared/styles/token';
 import { typo } from '../../../shared/styles/typo';
@@ -118,9 +119,6 @@ function TextLines({ content, maxLines, onPressMore }) {
   );
 }
 
-const DOUBLE_TAP_DELAY = 200;
-const DOUBLE_TAP_COOLDOWN = 350;
-
 export default function Post({
   type = 'textFull',
   currentView = true,
@@ -148,10 +146,11 @@ export default function Post({
   // img      — 이미지 포함 (텍스트+이미지 or 이미지만), 고정 높이 520, 텍스트 최대 6줄
   // textFull — 텍스트만, 고정 높이 550, 최대 12줄
 
-  const lastTapRef = useRef(0);
-  const tapTimerRef = useRef(null);
-  const likeRef = useRef(null);
-  const lastToggleRef = useRef(0);
+  const { likeRef, handleTap: handleBodyPress } = useDoubleTapLike({
+    onToggleLike: onPressLike,
+    onSingleTap: onPressBody,
+    doubleTapDelay: 200,
+  });
   const showImages = type === 'img' && images.length > 0;
 
   useEffect(() => {

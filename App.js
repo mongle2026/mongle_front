@@ -20,7 +20,6 @@ import FeedDetailScreen from './features/feed/detail/FeedDetailScreen.jsx';
 import LetterCoverSelect from './features/write/letter/LetterCoverSelect.jsx';
 import SelectDateScreen from './features/write/selectdate/SelectDateScreen.jsx';
 import SendAnimationScreen from './features/write/send/SendAnimationScreen.jsx';
-import FeedTransitionScreen from './features/write/feed/FeedTransitionScreen.jsx';
 import SelectRecipientScreen from './features/write/recipient/SelectRecipientScreen.jsx';
 import SelectMusic from './features/write/music/SelectMusic.jsx';
 import LetterHomeScreen from './features/letter/home/LetterHomeScreen.jsx';
@@ -163,7 +162,6 @@ export default function App() {
             <Stack.Screen name="RecordEdit" component={RecordEditScreen} />
             <Stack.Screen name="SelectDate" component={SelectDateScreen} />
             <Stack.Screen name="SendAnimation" component={SendAnimationScreen} />
-            <Stack.Screen name="FeedTransition" component={FeedTransitionScreen} options={{ animation: 'none' }} />
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>
