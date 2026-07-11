@@ -8,6 +8,7 @@ export default function useFeedDetail({
   userId,
   initialFeedData,
   onDeleteSuccess,
+  enabled = true,
 }) {
   const queryClient = useQueryClient();
 
@@ -19,14 +20,25 @@ export default function useFeedDetail({
     refetch,
   } = useQuery({
     queryKey: ['feed', String(feedId), userId],
+
     queryFn: async () => {
-      const response = await axios.get(`${API_BASE_URL}/feed/${feedId}`, {
-        params: { userId },
-      });
+      const response = await axios.get(
+        `${API_BASE_URL}/feed/${feedId}`,
+        {
+          params: { userId },
+        }
+      );
 
       return response.data;
     },
-    enabled: !!API_BASE_URL && !!feedId && !!userId,
+
+    enabled:
+      !!API_BASE_URL &&
+      !!feedId &&
+      !!userId &&
+      (!initialFeedData || enabled),
+
+    staleTime: 30_000,
   });
 
   const deleteFeedMutation = useMutation({

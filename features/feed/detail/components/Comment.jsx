@@ -1,4 +1,12 @@
-import { Pressable, StyleSheet, Text, View, Animated } from 'react-native';
+import { useEffect, useRef } from 'react';
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  Animated,
+  Keyboard,
+} from 'react-native';
 
 import Profile from '../../../../shared/components/Profile';
 import CommentIcon from '../../../../assets/icons/ic_comment.svg';
@@ -21,6 +29,7 @@ export default function Comment({
   onOpenDeleteMode,
   onCloseDeleteMode,
   measureRelativeToRef,
+  isKeyboardVisible,
 }) {
   const isReply = depth === 1;
 
@@ -37,6 +46,61 @@ export default function Comment({
     onCloseDeleteMode,
     measureRelativeToRef,
   });
+
+  const waitingForKeyboardRef = useRef(false);
+  const keyboardHideSubscriptionRef = useRef(null);
+  const measureFrameRef = useRef(null);
+
+  const latestOpenDeleteModeRef = useRef(openDeleteMode);
+  latestOpenDeleteModeRef.current = openDeleteMode;
+
+  useEffect(() => {
+    return () => {
+      keyboardHideSubscriptionRef.current?.remove();
+
+      if (measureFrameRef.current !== null) {
+        cancelAnimationFrame(measureFrameRef.current);
+      }
+    };
+  }, []);
+
+  const handleLongPress = () => {
+    const keyboardIsOpen = isKeyboardVisible?.() ?? false;
+
+    if (!keyboardIsOpen) {
+      latestOpenDeleteModeRef.current();
+      return;
+    }
+
+    waitingForKeyboardRef.current = true;
+
+    keyboardHideSubscriptionRef.current?.remove();
+
+    keyboardHideSubscriptionRef.current = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        keyboardHideSubscriptionRef.current?.remove();
+        keyboardHideSubscriptionRef.current = null;
+
+        measureFrameRef.current = requestAnimationFrame(() => {
+          measureFrameRef.current = null;
+          waitingForKeyboardRef.current = false;
+
+          latestOpenDeleteModeRef.current();
+        });
+      }
+    );
+
+    Keyboard.dismiss();
+  };
+
+  const handlePressOut = () => {
+    if (waitingForKeyboardRef.current) {
+      return;
+    }
+
+    resetPressBackground();
+  };
 
   const handleReplyPress = () => {
     if (isDeleteMode) {
@@ -57,9 +121,9 @@ export default function Comment({
     >
       <Pressable
         onPressIn={startPressBackground}
-        onPressOut={resetPressBackground}
+        onPressOut={handlePressOut}
         onPress={handlePress}
-        onLongPress={openDeleteMode}
+        onLongPress={handleLongPress}
         delayLongPress={LONG_PRESS_DELAY}
         style={styles.pressable}
       >

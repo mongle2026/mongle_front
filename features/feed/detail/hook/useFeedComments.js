@@ -7,6 +7,7 @@ const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 export default function useFeedComments({
   feedId,
   userId,
+  enabled = true,
 }) {
   const [comments, setComments] = useState([]);
   const [isLoadingComments, setIsLoadingComments] = useState(false);
@@ -141,8 +142,12 @@ export default function useFeedComments({
   ]);
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
     getComments();
-  }, [getComments]);
+  }, [enabled, getComments]);
 
   return {
     comments,

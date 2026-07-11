@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { FlatList, StyleSheet, View, useWindowDimensions, RefreshControl, InteractionManager, } from 'react-native';
+import {
+  FlatList,
+  StyleSheet,
+  View,
+  useWindowDimensions,
+  RefreshControl,
+} from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -7,7 +13,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../../../shared/styles/color';
 import { gap, padding } from '../../../shared/styles/token';
 import TopNavigation from '../components/TopNavigation';
-import Post from '../components/Post';
+// import Post from '../components/Post';
+import FeedPostItem from './components/FeedPostItem';
 import BottomNavigation from '../../../shared/components/BottomNavigation';
 import FAB from '../../../shared/components/FAB';
 import Toast from '../../../shared/components/Toast';
@@ -19,8 +26,8 @@ import useFeedActions from './hook/useFeedActions';
 
 const PROFILE_SOURCE = require('../../../assets/write/profile_img.png');
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
-const userId = 1;
+const POST_HEIGHT = 520;
+const POST_GAP = padding.XL;
 
 export default function FeedHomeScreen({ navigation, route }) {
   const userId = 1;
@@ -32,6 +39,8 @@ export default function FeedHomeScreen({ navigation, route }) {
   const ignoreNextBlurRef = useRef(false);
   const shownHomeToastIdRef = useRef(null);
   const homeToastTimerRef = useRef(null);
+
+  const listPaddingTop = insets.top + 58 + padding.M;
 
   const {
     activeTab,
@@ -58,8 +67,6 @@ export default function FeedHomeScreen({ navigation, route }) {
     },
   });
 
-  const [snapOffsets, setSnapOffsets] = useState([]);
-  const itemHeightsRef = useRef({});
   const flatListRef = useRef(null);
 
   const NAV_ITEMS = useMemo(() => [
@@ -68,35 +75,17 @@ export default function FeedHomeScreen({ navigation, route }) {
     { type: 'profile', profileSource: PROFILE_SOURCE, isActive: false },
   ], [navigation]);
 
-  const recomputeOffsets = useCallback(() => {
-    const count = posts.length;
+  const snapOffsets = useMemo(() => {
+    return posts.map((_, index) => {
+      const itemTop =
+        listPaddingTop + index * (POST_HEIGHT + POST_GAP);
 
-    if (count === 0) {
-      setSnapOffsets([]);
-      return;
-    }
-
-    const allMeasured = posts.every((_, index) => {
-      return itemHeightsRef.current[index] > 0;
+      return Math.max(
+        0,
+        itemTop - (screenHeight - POST_HEIGHT) / 2
+      );
     });
-
-    if (!allMeasured) {
-      return;
-    }
-
-    const paddingTop = insets.top + 58 + padding.M;
-    const offsets = [];
-    let cumulative = paddingTop;
-
-    for (let i = 0; i < count; i++) {
-      const h = itemHeightsRef.current[i];
-
-      offsets.push(Math.max(0, cumulative - (screenHeight - h) / 2));
-      cumulative += h + padding.XL;
-    }
-
-    setSnapOffsets(offsets);
-  }, [posts.length, insets.top, screenHeight]);
+  }, [posts.length, listPaddingTop, screenHeight]);
 
   const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 50 }).current;
   const onViewableItemsChanged = useRef(({ viewableItems }) => {
@@ -104,12 +93,6 @@ export default function FeedHomeScreen({ navigation, route }) {
       setCurrentIndex(viewableItems[0].index);
     }
   }).current;
-
-  useFocusEffect(
-    useCallback(() => {
-      refetchFeed();
-    }, [refetchFeed])
-  );
 
   const onPressFab = useCallback((fabPos) => {
     ignoreNextBlurRef.current = true;
@@ -129,16 +112,6 @@ export default function FeedHomeScreen({ navigation, route }) {
       setRefreshing(false);
     }
   }, [refetchFeed]);
-
-  const postIdsKey = useMemo(
-    () => posts.map(post => post.feedId).join(','),
-    [posts],
-  );
-
-  useEffect(() => {
-    itemHeightsRef.current = {};
-    setSnapOffsets([]);
-  }, [postIdsKey]);
 
   useEffect(() => {
     if (activeMusicFeedId === null) return;
@@ -173,19 +146,24 @@ export default function FeedHomeScreen({ navigation, route }) {
 
       shownHomeToastIdRef.current = receivedToast.id;
 
-      const interactionTask = InteractionManager.runAfterInteractions(() => {
-        homeToastTimerRef.current = setTimeout(() => {
-          showToast({
-            type: receivedToast.type,
-            message: receivedToast.message,
-            duration: 3000,
-          });
+      homeToastTimerRef.current = setTimeout(() => {
+        showToast({
+          type: receivedToast.type,
+          message: receivedToast.message,
+          duration: 3000,
+        });
 
-          navigation.setParams({
-            homeToast: undefined,
-          });
-        }, 500);
-      });
+        navigation.setParams({
+          homeToast: undefined,
+        });
+      }, 500);
+
+      return () => {
+        if (homeToastTimerRef.current) {
+          clearTimeout(homeToastTimerRef.current);
+          homeToastTimerRef.current = null;
+        }
+      };
 
       return () => {
         interactionTask?.cancel?.();
@@ -203,56 +181,31 @@ export default function FeedHomeScreen({ navigation, route }) {
     ])
   );
 
-  const renderItem = useCallback(({ item, index }) => {
-    const images = item.files
-      ?.reduce((acc, f) => {
-        if (f.mimeType?.startsWith('image/')) acc.push({ uri: `${API_BASE_URL}${f.url}` });
-        return acc;
-      }, []) ?? [];
-
-    return (
-      <View onLayout={({ nativeEvent }) => {
-        itemHeightsRef.current[index] = nativeEvent.layout.height;
-        recomputeOffsets();
-      }}>
-        <Post
-          type={images.length > 0 ? 'img' : 'textFull'}
-          currentView={index === currentIndex}
-          musicTitle={item.music?.musicTitle}
-          musicArtist={item.music?.musicArtist}
-          musicCover={item.music?.musicArtwork ?? undefined}
-          musicAudioUri={item.music?.previewUrl}
-          musicId={item.feedId}
-          activeMusicId={activeMusicFeedId}
-          onChangeActiveMusic={setActiveMusicFeedId}
-          content={item.record?.text ?? ''}
-          images={images}
-          name={item.user?.nickname ?? ''}
-          date={item.record?.date ?? ''}
-          id={item.user?.userCode}
-          profileSource={
-            item.user.hasProfileImage && item.user.profileImageUrl
-              ? { uri: `${API_BASE_URL}${item.user.profileImageUrl}` }
-              : null
-          }
-          isBookmarked={item.isBookmarked ?? false}
-          isLiked={item.isLiked ?? false}
-          onPressBookmark={() => toggleBookmark(item)}
-          onPressLike={() => toggleLike(item)}
-          onPressBody={() => {
-            if (index !== currentIndex) {
-              flatListRef.current?.scrollToOffset({
-                offset: snapOffsets[index] ?? 0,
-                animated: true,
-              });
-            } else {
-              navigation.navigate('FeedDetail', { feedId: item.feedId, feedData: item });
-            }
-          }}
-        />
-      </View>
-    );
-  }, [currentIndex, activeMusicFeedId, snapOffsets, toggleBookmark, toggleLike, navigation, recomputeOffsets]);
+  const renderItem = useCallback(
+    ({ item, index }) => (
+      <FeedPostItem
+        item={item}
+        isCurrent={index === currentIndex}
+        isMusicActive={
+          item.feedId === activeMusicFeedId
+        }
+        snapOffset={snapOffsets[index] ?? 0}
+        navigation={navigation}
+        flatListRef={flatListRef}
+        setActiveMusicFeedId={setActiveMusicFeedId}
+        toggleBookmark={toggleBookmark}
+        toggleLike={toggleLike}
+      />
+    ),
+    [
+      currentIndex,
+      activeMusicFeedId,
+      snapOffsets,
+      navigation,
+      toggleBookmark,
+      toggleLike,
+    ]
+  );
 
   return (
     <Animated.View style={styles.screen} entering={FadeIn.duration(400)}>
@@ -261,22 +214,33 @@ export default function FeedHomeScreen({ navigation, route }) {
         data={posts}
         keyExtractor={item => String(item.feedId)}
         renderItem={renderItem}
-        initialNumToRender={20}
-        maxToRenderPerBatch={20}
-        windowSize={10}
+
+        extraData={{
+          currentIndex,
+          activeMusicFeedId,
+        }}
+
+        initialNumToRender={5}
+        maxToRenderPerBatch={5}
+        windowSize={7}
+        updateCellsBatchingPeriod={30}
         removeClippedSubviews={false}
+
         contentContainerStyle={[
           styles.list,
           {
-            paddingTop: insets.top + 58 + padding.M,
-            paddingBottom: insets.bottom + 44 + padding.XXL,
+            paddingTop: listPaddingTop,
+            paddingBottom:
+              insets.bottom + 44 + padding.XXL,
           },
         ]}
+
         showsVerticalScrollIndicator={false}
         decelerationRate="fast"
-        snapToOffsets={snapOffsets.length === posts.length ? snapOffsets : undefined}
+        snapToOffsets={snapOffsets}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={viewabilityConfig}
+
         refreshControl={
           <RefreshControl
             refreshing={refreshing}

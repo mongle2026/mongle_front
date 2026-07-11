@@ -84,10 +84,15 @@ export default function useFeedActions({ userId, onBookmarkAdded } = {}) {
     onSettled: (data, error, variables) => {
       queryClient.invalidateQueries({
         queryKey: getFeedsKey(userId),
+        refetchType: 'none',
       });
 
       queryClient.invalidateQueries({
-        queryKey: getFeedDetailKey(variables.feedId, userId),
+        queryKey: getFeedDetailKey(
+          variables.feedId,
+          userId
+        ),
+        refetchType: 'none',
       });
     },
   });
@@ -159,36 +164,48 @@ export default function useFeedActions({ userId, onBookmarkAdded } = {}) {
     onSettled: (data, error, variables) => {
       queryClient.invalidateQueries({
         queryKey: getFeedsKey(userId),
+        refetchType: 'none',
       });
 
       queryClient.invalidateQueries({
-        queryKey: getFeedDetailKey(variables.feedId, userId),
+        queryKey: getFeedDetailKey(
+          variables.feedId,
+          userId
+        ),
+        refetchType: 'none',
       });
     },
   });
 
+  const mutateLike = likeMutation.mutate;
+  const mutateBookmark = bookmarkMutation.mutate;
+
   const toggleLike = useCallback(
     feed => {
-      if (!feed?.feedId) return;
+      if (!feed?.feedId) {
+        return;
+      }
 
-      likeMutation.mutate({
+      mutateLike({
         feedId: feed.feedId,
         nextLiked: !feed.isLiked,
       });
     },
-    [likeMutation]
+    [mutateLike]
   );
 
   const toggleBookmark = useCallback(
     feed => {
-      if (!feed?.feedId) return;
+      if (!feed?.feedId) {
+        return;
+      }
 
-      bookmarkMutation.mutate({
+      mutateBookmark({
         feedId: feed.feedId,
         nextBookmarked: !feed.isBookmarked,
       });
     },
-    [bookmarkMutation]
+    [mutateBookmark]
   );
 
   return {

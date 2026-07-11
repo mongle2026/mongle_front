@@ -1,4 +1,10 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import {
+  memo,
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+} from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -19,59 +25,95 @@ import { formatDate } from '../../../shared/utils/formatDate';
 const MAX_LINES = { textFull: 10, img: 6, textShort: 6 };
 const AUTO_THRESHOLD = 12;
 
+const POST_HEIGHT = 520;
+
 function TextLines({ content, maxLines, onPressMore }) {
-  const [lines, setLines] = useState([]);
-  const [measured, setMeasured] = useState(false);
+  const [measurement, setMeasurement] = useState({
+    content: null,
+    lines: [],
+  });
 
-  useEffect(() => {
-    setLines([]);
-    setMeasured(false);
-  }, [content]);
+  if (!content) {
+    return null;
+  }
 
-  const onTextLayout = useCallback(
-    e => {
-      if (!measured) {
-        setLines(e.nativeEvent.lines);
-        setMeasured(true);
-      }
-    },
-    [measured],
-  );
+  const measured = measurement.content === content;
 
-  if (!content) return null;
+  const lines = measured
+    ? measurement.lines
+    : [];
 
   const hasMore = lines.length > maxLines;
   const visibleLines = lines.slice(0, maxLines);
 
-  if (!measured) {
-    return (
-      <Text
-        style={[styles.lineText, { opacity: 0 }]}
-        onTextLayout={onTextLayout}
-      >
-        {content}
-      </Text>
-    );
-  }
+  const onTextLayout = useCallback(
+    event => {
+      const nextLines = event.nativeEvent.lines;
+
+      if (!nextLines?.length) {
+        return;
+      }
+
+      setMeasurement(current => {
+        if (current.content === content) {
+          return current;
+        }
+
+        return {
+          content,
+          lines: nextLines,
+        };
+      });
+    },
+    [content],
+  );
 
   return (
-    <View style={styles.linesContainer}>
-      {visibleLines.map((line, i) => {
-        const isLast = i === visibleLines.length - 1;
-        return (
-          <View key={i} style={styles.lineRow}>
-            <Text style={styles.lineText} numberOfLines={1}>
-              {line.text.trimEnd()}
-            </Text>
-            {hasMore && isLast && (
-              <Pressable style={styles.moreButton} onPress={onPressMore}>
-                <Text style={styles.moreText}>더보기</Text>
-              </Pressable>
-            )}
-            <View style={styles.underline} />
-          </View>
-        );
-      })}
+    <View style={styles.textLinesWrapper}>
+      {!measured && (
+        <Text
+          style={styles.lineText}
+          onTextLayout={onTextLayout}
+        >
+          {content}
+        </Text>
+      )}
+
+      {measured && (
+        <View style={styles.linesContainer}>
+          {visibleLines.map((line, index) => {
+            const isLast =
+              index === visibleLines.length - 1;
+
+            return (
+              <View
+                key={`${content}-${index}`}
+                style={styles.lineRow}
+              >
+                <Text
+                  style={styles.lineText}
+                  numberOfLines={1}
+                >
+                  {line.text.trimEnd()}
+                </Text>
+
+                {hasMore && isLast && (
+                  <Pressable
+                    style={styles.moreButton}
+                    onPress={onPressMore}
+                  >
+                    <Text style={styles.moreText}>
+                      더보기
+                    </Text>
+                  </Pressable>
+                )}
+
+                <View style={styles.underline} />
+              </View>
+            );
+          })}
+        </View>
+      )}
     </View>
   );
 }
@@ -112,6 +154,15 @@ export default function Post({
   const lastToggleRef = useRef(0);
   const showImages = type === 'img' && images.length > 0;
 
+  useEffect(() => {
+    return () => {
+      if (tapTimerRef.current) {
+        clearTimeout(tapTimerRef.current);
+        tapTimerRef.current = null;
+      }
+    };
+  }, []);
+
   // 카드 press 피드백: 누르는 동안 살짝 축소(0.98) → 떼면 원래대로
   const pressScale = useSharedValue(1);
   const cardAnimatedStyle = useAnimatedStyle(() => ({
@@ -134,8 +185,11 @@ export default function Post({
 
     if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
       clearTimeout(tapTimerRef.current);
+      tapTimerRef.current = null;
+
       lastTapRef.current = 0;
       lastToggleRef.current = now;
+
       // 더블탭: 하트 바운스 + 좋아요 토글 (안 눌렀으면 좋아요, 이미 눌렀으면 취소)
       likeRef.current?.bounce();
       onPressLike?.();
@@ -223,10 +277,11 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   fixedHeight: {
-    height: 520,
+    height: POST_HEIGHT,
   },
+
   fixedHeightText: {
-    height: 517,
+    height: POST_HEIGHT,
   },
   focusOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -243,6 +298,9 @@ const styles = StyleSheet.create({
   },
 
   // TextLines
+  textLinesWrapper: {
+    alignSelf: 'stretch',
+  },
   linesContainer: {
     alignSelf: 'stretch',
     gap: gap.M,

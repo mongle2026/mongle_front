@@ -82,11 +82,59 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
   const [dialogVisible, setDialogVisible] = useState(false);
 
   const screenRef = useRef(null);
-  const [screenLayoutHeight, setScreenLayoutHeight] = useState(0);
-  const [bottomBarHeight, setBottomBarHeight] = useState(0);
+  const screenLayoutHeightRef = useRef(0);
+  const bottomBarHeightRef = useRef(0);
+
+  const keyboardVisibleRef = useRef(false);
 
   const bottomValue = useFloatingBottomOffset();
   const { height: windowHeight } = useWindowDimensions();
+
+  const [isTransitionFinished, setTransitionFinished] =
+    useState(false);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener(
+      'transitionEnd',
+      event => {
+        if (!event.data.closing) {
+          setTransitionFinished(true);
+        }
+      }
+    );
+
+    return unsubscribe;
+  }, [navigation]);
+
+  useEffect(() => {
+    const keyboardShowEvent =
+      Platform.OS === 'ios'
+        ? 'keyboardWillShow'
+        : 'keyboardDidShow';
+
+    const showSubscription = Keyboard.addListener(
+      keyboardShowEvent,
+      () => {
+        keyboardVisibleRef.current = true;
+      }
+    );
+
+    const hideSubscription = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        keyboardVisibleRef.current = false;
+      }
+    );
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
+  const getIsKeyboardVisible = useCallback(() => {
+    return keyboardVisibleRef.current;
+  }, []);
 
   const {
     comments,
@@ -102,6 +150,7 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
   } = useFeedComments({
     feedId,
     userId,
+    enabled: isTransitionFinished,
   });
 
   const {
@@ -118,10 +167,10 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
     clearDeleteTarget,
     isDeleteModeComment,
   } = useCommentDeleteMode({
-    screenLayoutHeight,
+    screenLayoutHeightRef,
+    bottomBarHeightRef,
     windowHeight,
     bottomValue,
-    bottomBarHeight,
     isDeletingComment,
   });
 
@@ -135,6 +184,8 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
     feedId,
     userId,
     initialFeedData,
+    enabled: isTransitionFinished,
+
     onDeleteSuccess: () => {
       setDialogVisible(false);
       navigation.goBack();
@@ -146,8 +197,9 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
     toggleBookmark,
   } = useFeedActions({ userId });
 
-  const handleScreenLayout = useCallback((event) => {
-    setScreenLayoutHeight(event.nativeEvent.layout.height);
+  const handleScreenLayout = useCallback(event => {
+    screenLayoutHeightRef.current =
+      event.nativeEvent.layout.height;
   }, []);
 
   const handleCloseDialog = useCallback(() => {
@@ -175,13 +227,12 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
   ]);
 
   useEffect(() => {
-    if (dialogVisible || isCommentDeleteDialogVisible || activeDeleteComment) {
+    if (dialogVisible || isCommentDeleteDialogVisible) {
       Keyboard.dismiss();
     }
-  }, [dialogVisible, isCommentDeleteDialogVisible, activeDeleteComment]);
+  }, [dialogVisible, isCommentDeleteDialogVisible]);
 
-  const [localFeed, setLocalFeed] = useState(feed);
-  useEffect(() => { setLocalFeed(feed); }, [feed]);
+  const localFeed = feed;
 
   // 본문 더블탭 → 하트 바운스 + 좋아요 토글 (취소 포함)
   const likeRef = useRef(null);
@@ -326,14 +377,17 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
           id={user.userCode}
           profileSource={
             user.hasProfileImage && user.profileImageUrl
-              ? { uri: `${API_BASE_URL}${user.profileImageUrl}` }
+              ? {
+                uri: `${API_BASE_URL}${user.profileImageUrl}`,
+              }
               : null
           }
           isFollowing={isFollowing}
           isBookmarked={localFeed.isBookmarked}
           isLiked={localFeed.isLiked}
+          likeRef={likeRef}
           onPressFollow={() => {
-            setFollowing(f => !f);
+            setFollowing(value => !value);
             onPressFollow?.();
           }}
           onPressBookmark={() => toggleBookmark(localFeed)}
@@ -358,11 +412,18 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
                   <Comment
                     userCode={item.user?.userCode ?? `user_${item.userId}`}
                     comment={item.content}
-                    createdAt={item.createdAt ? formatDateDetail(item.createdAt) : ''}
-                    profileImageUrl={getCommentProfileSource(item.user?.profileImageUrl)}
+                    createdAt={
+                      item.createdAt
+                        ? formatDateDetail(item.createdAt)
+                        : ''
+                    }
+                    profileImageUrl={getCommentProfileSource(
+                      item.user?.profileImageUrl
+                    )}
                     depth={0}
                     isDeleteMode={isDeleteModeComment(item.commentId)}
                     measureRelativeToRef={screenRef}
+                    isKeyboardVisible={getIsKeyboardVisible}
                     onOpenDeleteMode={(layout) => {
                       handleOpenCommentDeleteMode(item, layout, 0);
                     }}
@@ -370,7 +431,8 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
                     onPress={() => {
                       setReplyTarget({
                         commentId: item.commentId,
-                        userCode: item.user?.userCode ?? `user_${item.userId}`,
+                        userCode:
+                          item.user?.userCode ?? `user_${item.userId}`,
                       });
                     }}
                   />
@@ -378,13 +440,22 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
                   {item.replies?.map((reply) => (
                     <Comment
                       key={reply.commentId}
-                      userCode={reply.user?.userCode ?? `user_${reply.userId}`}
+                      userCode={
+                        reply.user?.userCode ?? `user_${reply.userId}`
+                      }
                       comment={reply.content}
-                      createdAt={reply.createdAt ? formatDateDetail(reply.createdAt) : ''}
-                      profileImageUrl={getCommentProfileSource(reply.user?.profileImageUrl)}
+                      createdAt={
+                        reply.createdAt
+                          ? formatDateDetail(reply.createdAt)
+                          : ''
+                      }
+                      profileImageUrl={getCommentProfileSource(
+                        reply.user?.profileImageUrl
+                      )}
                       depth={1}
                       isDeleteMode={isDeleteModeComment(reply.commentId)}
                       measureRelativeToRef={screenRef}
+                      isKeyboardVisible={getIsKeyboardVisible}
                       onOpenDeleteMode={(layout) => {
                         handleOpenCommentDeleteMode(reply, layout, 1);
                       }}
@@ -392,7 +463,8 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
                       onPress={() => {
                         setReplyTarget({
                           commentId: item.commentId,
-                          userCode: item.user?.userCode ?? `user_${item.userId}`,
+                          userCode:
+                            item.user?.userCode ?? `user_${item.userId}`,
                         });
                       }}
                     />
@@ -413,8 +485,10 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
 
           <View
             pointerEvents="box-none"
-            onLayout={(event) => {
-              setDeleteButtonHeight(event.nativeEvent.layout.height);
+            onLayout={event => {
+              setDeleteButtonHeight(
+                event.nativeEvent.layout.height
+              );
             }}
             style={[
               styles.commentDeleteButtonWrapper,
@@ -422,8 +496,10 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
                 left: activeDeleteComment.left,
                 top:
                   activeDeleteComment.placement === 'top'
-                    ? activeDeleteComment.y - deleteButtonHeight
-                    : activeDeleteComment.y + activeDeleteComment.height,
+                    ? activeDeleteComment.y -
+                    deleteButtonHeight
+                    : activeDeleteComment.y +
+                    activeDeleteComment.height,
               },
             ]}
           >
@@ -455,8 +531,9 @@ export default function FeedDetailScreen({ navigation, route, ...directProps }) 
 
       <View
         style={{ bottom: bottomValue }}
-        onLayout={(event) => {
-          setBottomBarHeight(event.nativeEvent.layout.height);
+        onLayout={event => {
+          bottomBarHeightRef.current =
+            event.nativeEvent.layout.height;
         }}
       >
         <BottomBar

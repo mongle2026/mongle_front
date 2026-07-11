@@ -15,7 +15,6 @@ export default function useFeedHome() {
     message: '',
     actionLabel: undefined,
   });
-  const [localOverrides, setLocalOverrides] = useState({});
   const toastTimerRef = useRef(null);
   const normalizeFeedItem = (item) => {
     if (!item || !item.feedId) {
@@ -57,13 +56,11 @@ export default function useFeedHome() {
           .filter(Boolean)
         : [];
     },
+    staleTime: 30_000,
   });
 
   const posts = Array.isArray(apiPosts)
-    ? apiPosts.map(p => ({
-      ...p,
-      ...localOverrides[p.feedId],
-    }))
+    ? apiPosts
     : [];
 
   const onTabPress = useCallback((tab) => {
@@ -93,24 +90,6 @@ export default function useFeedHome() {
     }, duration);
   }, []);
 
-  const toggleLike = useCallback((feed) => {
-    if (!feed?.feedId) return;
-    setLocalOverrides(prev => ({
-      ...prev,
-      [feed.feedId]: { ...prev[feed.feedId], isLiked: !(prev[feed.feedId]?.isLiked ?? feed.isLiked) },
-    }));
-  }, []);
-
-  const toggleBookmark = useCallback((feed) => {
-    if (!feed?.feedId) return;
-    const nextBookmarked = !(localOverrides[feed.feedId]?.isBookmarked ?? feed.isBookmarked);
-    setLocalOverrides(prev => ({
-      ...prev,
-      [feed.feedId]: { ...prev[feed.feedId], isBookmarked: nextBookmarked },
-    }));
-    if (nextBookmarked) showToast();
-  }, [localOverrides, showToast]);
-
   return {
     userId: USER_ID,
     activeTab,
@@ -121,7 +100,5 @@ export default function useFeedHome() {
     refetchFeed,
     onTabPress,
     showToast,
-    toggleLike,
-    toggleBookmark,
   };
 }
