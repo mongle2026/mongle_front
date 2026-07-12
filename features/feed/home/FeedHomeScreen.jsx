@@ -13,7 +13,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../../../shared/styles/color';
 import { gap, padding } from '../../../shared/styles/token';
 import TopNavigation from '../components/TopNavigation';
-// import Post from '../components/Post';
 import FeedPostItem from './components/FeedPostItem';
 import BottomNavigation from '../../../shared/components/BottomNavigation';
 import FAB from '../../../shared/components/FAB';

@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { formatDateDetail } from '../../../shared/utils/formatDate';
 import { Dimensions, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View, BackHandler, KeyboardAvoidingView, Platform, Keyboard, useWindowDimensions, } from 'react-native';
 

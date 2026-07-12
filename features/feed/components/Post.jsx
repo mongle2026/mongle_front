@@ -174,32 +174,6 @@ export default function Post({
     pressScale.value = withTiming(1, { duration: 150 });
   }, [pressScale]);
 
-  const handleBodyPress = useCallback(() => {
-    const now = Date.now();
-
-    // 방금 더블탭 토글이 일어났으면, OS가 중복 전달한 여분의 탭을 무시 (like+unlike 상쇄 방지)
-    if (now - lastToggleRef.current < DOUBLE_TAP_COOLDOWN) {
-      return;
-    }
-
-    if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
-      clearTimeout(tapTimerRef.current);
-      tapTimerRef.current = null;
-
-      lastTapRef.current = 0;
-      lastToggleRef.current = now;
-
-      // 더블탭: 하트 바운스 + 좋아요 토글 (안 눌렀으면 좋아요, 이미 눌렀으면 취소)
-      likeRef.current?.bounce();
-      onPressLike?.();
-    } else {
-      lastTapRef.current = now;
-      tapTimerRef.current = setTimeout(() => {
-        onPressBody?.();
-      }, DOUBLE_TAP_DELAY);
-    }
-  }, [onPressLike, onPressBody]);
-
   return (
     <Animated.View
       style={[
